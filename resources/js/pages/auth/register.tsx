@@ -101,7 +101,8 @@ export default function Register() {
                                 >
                                     <option value="">Select a role</option>
                                     <option value="Responsable">Responsable</option>
-                                    <option value="Employee">Employee</option>
+                                    {/* <option value="Employee">Employee</option> */}
+                                    <option value="Vendeur">Vendeur</option>
                                 </select>
                                 <InputError
                                     message={errors.role}

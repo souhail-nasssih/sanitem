@@ -25,10 +25,70 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('employee.dashboard');
     });
 
-    // Default dashboard (for backward compatibility)
+    // Vendeur routes
+    Route::middleware(['role:Vendeur'])->group(function () {
+        Route::get('vendeur/select-employee', [App\Http\Controllers\VendeurController::class, 'selectEmployee'])->name('vendeur.select-employee');
+        Route::post('vendeur/select-employee', [App\Http\Controllers\VendeurController::class, 'storeSelectedEmployee'])->name('vendeur.store-selected-employee');
+        Route::get('vendeur/dashboard', [App\Http\Controllers\VendeurController::class, 'dashboard'])->name('vendeur.dashboard');
+        Route::post('vendeur/clear-employee', [App\Http\Controllers\VendeurController::class, 'clearSelectedEmployee'])->name('vendeur.clear-employee');
+    });
+
+    // Dashboard - redirect based on role
     Route::get('dashboard', function () {
+        $user = auth()->user();
+        $user->load('roles');
+        
+        if ($user->hasRole('Responsable')) {
+            return redirect()->route('responsable.dashboard');
+        } elseif ($user->hasRole('Employee')) {
+            return redirect()->route('employee.dashboard');
+        } elseif ($user->hasRole('Vendeur')) {
+            // Check if employee is already selected in session
+            if (!$request->session()->has('selected_employee_id')) {
+                return redirect()->route('vendeur.select-employee');
+            }
+            return redirect()->route('vendeur.dashboard');
+        }
+        
         return Inertia::render('dashboard');
     })->name('dashboard');
+
+    // Produits
+    Route::get('produits', [App\Http\Controllers\ProduitController::class, 'index'])->name('produits.index');
+    Route::post('produits', [App\Http\Controllers\ProduitController::class, 'store'])->name('produits.store');
+    Route::put('produits/{produit}', [App\Http\Controllers\ProduitController::class, 'update'])->name('produits.update');
+    Route::delete('produits/{produit}', [App\Http\Controllers\ProduitController::class, 'destroy'])->name('produits.destroy');
+
+    // Employees
+    Route::get('employees', [App\Http\Controllers\EmployeeController::class, 'index'])->name('employees.index');
+    Route::post('employees', [App\Http\Controllers\EmployeeController::class, 'store'])->name('employees.store');
+    Route::put('employees/{employee}', [App\Http\Controllers\EmployeeController::class, 'update'])->name('employees.update');
+    Route::delete('employees/{employee}', [App\Http\Controllers\EmployeeController::class, 'destroy'])->name('employees.destroy');
+
+    // Fournisseurs
+    Route::get('fournisseurs', function () {
+        return Inertia::render('fournisseurs/index');
+    })->name('fournisseurs.index');
+
+    // Clients
+    Route::get('clients', function () {
+        return Inertia::render('clients/index');
+    })->name('clients.index');
+
+    // BL Fournisseurs
+    Route::get('bl-fournisseurs', function () {
+        return Inertia::render('bl-fournisseurs/index');
+    })->name('bl-fournisseurs.index');
+
+    // BL Clients
+    Route::get('bl-clients', function () {
+        return Inertia::render('bl-clients/index');
+    })->name('bl-clients.index');
+
+    // Poubelle (Trash)
+    Route::get('trash', function () {
+        return Inertia::render('trash/index');
+    })->name('trash.index');
 });
 
 require __DIR__.'/settings.php';

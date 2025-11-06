@@ -26,6 +26,12 @@ class LoginResponse implements LoginResponseContract
             return redirect()->route('responsable.dashboard');
         } elseif ($user->hasRole('Employee')) {
             return redirect()->route('employee.dashboard');
+        } elseif ($user->hasRole('Vendeur')) {
+            // Check if employee is already selected in session
+            if (!$request->session()->has('selected_employee_id')) {
+                return redirect()->route('vendeur.select-employee');
+            }
+            return redirect()->route('vendeur.dashboard');
         }
         
         // Default redirect for other roles

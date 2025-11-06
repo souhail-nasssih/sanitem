@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('vendeurs', function (Blueprint $table) {
             $table->id();
-            $table->integer('numuro_post');
+            $table->string('numero_post');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });

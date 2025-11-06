@@ -60,6 +60,15 @@ class RolePermissionSeeder extends Seeder
             'view settings',
         ]);
 
+        // Create Vendeur role
+        $vendeurRole = Role::firstOrCreate(
+            ['name' => 'Vendeur', 'guard_name' => 'web']
+        );
+        $vendeurRole->givePermissionTo([
+            'view dashboard',
+            'view settings',
+        ]);
+
         // Keep user and moderator roles for backward compatibility
         $userRole = Role::firstOrCreate(
             ['name' => 'user', 'guard_name' => 'web']

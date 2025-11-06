@@ -79,16 +79,16 @@ export default function AuthenticatedLayout({ header, children }) {
     const navigation = [
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { name: "Produits", href: "/produits", icon: Package },
+        { name: "Employees", href: "/employees", icon: CalendarClock },
         { name: "Fournisseurs", href: "/fournisseurs", icon: Truck },
         { name: "Clients", href: "/clients", icon: Users },
-        { name: "Factures Fournisseurs", href: "/facture-fournisseurs", icon: FileText },
-        { name: "Factures Clients", href: "/facture-clients", icon: ReceiptText },
+        // { name: "Factures Fournisseurs", href: "/facture-fournisseurs", icon: FileText },
+        // { name: "Factures Clients", href: "/facture-clients", icon: ReceiptText },
         { name: "BL Fournisseurs", href: "/bl-fournisseurs", icon: ClipboardList },
         { name: "BL Clients", href: "/bl-clients", icon: ClipboardCheck },
-        { name: "Échéancier", href: "/echeancier", icon: CalendarClock },
         { name: "Poubelle", href: "/trash", icon: Trash2 },
         // { name: "Règlement", href: "/reglements", icon: ReceiptText },
-        { name: "Settings", href: "#", icon: Settings },
+        { name: "Settings", href: "/settings/profile", icon: Settings },
     ];
 
     const isActive = (href) => {
@@ -97,9 +97,22 @@ export default function AuthenticatedLayout({ header, children }) {
             ? new URL(href).pathname.replace(/\/+$/, "")
             : href.replace(/\/+$/, "");
 
+        // Skip active state for hash links
+        if (hrefPath === "#") {
+            return false;
+        }
+
         // Consider both "/" and "/dashboard" as dashboard
         if (hrefPath === "/dashboard") {
-            return currentUrl === "/dashboard" || currentUrl === "/";
+            return currentUrl === "/dashboard" || currentUrl === "/" ||
+                   currentUrl === "/responsable/dashboard" ||
+                   currentUrl === "/employee/dashboard" ||
+                   currentUrl === "/vendeur/dashboard";
+        }
+
+        // Handle settings routes - match any settings route
+        if (hrefPath === "/settings/profile") {
+            return currentUrl.startsWith("/settings");
         }
 
         return (
