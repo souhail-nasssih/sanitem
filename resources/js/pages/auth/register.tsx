@@ -90,10 +90,29 @@ export default function Register() {
                                 />
                             </div>
 
+                            <div className="grid gap-2">
+                                <Label htmlFor="role">Role</Label>
+                                <select
+                                    id="role"
+                                    name="role"
+                                    required
+                                    tabIndex={5}
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <option value="">Select a role</option>
+                                    <option value="Responsable">Responsable</option>
+                                    <option value="Employee">Employee</option>
+                                </select>
+                                <InputError
+                                    message={errors.role}
+                                    className="mt-2"
+                                />
+                            </div>
+
                             <Button
                                 type="submit"
                                 className="mt-2 w-full"
-                                tabIndex={5}
+                                tabIndex={6}
                                 data-test="register-user-button"
                             >
                                 {processing && <Spinner />}
@@ -103,7 +122,7 @@ export default function Register() {
 
                         <div className="text-center text-sm text-muted-foreground">
                             Already have an account?{' '}
-                            <TextLink href={login()} tabIndex={6}>
+                                <TextLink href={login()} tabIndex={7}>
                                 Log in
                             </TextLink>
                         </div>

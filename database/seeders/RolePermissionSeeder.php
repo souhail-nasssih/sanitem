@@ -38,12 +38,34 @@ class RolePermissionSeeder extends Seeder
         );
         $adminRole->givePermissionTo(Permission::all());
 
+        // Create Responsable role
+        $responsableRole = Role::firstOrCreate(
+            ['name' => 'Responsable', 'guard_name' => 'web']
+        );
+        $responsableRole->givePermissionTo([
+            'view dashboard',
+            'manage users',
+            'manage roles',
+            'manage permissions',
+            'view settings',
+            'manage settings',
+        ]);
+
+        // Create Employee role
+        $employeeRole = Role::firstOrCreate(
+            ['name' => 'Employee', 'guard_name' => 'web']
+        );
+        $employeeRole->givePermissionTo([
+            'view dashboard',
+            'view settings',
+        ]);
+
+        // Keep user and moderator roles for backward compatibility
         $userRole = Role::firstOrCreate(
             ['name' => 'user', 'guard_name' => 'web']
         );
         $userRole->givePermissionTo(['view dashboard', 'view settings']);
 
-        // Optional: Create additional roles
         $moderatorRole = Role::firstOrCreate(
             ['name' => 'moderator', 'guard_name' => 'web']
         );

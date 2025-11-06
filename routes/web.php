@@ -11,6 +11,21 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    // Responsable dashboard
+    Route::middleware(['role:Responsable'])->group(function () {
+        Route::get('responsable/dashboard', function () {
+            return Inertia::render('responsable/dashboard');
+        })->name('responsable.dashboard');
+    });
+
+    // Employee dashboard
+    Route::middleware(['role:Employee'])->group(function () {
+        Route::get('employee/dashboard', function () {
+            return Inertia::render('employee/dashboard');
+        })->name('employee.dashboard');
+    });
+
+    // Default dashboard (for backward compatibility)
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');

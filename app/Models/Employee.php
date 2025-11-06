@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Employee extends Model
+{
+    protected $fillable = [
+        'cin',
+        'type',
+        'adresse',
+    ];
+
+    /**
+     * Get the BL fournisseurs for the employee.
+     */
+    public function blFournisseurs(): HasMany
+    {
+        return $this->hasMany(BLfournisseur::class);
+    }
+}

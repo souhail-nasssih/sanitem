@@ -50,4 +50,12 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
+
+    /**
+     * Get the vendeur associated with the user.
+     */
+    public function vendeur()
+    {
+        return $this->hasOne(Vendeur::class);
+    }
 }
