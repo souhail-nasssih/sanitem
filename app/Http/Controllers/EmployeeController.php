@@ -13,7 +13,7 @@ class EmployeeController extends Controller
     public function index()
     {
         $employees = Employee::latest()->paginate(10);
-        
+
         return inertia('employees/index', [
             'employees' => $employees,
         ]);
@@ -27,7 +27,6 @@ class EmployeeController extends Controller
         $validated = $request->validate([
             'nom_complet' => ['required', 'string', 'max:255'],
             'cin' => ['required', 'string', 'max:255', 'unique:employees,cin'],
-            'type' => ['required', 'string', 'max:255'],
             'adresse' => ['required', 'string', 'max:255'],
         ]);
 

@@ -27,6 +27,18 @@ class LoginResponse implements LoginResponseContract
         } elseif ($user->hasRole('Employee')) {
             return redirect()->route('employee.dashboard');
         } elseif ($user->hasRole('Vendeur')) {
+            // Check if there's a pending confirmation
+            $vendeur = $user->vendeur;
+            if ($vendeur) {
+                $pendingConfirmation = \App\Models\VendeurEmployeeConfirmation::where('vendeur_id', $vendeur->id)
+                    ->where('status', 'pending')
+                    ->first();
+                
+                if ($pendingConfirmation) {
+                    return redirect()->route('vendeur.waiting');
+                }
+            }
+            
             // Check if employee is already selected in session
             if (!$request->session()->has('selected_employee_id')) {
                 return redirect()->route('vendeur.select-employee');

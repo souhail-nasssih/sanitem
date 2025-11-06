@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { showToast } from '@/components/Toast';
 import { Button } from '@/components/ui/button';
-import { User as UserIcon } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { User as UserIcon, Shield } from 'lucide-react';
 
 interface Employee {
     id: number;
@@ -18,7 +20,13 @@ interface SelectEmployeeProps {
 
 export default function SelectEmployee({ employees }: SelectEmployeeProps) {
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
+    const [cinInput, setCinInput] = useState('');
     const { flash } = usePage().props as any;
+
+    // Get selected employee details
+    const selectedEmployee = selectedEmployeeId 
+        ? employees.find(emp => emp.id === selectedEmployeeId)
+        : null;
 
     // Show toast messages from flash data
     useEffect(() => {
@@ -29,6 +37,11 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
             showToast(flash.error, 'error');
         }
     }, [flash]);
+
+    // Reset CIN input when employee selection changes
+    useEffect(() => {
+        setCinInput('');
+    }, [selectedEmployeeId]);
 
     const handleSelectEmployee = (employeeId: number) => {
         setSelectedEmployeeId(employeeId);
@@ -42,14 +55,35 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
             return;
         }
 
+        if (!selectedEmployee) {
+            showToast('Employee sélectionné non trouvé', 'error');
+            return;
+        }
+
+        // Validate CIN
+        if (!cinInput.trim()) {
+            showToast('Veuillez entrer le CIN de l\'employee', 'error');
+            return;
+        }
+
+        if (cinInput.trim() !== selectedEmployee.cin) {
+            showToast('Le CIN saisi ne correspond pas à l\'employee sélectionné', 'error');
+            return;
+        }
+
         router.post('/vendeur/select-employee', {
             employee_id: selectedEmployeeId,
+            cin: cinInput.trim(),
         }, {
             onSuccess: () => {
-                showToast('Employee sélectionné avec succès', 'success');
+                showToast('Demande de confirmation envoyée', 'success');
             },
             onError: (errors) => {
-                showToast('Erreur lors de la sélection de l\'employee', 'error');
+                if (errors.cin) {
+                    showToast(errors.cin, 'error');
+                } else {
+                    showToast('Erreur lors de la sélection de l\'employee', 'error');
+                }
             },
         });
     };
@@ -102,9 +136,6 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
                                                         <h4 className="font-medium text-gray-900 dark:text-white mb-1">
                                                             {employee.nom_complet}
                                                         </h4>
-                                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                            CIN: {employee.cin}
-                                                        </p>
                                                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                                                             {employee.adresse}
                                                         </p>
@@ -121,13 +152,48 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
                                         ))}
                                     </div>
 
+                                    {/* CIN Confirmation Section */}
+                                    {selectedEmployee && (
+                                        <div className="mb-6 p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg">
+                                            <div className="flex items-start gap-3 mb-4">
+                                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 rounded-full">
+                                                    <Shield className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h4 className="font-medium text-gray-900 dark:text-white mb-1">
+                                                        Confirmation de sécurité
+                                                    </h4>
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                        Veuillez entrer le CIN de <span className="font-medium">{selectedEmployee.nom_complet}</span> pour confirmer la sélection.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="cin">CIN de l'Employee *</Label>
+                                                <Input
+                                                    id="cin"
+                                                    type="text"
+                                                    required
+                                                    placeholder="Entrez le CIN de l'employee sélectionné"
+                                                    className="w-full"
+                                                    value={cinInput}
+                                                    onChange={(e) => setCinInput(e.target.value)}
+                                                    autoFocus
+                                                />
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                    Vous devez entrer le CIN de {selectedEmployee.nom_complet} pour confirmer la sélection.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div className="flex items-center justify-end gap-4">
                                         <Button
                                             type="submit"
-                                            disabled={!selectedEmployeeId}
+                                            disabled={!selectedEmployeeId || !cinInput.trim() || (selectedEmployee && cinInput.trim() !== selectedEmployee.cin)}
                                             className="bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            Continuer avec cet Employee
+                                            Envoyer la demande de confirmation
                                         </Button>
                                     </div>
                                 </form>

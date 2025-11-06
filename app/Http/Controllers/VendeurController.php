@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\VendeurEmployeeConfirmationRequested;
 use App\Models\Employee;
+use App\Models\VendeurEmployeeConfirmation;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -26,20 +28,100 @@ class VendeurController extends Controller
     }
 
     /**
-     * Store selected employee in session
+     * Store selected employee and create confirmation request
      */
     public function storeSelectedEmployee(Request $request)
     {
         $validated = $request->validate([
             'employee_id' => ['required', 'exists:employees,id'],
+            'cin' => ['required', 'string'],
         ]);
 
-        // Store selected employee in session
-        $request->session()->put('selected_employee_id', $validated['employee_id']);
-        $request->session()->put('selected_employee', Employee::find($validated['employee_id']));
+        // Get the employee to verify CIN
+        $employee = Employee::findOrFail($validated['employee_id']);
 
-        return redirect()->route('vendeur.dashboard')
-            ->with('success', 'Employee sélectionné avec succès.');
+        // Validate CIN matches
+        if ($validated['cin'] !== $employee->cin) {
+            return redirect()->back()
+                ->withErrors(['cin' => 'Le CIN saisi ne correspond pas à l\'employee sélectionné.'])
+                ->withInput();
+        }
+
+        // Get the vendeur for the current user
+        $vendeur = $request->user()->vendeur;
+        
+        if (!$vendeur) {
+            return redirect()->back()
+                ->with('error', 'Vendeur non trouvé.');
+        }
+
+        // Check if there's already a pending confirmation
+        $existingConfirmation = VendeurEmployeeConfirmation::where('vendeur_id', $vendeur->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($existingConfirmation) {
+            return redirect()->back()
+                ->with('error', 'Une demande de confirmation est déjà en attente.');
+        }
+
+        // Create confirmation request
+        $confirmation = VendeurEmployeeConfirmation::create([
+            'vendeur_id' => $vendeur->id,
+            'employee_id' => $validated['employee_id'],
+            'status' => 'pending',
+        ]);
+
+        // Broadcast the confirmation request event
+        event(new VendeurEmployeeConfirmationRequested($confirmation));
+
+        return redirect()->route('vendeur.waiting')
+            ->with('success', 'Demande de confirmation envoyée. En attente de l\'approbation du Responsable.');
+    }
+
+    /**
+     * Show waiting page for confirmation
+     */
+    public function waiting(Request $request)
+    {
+        // Ensure user is Vendeur
+        if (!$request->user()->hasRole('Vendeur')) {
+            return redirect()->route('dashboard');
+        }
+
+        $vendeur = $request->user()->vendeur;
+        
+        if (!$vendeur) {
+            return redirect()->route('vendeur.select-employee');
+        }
+
+        $confirmation = VendeurEmployeeConfirmation::where('vendeur_id', $vendeur->id)
+            ->where('status', 'pending')
+            ->with(['employee'])
+            ->latest()
+            ->first();
+
+        if (!$confirmation) {
+            // Check if there's an approved confirmation
+            $approvedConfirmation = VendeurEmployeeConfirmation::where('vendeur_id', $vendeur->id)
+                ->where('status', 'approved')
+                ->with(['employee'])
+                ->latest()
+                ->first();
+
+            if ($approvedConfirmation) {
+                // Store in session and redirect to dashboard
+                $request->session()->put('selected_employee_id', $approvedConfirmation->employee_id);
+                $request->session()->put('selected_employee', $approvedConfirmation->employee);
+                return redirect()->route('vendeur.dashboard');
+            }
+
+            return redirect()->route('vendeur.select-employee');
+        }
+        
+        return Inertia::render('vendeur/waiting', [
+            'confirmation' => $confirmation,
+        ]);
     }
 
     /**
@@ -52,9 +134,26 @@ class VendeurController extends Controller
             return redirect()->route('dashboard');
         }
 
-        // Check if employee is selected
+        // Check if employee is selected in session
         if (!$request->session()->has('selected_employee_id')) {
-            return redirect()->route('vendeur.select-employee');
+            // Check for approved confirmation
+            $vendeur = $request->user()->vendeur;
+            if ($vendeur) {
+                $approvedConfirmation = VendeurEmployeeConfirmation::where('vendeur_id', $vendeur->id)
+                    ->where('status', 'approved')
+                    ->with(['employee'])
+                    ->latest()
+                    ->first();
+
+                if ($approvedConfirmation) {
+                    $request->session()->put('selected_employee_id', $approvedConfirmation->employee_id);
+                    $request->session()->put('selected_employee', $approvedConfirmation->employee);
+                } else {
+                    return redirect()->route('vendeur.select-employee');
+                }
+            } else {
+                return redirect()->route('vendeur.select-employee');
+            }
         }
 
         $selectedEmployee = $request->session()->get('selected_employee');

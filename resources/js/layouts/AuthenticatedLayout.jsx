@@ -1,7 +1,7 @@
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import Dropdown from "@/Components/Dropdown";
 import { Link, usePage } from "@inertiajs/react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
     LayoutDashboard,
     Users,
@@ -17,6 +17,7 @@ import {
     ClipboardCheck,
     CalendarClock,
     Trash2,
+    CheckCircle2,
 } from "lucide-react";
 import ThemeToggle from "@/Components/ThemeToggle";
 import NotificationCenter from "@/Components/NotificationCenter";
@@ -76,7 +77,16 @@ export default function AuthenticatedLayout({ header, children }) {
         handleNavigation();
     }, [url]);
 
-    const navigation = [
+    // Check if user is Responsable - handle both array and object formats
+    const isResponsable = useMemo(() => {
+        if (!user?.roles) return false;
+        return user.roles.some(role => {
+            const roleName = typeof role === 'string' ? role : role?.name;
+            return roleName === 'Responsable';
+        });
+    }, [user?.roles]);
+
+    const navigation = useMemo(() => [
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { name: "Produits", href: "/produits", icon: Package },
         { name: "Employees", href: "/employees", icon: CalendarClock },
@@ -88,8 +98,9 @@ export default function AuthenticatedLayout({ header, children }) {
         { name: "BL Clients", href: "/bl-clients", icon: ClipboardCheck },
         { name: "Poubelle", href: "/trash", icon: Trash2 },
         // { name: "Règlement", href: "/reglements", icon: ReceiptText },
+        ...(isResponsable ? [{ name: "Confirmations", href: "/responsable/confirmations", icon: CheckCircle2 }] : []),
         { name: "Settings", href: "/settings/profile", icon: Settings },
-    ];
+    ], [isResponsable]);
 
     const isActive = (href) => {
         const currentUrl = url.split("?")[0].replace(/\/+$/, "");

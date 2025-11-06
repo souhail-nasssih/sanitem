@@ -29,8 +29,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:Vendeur'])->group(function () {
         Route::get('vendeur/select-employee', [App\Http\Controllers\VendeurController::class, 'selectEmployee'])->name('vendeur.select-employee');
         Route::post('vendeur/select-employee', [App\Http\Controllers\VendeurController::class, 'storeSelectedEmployee'])->name('vendeur.store-selected-employee');
+        Route::get('vendeur/waiting', [App\Http\Controllers\VendeurController::class, 'waiting'])->name('vendeur.waiting');
         Route::get('vendeur/dashboard', [App\Http\Controllers\VendeurController::class, 'dashboard'])->name('vendeur.dashboard');
         Route::post('vendeur/clear-employee', [App\Http\Controllers\VendeurController::class, 'clearSelectedEmployee'])->name('vendeur.clear-employee');
+    });
+
+    // Confirmation routes for Responsable
+    Route::middleware(['role:Responsable'])->group(function () {
+        Route::get('responsable/confirmations', [App\Http\Controllers\ConfirmationController::class, 'index'])->name('responsable.confirmations');
+        Route::post('confirmations/{confirmation}/approve', [App\Http\Controllers\ConfirmationController::class, 'approve'])->name('confirmations.approve');
+        Route::post('confirmations/{confirmation}/reject', [App\Http\Controllers\ConfirmationController::class, 'reject'])->name('confirmations.reject');
     });
 
     // Dashboard - redirect based on role
