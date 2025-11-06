@@ -1,6 +1,6 @@
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import Dropdown from "@/Components/Dropdown";
-import { Link, usePage, router } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { useState, useEffect, useRef } from "react";
 import {
     LayoutDashboard,
@@ -77,16 +77,16 @@ export default function AuthenticatedLayout({ header, children }) {
     }, [url]);
 
     const navigation = [
-        { name: "Dashboard", href: router('dashboard'), icon: LayoutDashboard },
-        { name: "Produits", href: router('produits.index'), icon: Package },
-        { name: "Fournisseurs", href: router('fournisseurs.index'), icon: Truck },
-        { name: "Clients", href: router('clients.index'), icon: Users },
-        { name: "Factures Fournisseurs", href: router('facture-fournisseurs.index'), icon: FileText },
-        { name: "Factures Clients", href: router('facture-clients.index'), icon: ReceiptText },
-        { name: "BL Fournisseurs", href: router('bl-fournisseurs.index'), icon: ClipboardList },
-        { name: "BL Clients", href: router('bl-clients.index'), icon: ClipboardCheck },
-        { name: "Échéancier", href: router('echeancier.index'), icon: CalendarClock },
-        { name: "Poubelle", href: router('trash.index'), icon: Trash2 },
+        { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+        { name: "Produits", href: "/produits", icon: Package },
+        { name: "Fournisseurs", href: "/fournisseurs", icon: Truck },
+        { name: "Clients", href: "/clients", icon: Users },
+        { name: "Factures Fournisseurs", href: "/facture-fournisseurs", icon: FileText },
+        { name: "Factures Clients", href: "/facture-clients", icon: ReceiptText },
+        { name: "BL Fournisseurs", href: "/bl-fournisseurs", icon: ClipboardList },
+        { name: "BL Clients", href: "/bl-clients", icon: ClipboardCheck },
+        { name: "Échéancier", href: "/echeancier", icon: CalendarClock },
+        { name: "Poubelle", href: "/trash", icon: Trash2 },
         // { name: "Règlement", href: "/reglements", icon: ReceiptText },
         { name: "Settings", href: "#", icon: Settings },
     ];
@@ -96,9 +96,12 @@ export default function AuthenticatedLayout({ header, children }) {
         const hrefPath = href.startsWith("http")
             ? new URL(href).pathname.replace(/\/+$/, "")
             : href.replace(/\/+$/, "");
-        if (hrefPath === route("dashboard").replace(/\/+$/, "")) {
-            return currentUrl === "/" || currentUrl === hrefPath;
+
+        // Consider both "/" and "/dashboard" as dashboard
+        if (hrefPath === "/dashboard") {
+            return currentUrl === "/dashboard" || currentUrl === "/";
         }
+
         return (
             currentUrl === hrefPath ||
             (currentUrl.startsWith(hrefPath) && hrefPath !== "/")
@@ -254,13 +257,13 @@ export default function AuthenticatedLayout({ header, children }) {
 
                                         <Dropdown.Content className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-700">
                                             <Dropdown.Link
-                                                href={route("profile.edit")}
+                                                href="/profile"
                                                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600"
                                             >
                                                 Profile
                                             </Dropdown.Link>
                                             <Dropdown.Link
-                                                href={route("logout")}
+                                                href="/logout"
                                                 method="post"
                                                 as="button"
                                                 className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600"
