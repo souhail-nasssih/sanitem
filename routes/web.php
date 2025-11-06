@@ -17,3 +17,34 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__.'/settings.php';
+
+// Temporary API endpoints for NotificationCenter (prevent 404s)
+Route::middleware(['auth', 'verified'])->prefix('api')->group(function () {
+    Route::get('notifications', function () {
+        return response()->json([
+            'data' => [],
+        ]);
+    });
+
+    Route::get('notifications/unread-count', function () {
+        return response()->json([
+            'count' => 0,
+        ]);
+    });
+
+    Route::post('notifications/check-due-dates', function () {
+        return response()->json(['success' => true]);
+    });
+
+    Route::post('notifications/{notification}/read', function () {
+        return response()->json(['success' => true]);
+    });
+
+    Route::post('notifications/read-all', function () {
+        return response()->json(['success' => true]);
+    });
+
+    Route::delete('notifications/{notification}', function () {
+        return response()->json(['success' => true]);
+    });
+});
