@@ -1,19 +1,21 @@
 import { Appearance, useAppearance } from '@/hooks/use-appearance';
+import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/utils';
 import { LucideIcon, Monitor, Moon, Sun } from 'lucide-react';
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, useMemo } from 'react';
 
 export default function AppearanceToggleTab({
     className = '',
     ...props
 }: HTMLAttributes<HTMLDivElement>) {
+    const { t } = useTranslation();
     const { appearance, updateAppearance } = useAppearance();
 
-    const tabs: { value: Appearance; icon: LucideIcon; label: string }[] = [
-        { value: 'light', icon: Sun, label: 'Light' },
-        { value: 'dark', icon: Moon, label: 'Dark' },
-        { value: 'system', icon: Monitor, label: 'System' },
-    ];
+    const tabs: { value: Appearance; icon: LucideIcon; label: string }[] = useMemo(() => [
+        { value: 'light', icon: Sun, label: t('light') },
+        { value: 'dark', icon: Moon, label: t('dark') },
+        { value: 'system', icon: Monitor, label: t('system') },
+    ], [t]);
 
     return (
         <div
