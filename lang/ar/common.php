@@ -236,5 +236,20 @@ return [
     'light' => 'فاتح',
     'dark' => 'داكن',
     'system' => 'النظام',
+    // Fournisseurs (Suppliers)
+    'add_supplier' => 'إضافة مورد',
+    'new_supplier' => 'مورد جديد',
+    'create_supplier' => 'إنشاء المورد',
+    'edit_supplier' => 'تعديل المورد',
+    'list_suppliers' => 'قائمة الموردين',
+    'delete_supplier' => 'حذف المورد',
+    'no_suppliers_found' => 'لم يتم العثور على موردين. قم بإنشاء موردك الأول بالنقر على "إضافة مورد".',
+    'supplier_created_success' => 'تم إنشاء المورد بنجاح',
+    'supplier_updated_success' => 'تم تحديث المورد بنجاح',
+    'supplier_deleted_success' => 'تم حذف المورد بنجاح',
+    'supplier_create_error' => 'خطأ في إنشاء المورد',
+    'supplier_update_error' => 'خطأ في تحديث المورد',
+    'supplier_delete_error' => 'خطأ في حذف المورد',
+    'supplier_full_name_placeholder' => 'الاسم الكامل للمورد',
 ];
 

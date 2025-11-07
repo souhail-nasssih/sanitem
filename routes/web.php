@@ -77,9 +77,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('employees/{employee}', [App\Http\Controllers\EmployeeController::class, 'destroy'])->name('employees.destroy');
 
     // Fournisseurs
-    Route::get('fournisseurs', function () {
-        return Inertia::render('fournisseurs/index');
-    })->name('fournisseurs.index');
+    Route::get('fournisseurs', [App\Http\Controllers\FournisseurController::class, 'index'])->name('fournisseurs.index');
+    Route::post('fournisseurs', [App\Http\Controllers\FournisseurController::class, 'store'])->name('fournisseurs.store');
+    Route::put('fournisseurs/{fournisseur}', [App\Http\Controllers\FournisseurController::class, 'update'])->name('fournisseurs.update');
+    Route::delete('fournisseurs/{fournisseur}', [App\Http\Controllers\FournisseurController::class, 'destroy'])->name('fournisseurs.destroy');
 
     // Clients
     Route::get('clients', function () {

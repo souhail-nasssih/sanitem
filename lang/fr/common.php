@@ -236,5 +236,20 @@ return [
     'light' => 'Clair',
     'dark' => 'Sombre',
     'system' => 'Système',
+    // Fournisseurs (Suppliers)
+    'add_supplier' => 'Ajouter un Fournisseur',
+    'new_supplier' => 'Nouveau Fournisseur',
+    'create_supplier' => 'Créer le Fournisseur',
+    'edit_supplier' => 'Modifier le Fournisseur',
+    'list_suppliers' => 'Liste des Fournisseurs',
+    'delete_supplier' => 'Supprimer le fournisseur',
+    'no_suppliers_found' => 'Aucun fournisseur trouvé. Créez votre premier fournisseur en cliquant sur "Ajouter un Fournisseur".',
+    'supplier_created_success' => 'Fournisseur créé avec succès',
+    'supplier_updated_success' => 'Fournisseur mis à jour avec succès',
+    'supplier_deleted_success' => 'Fournisseur supprimé avec succès',
+    'supplier_create_error' => 'Erreur lors de la création du fournisseur',
+    'supplier_update_error' => 'Erreur lors de la mise à jour du fournisseur',
+    'supplier_delete_error' => 'Erreur lors de la suppression du fournisseur',
+    'supplier_full_name_placeholder' => 'Nom complet du fournisseur',
 ];
 
