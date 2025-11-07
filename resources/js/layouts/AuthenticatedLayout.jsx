@@ -77,15 +77,16 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
 
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 1024);
-            if (window.innerWidth >= 1024) {
+            const isMobileView = window.innerWidth < 1024;
+            setIsMobile(isMobileView);
+            if (isMobileView) {
+                // On mobile, always close sidebar
+                setSidebarOpen(false);
+            } else {
                 // On desktop, restore the saved state or default to true
                 const saved = localStorage.getItem('sidebarOpen');
                 const shouldOpen = saved !== null ? JSON.parse(saved) : true;
                 setSidebarOpen(shouldOpen);
-            } else {
-                // On mobile, always close sidebar
-                setSidebarOpen(false);
             }
         };
 
@@ -175,9 +176,13 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
             {!shouldHideSidebar && (
                 <div
                     className={`fixed inset-y-0 z-30 flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out ${
-                        currentLocale === 'ar'
-                            ? `right-0 border-l border-gray-200 dark:border-gray-700 ${sidebarOpen ? "w-64" : "w-20"}`
-                            : `left-0 border-r border-gray-200 dark:border-gray-700 ${sidebarOpen ? "w-64" : "w-20"}`
+                        isMobile
+                            ? currentLocale === 'ar'
+                                ? `right-0 border-l border-gray-200 dark:border-gray-700 ${sidebarOpen ? "translate-x-0" : "translate-x-full"} w-64`
+                                : `left-0 border-r border-gray-200 dark:border-gray-700 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} w-64`
+                            : currentLocale === 'ar'
+                                ? `right-0 border-l border-gray-200 dark:border-gray-700 ${sidebarOpen ? "w-64" : "w-20"}`
+                                : `left-0 border-r border-gray-200 dark:border-gray-700 ${sidebarOpen ? "w-64" : "w-20"}`
                     }`}
                 >
                 <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
@@ -265,17 +270,19 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
             )}
 
             {/* Main content area - Corrections principales ici */}
-            <div className={`flex-1 flex flex-col min-w-0 ${
+            <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${
                 shouldHideSidebar
                     ? "ml-0 mr-0"
-                    : currentLocale === 'ar'
-                        ? (sidebarOpen ? "lg:mr-64" : "lg:mr-20")
-                        : (sidebarOpen ? "lg:ml-64" : "lg:ml-20")
+                    : isMobile
+                        ? "ml-0 mr-0"
+                        : currentLocale === 'ar'
+                            ? (sidebarOpen ? "lg:mr-64" : "lg:mr-20")
+                            : (sidebarOpen ? "lg:ml-64" : "lg:ml-20")
             }`}>
                 {/* Top navigation */}
-                <nav className="bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700 w-full">
-                    <div className="px-4 sm:px-6 lg:px-8 w-full">
-                        <div className="flex h-16 items-center justify-between w-full">
+                <nav className="bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700 w-full sticky top-0 z-10">
+                    <div className="px-3 sm:px-4 md:px-6 lg:px-8 w-full">
+                        <div className="flex h-14 sm:h-16 items-center justify-between w-full gap-2">
                             {!shouldHideSidebar && (
                                 <div className="flex items-center">
                                     <button
@@ -300,12 +307,12 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
                                 </div>
                             )}
 
-                            <div className={`flex items-center gap-2 ${
+                            <div className={`flex items-center gap-1 sm:gap-2 ${
                                 currentLocale === 'ar' ? 'mr-auto' : 'ml-auto'
                             }`}>
                                 {!shouldHideNotification && <NotificationCenter ref={notificationCenterRef} />}
                                 <LanguageSwitcher />
-                                <ThemeToggle className={currentLocale === 'ar' ? "ml-4" : "mr-4"} />
+                                <ThemeToggle className={currentLocale === 'ar' ? "ml-2 sm:ml-4" : "mr-2 sm:mr-4"} />
                                 <div className="relative">
                                     <Dropdown>
                                         <Dropdown.Trigger>
@@ -361,9 +368,9 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
                 <main className="flex-1 overflow-y-auto w-full">
                     {header && (
                         <header className="bg-white shadow-sm dark:bg-gray-800 w-full">
-                            <div className="mx-auto w-full px-4 py-4 sm:px-6 lg:px-8">
+                            <div className="mx-auto w-full px-3 py-3 sm:px-4 sm:py-4 md:px-6 lg:px-8">
                                 {typeof header === 'string' ? (
-                                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{header}</h1>
+                                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white">{header}</h1>
                                 ) : (
                                     header
                                 )}
@@ -371,7 +378,7 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
                         </header>
                     )}
 
-                    <div className="mx-auto w-full px-4 py-6 sm:px-6 lg:px-8 bg-gray-100 dark:bg-gray-900">
+                    <div className="mx-auto w-full px-3 py-4 sm:px-4 sm:py-6 md:px-6 lg:px-8 bg-gray-100 dark:bg-gray-900">
                         {children}
                     </div>
                 </main>

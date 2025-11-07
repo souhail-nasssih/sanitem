@@ -44,21 +44,21 @@ export default function Dashboard({
             <Head title={t('dashboard')} />
 
             {/* Statistiques principales */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8">
                 {/* Chiffre d'affaires total */}
-                <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+                <div className="rounded-lg bg-white p-4 sm:p-6 shadow-sm dark:bg-gray-800">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('total_revenue')}</h3>
+                        <h3 className="text-sm sm:text-base md:text-lg font-medium text-gray-900 dark:text-white">{t('total_revenue')}</h3>
                         <div className="flex items-center">
                             <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                             </svg>
                         </div>
                     </div>
-                    <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
+                    <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                         {formatCurrency(stats?.chiffreAffaires || 0)}
                     </p>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                         {t('total_client_invoices')}
                     </p>
                 </div>
@@ -73,44 +73,44 @@ export default function Dashboard({
                             </svg>
                         </div>
                     </div>
-                    <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
+                    <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                         {formatCurrency(stats?.creancesClients || 0)}
                     </p>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                         {t('unpaid_invoices')}
                     </p>
                 </div>
 
                 {/* Trésorerie nette */}
-                <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+                <div className="rounded-lg bg-white p-4 sm:p-6 shadow-sm dark:bg-gray-800">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('net_treasury')}</h3>
+                        <h3 className="text-sm sm:text-base md:text-lg font-medium text-gray-900 dark:text-white">{t('net_treasury')}</h3>
                         <div className="flex items-center">
                             <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                             </svg>
                         </div>
                     </div>
-                    <p className={`mt-2 text-3xl font-bold ${(stats?.tresorerieNette || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    <p className={`mt-2 text-2xl sm:text-3xl font-bold ${(stats?.tresorerieNette || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                         {formatCurrency(stats?.tresorerieNette || 0)}
                     </p>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                         {t('receivables_debts')}
                     </p>
                 </div>
 
                 {/* CA du mois */}
-                <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+                <div className="rounded-lg bg-white p-4 sm:p-6 shadow-sm dark:bg-gray-800">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('revenue_this_month')}</h3>
+                        <h3 className="text-sm sm:text-base md:text-lg font-medium text-gray-900 dark:text-white">{t('revenue_this_month')}</h3>
                         <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                         </svg>
                     </div>
-                    <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
+                    <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                         {formatCurrency(stats?.caCeMois || 0)}
                     </p>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                         {stats?.evolutionCAMois !== undefined && (
                             <span className={`flex items-center ${stats.evolutionCAMois >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                                 <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -128,45 +128,45 @@ export default function Dashboard({
             </div>
 
             {/* Alertes critiques */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-8">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 mb-6 sm:mb-8">
                 {/* Factures en retard */}
-                <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+                <div className="rounded-lg bg-white p-4 sm:p-6 shadow-sm dark:bg-gray-800">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('overdue_invoices')}</h3>
+                        <h3 className="text-sm sm:text-base md:text-lg font-medium text-gray-900 dark:text-white">{t('overdue_invoices')}</h3>
                         <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <p className="mt-2 text-3xl font-bold text-red-600">
+                    <p className="mt-2 text-2xl sm:text-3xl font-bold text-red-600">
                         {formatNumber(stats?.facturesEnRetard || 0)}
                     </p>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                         {t('past_due_dates')}
                     </p>
                 </div>
 
                 {/* Produits en rupture */}
-                <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+                <div className="rounded-lg bg-white p-4 sm:p-6 shadow-sm dark:bg-gray-800">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('products_out_of_stock')}</h3>
+                        <h3 className="text-sm sm:text-base md:text-lg font-medium text-gray-900 dark:text-white">{t('products_out_of_stock')}</h3>
                         <svg className="h-6 w-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                         </svg>
                     </div>
-                    <p className="mt-2 text-3xl font-bold text-orange-600">
+                    <p className="mt-2 text-2xl sm:text-3xl font-bold text-orange-600">
                         {formatNumber(stats?.produitsEnRupture || 0)}
                     </p>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                         {t('critical_stock')}
                     </p>
                 </div>
             </div>
 
             {/* Contenu principal en deux colonnes */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 {/* Top clients */}
-                <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">{t('top_clients')}</h3>
+                <div className="rounded-lg bg-white p-4 sm:p-6 shadow-sm dark:bg-gray-800">
+                    <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">{t('top_clients')}</h3>
                     <div className="space-y-4">
                         {topClients && topClients.length > 0 ? (
                             topClients.map((client, index) => (
@@ -200,8 +200,8 @@ export default function Dashboard({
                 </div>
 
                 {/* Produits en rupture de stock */}
-                <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">{t('products_out_of_stock')}</h3>
+                <div className="rounded-lg bg-white p-4 sm:p-6 shadow-sm dark:bg-gray-800">
+                    <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">{t('products_out_of_stock')}</h3>
                     <div className="space-y-4">
                         {produitsStockBas && produitsStockBas.length > 0 ? (
                             produitsStockBas.map((produit) => (

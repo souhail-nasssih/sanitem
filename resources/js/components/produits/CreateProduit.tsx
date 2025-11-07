@@ -52,9 +52,9 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                     {t('add_product')}
                 </Button>
             ) : (
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                             {t('new_product')}
                         </h3>
                         <Button
@@ -66,8 +66,8 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                         </Button>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="reférence">{t('reference')} *</Label>
                                 <Input
@@ -111,7 +111,7 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                             <InputError message={errors.discription} />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="qte_stock">{t('qte_stock')} *</Label>
                                 <Input
@@ -158,7 +158,7 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-4 pt-4">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 pt-3 sm:pt-4">
                             <Button
                                 type="submit"
                                 disabled={processing}

@@ -2,7 +2,7 @@ import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useTranslation } from '@/hooks/useTranslation';
-import { showToast } from '@/components/Toast';
+import { showToast } from '@/Components/Toast';
 import { Loader2 } from 'lucide-react';
 
 interface Employee {

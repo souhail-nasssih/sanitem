@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useTranslation } from '@/hooks/useTranslation';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { showToast } from '@/components/Toast';
+import { showToast } from '@/Components/Toast';
 import { Button } from '@/components/ui/button';
 import { Check, X, User, Loader2 } from 'lucide-react';
 
@@ -157,11 +157,11 @@ export default function Confirmations({ confirmations: initialConfirmations }: C
         >
             <Head title={t('confirmations')} />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div className="py-4 sm:py-6 md:py-8 lg:py-12">
+                <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <h3 className="text-lg font-semibold mb-4">{t('confirmation_requests')}</h3>
+                        <div className="p-3 sm:p-4 md:p-6 text-gray-900 dark:text-gray-100">
+                            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">{t('confirmation_requests')}</h3>
                             
                             {confirmations && confirmations.length > 0 ? (
                                 <div className="space-y-4">
@@ -199,39 +199,39 @@ export default function Confirmations({ confirmations: initialConfirmations }: C
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-2 ml-4">
-                                                    <Button
-                                                        onClick={() => handleApproveClick(confirmation)}
-                                                        disabled={processing === confirmation.id}
-                                                        className="bg-green-600 hover:bg-green-700 text-white"
-                                                        size="sm"
-                                                    >
-                                                        {processing === confirmation.id ? (
-                                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                                        ) : (
-                                                            <>
-                                                                <Check className="h-4 w-4 mr-1" />
-                                                                {t('approve')}
-                                                            </>
-                                                        )}
-                                                    </Button>
-                                                    <Button
-                                                        onClick={() => handleReject(confirmation.id)}
-                                                        disabled={processing === confirmation.id}
-                                                        variant="outline"
-                                                        className="border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
-                                                        size="sm"
-                                                    >
-                                                        {processing === confirmation.id ? (
-                                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                                        ) : (
-                                                            <>
-                                                                <X className="h-4 w-4 mr-1" />
-                                                                {t('reject')}
-                                                            </>
-                                                        )}
-                                                    </Button>
-                                                </div>
+                                                    <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-4">
+                                                        <Button
+                                                            onClick={() => handleApproveClick(confirmation)}
+                                                            disabled={processing === confirmation.id}
+                                                            className="flex-1 sm:flex-initial bg-green-600 hover:bg-green-700 text-white text-sm"
+                                                            size="sm"
+                                                        >
+                                                            {processing === confirmation.id ? (
+                                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                                            ) : (
+                                                                <>
+                                                                    <Check className="h-4 w-4 mr-1" />
+                                                                    {t('approve')}
+                                                                </>
+                                                            )}
+                                                        </Button>
+                                                        <Button
+                                                            onClick={() => handleReject(confirmation.id)}
+                                                            disabled={processing === confirmation.id}
+                                                            variant="outline"
+                                                            className="flex-1 sm:flex-initial border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20 text-sm"
+                                                            size="sm"
+                                                        >
+                                                            {processing === confirmation.id ? (
+                                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                                            ) : (
+                                                                <>
+                                                                    <X className="h-4 w-4 mr-1" />
+                                                                    {t('reject')}
+                                                                </>
+                                                            )}
+                                                        </Button>
+                                                    </div>
                                             </div>
                                         </div>
                                     ))}

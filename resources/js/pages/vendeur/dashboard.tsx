@@ -2,7 +2,7 @@ import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useTranslation } from '@/hooks/useTranslation';
-import { showToast } from '@/components/Toast';
+import { showToast } from '@/Components/Toast';
 import { Button } from '@/components/ui/button';
 import { User, LogOut } from 'lucide-react';
 
@@ -51,12 +51,12 @@ export default function VendeurDashboard({ selectedEmployee }: VendeurDashboardP
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    {/* Selected Employee Card */}
-                    {selectedEmployee && (
-                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                            <div className="p-6 text-gray-900 dark:text-gray-100">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
+                        {/* Selected Employee Card */}
+                        {selectedEmployee && (
+                            <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-4 sm:mb-6">
+                                <div className="p-4 sm:p-6 text-gray-900 dark:text-gray-100">
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+                                        <div className="flex items-center gap-3 sm:gap-4">
                                         <div className="p-3 bg-indigo-100 dark:bg-indigo-900/20 rounded-full">
                                             <User className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                                         </div>
@@ -72,30 +72,30 @@ export default function VendeurDashboard({ selectedEmployee }: VendeurDashboardP
                                             </p>
                                         </div>
                                     </div>
-                                    <Button
-                                        onClick={handleChangeEmployee}
-                                        variant="outline"
-                                        className="flex items-center gap-2"
-                                    >
-                                        <LogOut className="h-4 w-4" />
-                                        {t('change_employee')}
-                                    </Button>
+                                        <Button
+                                            onClick={handleChangeEmployee}
+                                            variant="outline"
+                                            className="w-full sm:w-auto flex items-center justify-center gap-2 mt-3 sm:mt-0"
+                                        >
+                                            <LogOut className="h-4 w-4" />
+                                            {t('change_employee')}
+                                        </Button>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* Dashboard Content */}
-                    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <h3 className="text-lg font-semibold mb-4">{t('welcome_vendeur')}</h3>
-                            <p className="mb-4">
-                                {selectedEmployee 
-                                    ? t('working_with', { name: selectedEmployee.nom_complet })
-                                    : t('select_employee_to_start')
-                                }
-                            </p>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                        {/* Dashboard Content */}
+                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                            <div className="p-4 sm:p-6 text-gray-900 dark:text-gray-100">
+                                <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">{t('welcome_vendeur')}</h3>
+                                <p className="mb-3 sm:mb-4 text-sm sm:text-base">
+                                    {selectedEmployee 
+                                        ? t('working_with', { name: selectedEmployee.nom_complet })
+                                        : t('select_employee_to_start')
+                                    }
+                                </p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-4 sm:mt-6">
                                 <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                                     <h4 className="font-medium text-blue-900 dark:text-blue-100">{t('sales')}</h4>
                                     <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">

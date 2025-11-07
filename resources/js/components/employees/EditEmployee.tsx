@@ -2,7 +2,7 @@ import { useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import InputError from '@/components/input-error';
-import { showToast } from '@/components/Toast';
+import { showToast } from '@/Components/Toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -71,7 +71,7 @@ export default function EditEmployee({ employee, onSuccess, onCancel }: EditEmpl
                 )}
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                 <div className="grid gap-2">
                     <Label htmlFor="nom_complet">{t('nom_complet')} *</Label>
                     <Input
@@ -86,7 +86,7 @@ export default function EditEmployee({ employee, onSuccess, onCancel }: EditEmpl
                     <InputError message={errors.nom_complet} />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="grid gap-2">
                         <Label htmlFor="cin">{t('cin')} *</Label>
                         <Input
@@ -116,7 +116,7 @@ export default function EditEmployee({ employee, onSuccess, onCancel }: EditEmpl
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4 pt-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 pt-3 sm:pt-4">
                     <Button
                         type="submit"
                         disabled={processing}

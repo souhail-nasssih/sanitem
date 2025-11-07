@@ -2,7 +2,7 @@ import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import InputError from '@/components/input-error';
-import { showToast } from '@/components/Toast';
+import { showToast } from '@/Components/Toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -49,9 +49,9 @@ export default function CreateEmployee({ onSuccess }: CreateEmployeeProps) {
                     {t('add_employee')}
                 </Button>
             ) : (
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                             {t('new_employee')}
                         </h3>
                         <Button
@@ -63,7 +63,7 @@ export default function CreateEmployee({ onSuccess }: CreateEmployeeProps) {
                         </Button>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                         <div className="grid gap-2">
                             <Label htmlFor="nom_complet">{t('nom_complet')} *</Label>
                             <Input
@@ -78,7 +78,7 @@ export default function CreateEmployee({ onSuccess }: CreateEmployeeProps) {
                             <InputError message={errors.nom_complet} />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="cin">{t('cin')} *</Label>
                                 <Input
@@ -108,7 +108,7 @@ export default function CreateEmployee({ onSuccess }: CreateEmployeeProps) {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-4 pt-4">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 pt-3 sm:pt-4">
                             <Button
                                 type="submit"
                                 disabled={processing}

@@ -5,7 +5,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import CreateEmployee from '@/components/employees/CreateEmployee';
 import EditEmployee from '@/components/employees/EditEmployee';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { showToast } from '@/components/Toast';
+import { showToast } from '@/Components/Toast';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2 } from 'lucide-react';
 
@@ -93,8 +93,8 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
         >
             <Head title={t('employees')} />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div className="py-4 sm:py-6 md:py-8 lg:py-12">
+                <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
                     {/* Create Employee Component */}
                     {!editingEmployee && <CreateEmployee onSuccess={handleSuccess} />}
 
@@ -114,24 +114,24 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
 
                     {/* Employees List */}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <h3 className="text-lg font-semibold mb-4">{t('list_employees')}</h3>
+                        <div className="p-3 sm:p-4 md:p-6 text-gray-900 dark:text-gray-100">
+                            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">{t('list_employees')}</h3>
                             
                             {employees && employees.data && employees.data.length > 0 ? (
-                                <div className="overflow-x-auto">
+                                <div className="overflow-x-auto -mx-3 sm:mx-0">
                                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                         <thead className="bg-gray-50 dark:bg-gray-700">
                                             <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                     {t('nom_complet')}
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">
                                                     {t('cin')}
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden md:table-cell">
                                                     {t('adresse')}
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                     {t('actions')}
                                                 </th>
                                             </tr>
@@ -139,22 +139,25 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
                                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                             {employees.data.map((employee) => (
                                                 <tr key={employee.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                                        {employee.nom_complet}
+                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-sm font-medium text-gray-900 dark:text-white">
+                                                        <div className="flex flex-col">
+                                                            <span>{employee.nom_complet}</span>
+                                                            <span className="text-xs text-gray-500 dark:text-gray-400 sm:hidden">{t('cin')}: {employee.cin}</span>
+                                                        </div>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 hidden sm:table-cell">
                                                         {employee.cin}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-sm text-gray-500 dark:text-gray-300 hidden md:table-cell">
                                                         {employee.adresse}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                        <div className="flex items-center gap-2">
+                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium">
+                                                        <div className="flex items-center gap-1 sm:gap-2">
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"
                                                                 onClick={() => handleEdit(employee)}
-                                                                className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                                                className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 p-1.5 sm:p-2"
                                                             >
                                                                 <Pencil className="h-4 w-4" />
                                                             </Button>
@@ -162,7 +165,7 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
                                                                 variant="ghost"
                                                                 size="sm"
                                                                 onClick={() => handleDeleteClick(employee.id)}
-                                                                className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                                                className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 p-1.5 sm:p-2"
                                                             >
                                                                 <Trash2 className="h-4 w-4" />
                                                             </Button>

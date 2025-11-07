@@ -2,7 +2,7 @@ import { Head, router, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useTranslation } from '@/hooks/useTranslation';
-import { showToast } from '@/components/Toast';
+import { showToast } from '@/Components/Toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -100,22 +100,22 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
         >
             <Head title={t('select_employee')} />
 
-            <div className="py-12">
-                <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <div className="mb-6">
-                                <h3 className="text-lg font-semibold mb-2">
-                                    {t('select_employee_title')}
-                                </h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    {t('select_employee_description')}
-                                </p>
-                            </div>
+                <div className="py-4 sm:py-6 md:py-8 lg:py-12">
+                    <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                            <div className="p-4 sm:p-6 text-gray-900 dark:text-gray-100">
+                                <div className="mb-4 sm:mb-6">
+                                    <h3 className="text-base sm:text-lg font-semibold mb-2">
+                                        {t('select_employee_title')}
+                                    </h3>
+                                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                                        {t('select_employee_description')}
+                                    </p>
+                                </div>
 
-                            {employees && employees.length > 0 ? (
-                                <form onSubmit={handleSubmit}>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                                {employees && employees.length > 0 ? (
+                                    <form onSubmit={handleSubmit}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
                                         {employees.map((employee) => (
                                             <div
                                                 key={employee.id}
@@ -154,10 +154,10 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
                                         ))}
                                     </div>
 
-                                    {/* CIN Confirmation Section */}
-                                    {selectedEmployee && (
-                                        <div className="mb-6 p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg">
-                                            <div className="flex items-start gap-3 mb-4">
+                                        {/* CIN Confirmation Section */}
+                                        {selectedEmployee && (
+                                            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg">
+                                                <div className="flex items-start gap-2 sm:gap-3 mb-3 sm:mb-4">
                                                 <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 rounded-full">
                                                     <Shield className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                                                 </div>
@@ -189,15 +189,15 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
                                         </div>
                                     )}
 
-                                    <div className="flex items-center justify-end gap-4">
-                                        <Button
-                                            type="submit"
-                                            disabled={!selectedEmployeeId || !cinInput.trim() || (selectedEmployee && cinInput.trim() !== selectedEmployee.cin)}
-                                            className="bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            {t('send_confirmation_request')}
-                                        </Button>
-                                    </div>
+                                        <div className="flex items-center justify-end gap-2 sm:gap-4">
+                                            <Button
+                                                type="submit"
+                                                disabled={!selectedEmployeeId || !cinInput.trim() || (selectedEmployee && cinInput.trim() !== selectedEmployee.cin)}
+                                                className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                {t('send_confirmation_request')}
+                                            </Button>
+                                        </div>
                                 </form>
                             ) : (
                                 <div className="text-center py-8">
