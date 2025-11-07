@@ -339,7 +339,7 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
                                                 href="/profile"
                                                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600"
                                             >
-                                                Profile
+                                                {t('profile')}
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href="/logout"
@@ -347,7 +347,7 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
                                                 as="button"
                                                 className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600"
                                             >
-                                                Log Out
+                                                {t('logout')}
                                             </Dropdown.Link>
                                         </Dropdown.Content>
                                     </Dropdown>
