@@ -21,6 +21,28 @@ class FournisseurController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(Fournisseur $fournisseur)
+    {
+        $fournisseur->load([
+            'blFournisseurs' => function ($query) {
+                $query->orderBy('date_bl_fournisseur', 'desc')
+                      ->orderBy('numero_bl', 'desc');
+            },
+            'blFournisseurs.employee',
+            'blFournisseurs.detailBLFournisseurs' => function ($query) {
+                $query->orderBy('id');
+            },
+            'blFournisseurs.detailBLFournisseurs.produit'
+        ]);
+        
+        return inertia('fournisseurs/show', [
+            'fournisseur' => $fournisseur,
+        ]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)

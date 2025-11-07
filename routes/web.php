@@ -79,23 +79,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Fournisseurs
     Route::get('fournisseurs', [App\Http\Controllers\FournisseurController::class, 'index'])->name('fournisseurs.index');
     Route::post('fournisseurs', [App\Http\Controllers\FournisseurController::class, 'store'])->name('fournisseurs.store');
+    Route::get('fournisseurs/{fournisseur}', [App\Http\Controllers\FournisseurController::class, 'show'])->name('fournisseurs.show');
     Route::put('fournisseurs/{fournisseur}', [App\Http\Controllers\FournisseurController::class, 'update'])->name('fournisseurs.update');
     Route::delete('fournisseurs/{fournisseur}', [App\Http\Controllers\FournisseurController::class, 'destroy'])->name('fournisseurs.destroy');
 
     // Clients
-    Route::get('clients', function () {
-        return Inertia::render('clients/index');
-    })->name('clients.index');
+    Route::get('clients', [App\Http\Controllers\ClientController::class, 'index'])->name('clients.index');
+    Route::post('clients', [App\Http\Controllers\ClientController::class, 'store'])->name('clients.store');
+    Route::get('clients/{client}', [App\Http\Controllers\ClientController::class, 'show'])->name('clients.show');
+    Route::put('clients/{client}', [App\Http\Controllers\ClientController::class, 'update'])->name('clients.update');
+    Route::delete('clients/{client}', [App\Http\Controllers\ClientController::class, 'destroy'])->name('clients.destroy');
 
     // BL Fournisseurs
-    Route::get('bl-fournisseurs', function () {
-        return Inertia::render('bl-fournisseurs/index');
-    })->name('bl-fournisseurs.index');
+    Route::get('bl-fournisseurs', [App\Http\Controllers\BLfournisseurController::class, 'index'])->name('bl-fournisseurs.index');
+    Route::post('bl-fournisseurs', [App\Http\Controllers\BLfournisseurController::class, 'store'])->name('bl-fournisseurs.store');
+    Route::put('bl-fournisseurs/{blFournisseur}', [App\Http\Controllers\BLfournisseurController::class, 'update'])->name('bl-fournisseurs.update');
+    Route::delete('bl-fournisseurs/{blFournisseur}', [App\Http\Controllers\BLfournisseurController::class, 'destroy'])->name('bl-fournisseurs.destroy');
 
     // BL Clients
-    Route::get('bl-clients', function () {
-        return Inertia::render('bl-clients/index');
-    })->name('bl-clients.index');
+    Route::get('bl-clients', [App\Http\Controllers\BonLivraisonController::class, 'index'])->name('bl-clients.index');
+    Route::post('bl-clients', [App\Http\Controllers\BonLivraisonController::class, 'store'])->name('bl-clients.store');
+    Route::put('bl-clients/{bonLivraison}', [App\Http\Controllers\BonLivraisonController::class, 'update'])->name('bl-clients.update');
+    Route::delete('bl-clients/{bonLivraison}', [App\Http\Controllers\BonLivraisonController::class, 'destroy'])->name('bl-clients.destroy');
 
     // Poubelle (Trash)
     Route::get('trash', function () {

@@ -27,6 +27,6 @@ class DetailBL extends Model
      */
     public function bonLivraison(): BelongsTo
     {
-        return $this->belongsTo(BonLivraison::class);
+        return $this->belongsTo(BonLivraison::class, 'bon_livraison_id');
     }
 }

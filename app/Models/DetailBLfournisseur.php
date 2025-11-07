@@ -28,6 +28,6 @@ class DetailBLfournisseur extends Model
      */
     public function blFournisseur(): BelongsTo
     {
-        return $this->belongsTo(BLfournisseur::class);
+        return $this->belongsTo(BLfournisseur::class, 'bl_fournisseur_id');
     }
 }

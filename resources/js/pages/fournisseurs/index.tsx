@@ -1,4 +1,4 @@
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -7,7 +7,7 @@ import EditFournisseur from '@/components/fournisseurs/EditFournisseur';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { showToast } from '@/Components/Toast';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Eye } from 'lucide-react';
 
 interface Fournisseur {
     id: number;
@@ -29,7 +29,7 @@ interface FournisseursIndexProps {
 }
 
 export default function FournisseursIndex({ fournisseurs }: FournisseursIndexProps) {
-    const { t } = useTranslation();
+    const { t, locale } = useTranslation();
     const [editingFournisseur, setEditingFournisseur] = useState<Fournisseur | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; fournisseurId: number | null }>({
         isOpen: false,
@@ -121,16 +121,16 @@ export default function FournisseursIndex({ fournisseurs }: FournisseursIndexPro
                                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                         <thead className="bg-gray-50 dark:bg-gray-700">
                                             <tr>
-                                                <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
                                                     {t('nom_complet')}
                                                 </th>
-                                                <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
                                                     {t('numero_tel')}
                                                 </th>
-                                                <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden md:table-cell">
+                                                <th className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden md:table-cell`}>
                                                     {t('adresse')}
                                                 </th>
-                                                <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
                                                     {t('actions')}
                                                 </th>
                                             </tr>
@@ -138,20 +138,30 @@ export default function FournisseursIndex({ fournisseurs }: FournisseursIndexPro
                                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                             {fournisseurs.data.map((fournisseur) => (
                                                 <tr key={fournisseur.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-sm font-medium text-gray-900 dark:text-white">
+                                                    <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-sm font-medium text-gray-900 dark:text-white ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
                                                         <div className="flex flex-col">
                                                             <span>{fournisseur.nom_complet}</span>
                                                             <span className="text-xs text-gray-500 dark:text-gray-400 md:hidden">{fournisseur.adresse}</span>
                                                         </div>
                                                     </td>
-                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                                                    <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
                                                         {fournisseur.numero_tel}
                                                     </td>
-                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-sm text-gray-500 dark:text-gray-300 hidden md:table-cell">
+                                                    <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-sm text-gray-500 dark:text-gray-300 hidden md:table-cell ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
                                                         {fournisseur.adresse}
                                                     </td>
-                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium">
-                                                        <div className="flex items-center gap-1 sm:gap-2">
+                                                    <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                        <div className={`flex items-center gap-1 sm:gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                asChild
+                                                                className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1.5 sm:p-2"
+                                                  >
+                                                                <Link href={`/fournisseurs/${fournisseur.id}`}>
+                                                                    <Eye className="h-4 w-4" />
+                                                                </Link>
+                                                            </Button>
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"

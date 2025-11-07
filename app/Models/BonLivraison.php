@@ -36,6 +36,6 @@ class BonLivraison extends Model
      */
     public function detailBLs(): HasMany
     {
-        return $this->hasMany(DetailBL::class);
+        return $this->hasMany(DetailBL::class, 'bon_livraison_id');
     }
 }

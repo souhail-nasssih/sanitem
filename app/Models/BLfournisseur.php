@@ -36,6 +36,6 @@ class BLfournisseur extends Model
      */
     public function detailBLFournisseurs(): HasMany
     {
-        return $this->hasMany(DetailBLfournisseur::class);
+        return $this->hasMany(DetailBLfournisseur::class, 'bl_fournisseur_id');
     }
 }

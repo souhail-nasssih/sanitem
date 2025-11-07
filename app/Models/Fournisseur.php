@@ -18,6 +18,6 @@ class Fournisseur extends Model
      */
     public function blFournisseurs(): HasMany
     {
-        return $this->hasMany(BLfournisseur::class);
+        return $this->hasMany(BLfournisseur::class, 'fournisseur_id');
     }
 }
