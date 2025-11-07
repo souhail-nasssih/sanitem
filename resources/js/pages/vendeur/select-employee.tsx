@@ -1,6 +1,7 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTranslation } from '@/hooks/useTranslation';
 import { showToast } from '@/components/Toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +20,7 @@ interface SelectEmployeeProps {
 }
 
 export default function SelectEmployee({ employees }: SelectEmployeeProps) {
+    const { t } = useTranslation();
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
     const [cinInput, setCinInput] = useState('');
     const { flash } = usePage().props as any;
@@ -51,23 +53,23 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
         e.preventDefault();
         
         if (!selectedEmployeeId) {
-            showToast('Veuillez sélectionner un employee', 'error');
+            showToast(t('please_select_employee'), 'error');
             return;
         }
 
         if (!selectedEmployee) {
-            showToast('Employee sélectionné non trouvé', 'error');
+            showToast(t('employee_not_found'), 'error');
             return;
         }
 
         // Validate CIN
         if (!cinInput.trim()) {
-            showToast('Veuillez entrer le CIN de l\'employee', 'error');
+            showToast(t('please_enter_cin'), 'error');
             return;
         }
 
         if (cinInput.trim() !== selectedEmployee.cin) {
-            showToast('Le CIN saisi ne correspond pas à l\'employee sélectionné', 'error');
+            showToast(t('cin_mismatch'), 'error');
             return;
         }
 
@@ -76,13 +78,13 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
             cin: cinInput.trim(),
         }, {
             onSuccess: () => {
-                showToast('Demande de confirmation envoyée', 'success');
+                showToast(t('confirmation_request_sent'), 'success');
             },
             onError: (errors) => {
                 if (errors.cin) {
                     showToast(errors.cin, 'error');
                 } else {
-                    showToast('Erreur lors de la sélection de l\'employee', 'error');
+                    showToast(t('error_selecting_employee'), 'error');
                 }
             },
         });
@@ -92,11 +94,11 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
         <AuthenticatedLayout 
             header={
                 <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Sélectionner un Employee
+                    {t('select_employee')}
                 </h2>
             }
         >
-            <Head title="Sélectionner un Employee" />
+            <Head title={t('select_employee')} />
 
             <div className="py-12">
                 <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
@@ -104,10 +106,10 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <div className="mb-6">
                                 <h3 className="text-lg font-semibold mb-2">
-                                    Sélectionnez l'employee qui va travailler avec cette machine
+                                    {t('select_employee_title')}
                                 </h3>
                                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    Choisissez un employee dans la liste ci-dessous pour commencer à travailler.
+                                    {t('select_employee_description')}
                                 </p>
                             </div>
 
@@ -161,27 +163,27 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
                                                 </div>
                                                 <div className="flex-1">
                                                     <h4 className="font-medium text-gray-900 dark:text-white mb-1">
-                                                        Confirmation de sécurité
+                                                        {t('security_confirmation')}
                                                     </h4>
                                                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                        Veuillez entrer le CIN de <span className="font-medium">{selectedEmployee.nom_complet}</span> pour confirmer la sélection.
+                                                        {t('enter_employee_cin', { name: selectedEmployee.nom_complet })}
                                                     </p>
                                                 </div>
                                             </div>
                                             <div className="grid gap-2">
-                                                <Label htmlFor="cin">CIN de l'Employee *</Label>
+                                                <Label htmlFor="cin">{t('employee_cin_label')}</Label>
                                                 <Input
                                                     id="cin"
                                                     type="text"
                                                     required
-                                                    placeholder="Entrez le CIN de l'employee sélectionné"
+                                                    placeholder={t('enter_employee_cin_placeholder')}
                                                     className="w-full"
                                                     value={cinInput}
                                                     onChange={(e) => setCinInput(e.target.value)}
                                                     autoFocus
                                                 />
                                                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                    Vous devez entrer le CIN de {selectedEmployee.nom_complet} pour confirmer la sélection.
+                                                    {t('must_enter_cin', { name: selectedEmployee.nom_complet })}
                                                 </p>
                                             </div>
                                         </div>
@@ -193,14 +195,14 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
                                             disabled={!selectedEmployeeId || !cinInput.trim() || (selectedEmployee && cinInput.trim() !== selectedEmployee.cin)}
                                             className="bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            Envoyer la demande de confirmation
+                                            {t('send_confirmation_request')}
                                         </Button>
                                     </div>
                                 </form>
                             ) : (
                                 <div className="text-center py-8">
                                     <p className="text-gray-500 dark:text-gray-400 mb-4">
-                                        Aucun employee disponible. Veuillez contacter l'administrateur.
+                                        {t('no_employee_available')}
                                     </p>
                                 </div>
                             )}

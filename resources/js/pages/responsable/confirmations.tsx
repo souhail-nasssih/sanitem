@@ -1,6 +1,8 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTranslation } from '@/hooks/useTranslation';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import { showToast } from '@/components/Toast';
 import { Button } from '@/components/ui/button';
 import { Check, X, User, Loader2 } from 'lucide-react';
@@ -37,8 +39,14 @@ interface ConfirmationsProps {
 }
 
 export default function Confirmations({ confirmations: initialConfirmations }: ConfirmationsProps) {
+    const { t } = useTranslation();
     const [confirmations, setConfirmations] = useState(initialConfirmations);
     const [processing, setProcessing] = useState<number | null>(null);
+    const [approveConfirm, setApproveConfirm] = useState<{ isOpen: boolean; confirmationId: number | null; confirmation: Confirmation | null }>({
+        isOpen: false,
+        confirmationId: null,
+        confirmation: null,
+    });
     const { flash } = usePage().props as any;
 
     // Show toast messages from flash data
@@ -68,8 +76,21 @@ export default function Confirmations({ confirmations: initialConfirmations }: C
         return () => clearInterval(pollInterval);
     }, []);
 
-    const handleApprove = async (confirmationId: number) => {
+    const handleApproveClick = (confirmation: Confirmation) => {
+        setApproveConfirm({
+            isOpen: true,
+            confirmationId: confirmation.id,
+            confirmation: confirmation,
+        });
+    };
+
+    const handleApproveConfirm = async () => {
+        if (!approveConfirm.confirmationId) return;
+
+        const confirmationId = approveConfirm.confirmationId;
+        setApproveConfirm({ isOpen: false, confirmationId: null, confirmation: null });
         setProcessing(confirmationId);
+
         try {
             const response = await fetch(`/confirmations/${confirmationId}/approve`, {
                 method: 'POST',
@@ -82,17 +103,21 @@ export default function Confirmations({ confirmations: initialConfirmations }: C
             const data = await response.json();
 
             if (response.ok) {
-                showToast(data.message || 'Confirmation approuvée avec succès', 'success');
+                showToast(data.message || t('confirmation_approved'), 'success');
                 // Remove from list
                 setConfirmations(prev => prev.filter(c => c.id !== confirmationId));
             } else {
-                showToast(data.error || 'Erreur lors de l\'approbation', 'error');
+                showToast(data.error || t('approval_error'), 'error');
             }
         } catch (error) {
-            showToast('Erreur lors de l\'approbation', 'error');
+            showToast(t('approval_error'), 'error');
         } finally {
             setProcessing(null);
         }
+    };
+
+    const handleApproveCancel = () => {
+        setApproveConfirm({ isOpen: false, confirmationId: null, confirmation: null });
     };
 
     const handleReject = async (confirmationId: number) => {
@@ -109,14 +134,14 @@ export default function Confirmations({ confirmations: initialConfirmations }: C
             const data = await response.json();
 
             if (response.ok) {
-                showToast(data.message || 'Confirmation rejetée', 'success');
+                showToast(data.message || t('confirmation_rejected'), 'success');
                 // Remove from list
                 setConfirmations(prev => prev.filter(c => c.id !== confirmationId));
             } else {
-                showToast(data.error || 'Erreur lors du rejet', 'error');
+                showToast(data.error || t('rejection_error'), 'error');
             }
         } catch (error) {
-            showToast('Erreur lors du rejet', 'error');
+            showToast(t('rejection_error'), 'error');
         } finally {
             setProcessing(null);
         }
@@ -126,17 +151,17 @@ export default function Confirmations({ confirmations: initialConfirmations }: C
         <AuthenticatedLayout 
             header={
                 <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Confirmations en attente
+                    {t('confirmations_pending')}
                 </h2>
             }
         >
-            <Head title="Confirmations" />
+            <Head title={t('confirmations')} />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <h3 className="text-lg font-semibold mb-4">Demandes de confirmation</h3>
+                            <h3 className="text-lg font-semibold mb-4">{t('confirmation_requests')}</h3>
                             
                             {confirmations && confirmations.length > 0 ? (
                                 <div className="space-y-4">
@@ -153,30 +178,30 @@ export default function Confirmations({ confirmations: initialConfirmations }: C
                                                         </div>
                                                         <div>
                                                             <h4 className="font-medium text-gray-900 dark:text-white">
-                                                                {confirmation.vendeur?.user?.name || 'Vendeur'} demande l'accès
+                                                                {t('vendeur_requests_access', { name: confirmation.vendeur?.user?.name || t('vendeur') })}
                                                             </h4>
                                                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                                Machine: {confirmation.vendeur?.numero_post || 'N/A'}
+                                                                {t('machine', { name: confirmation.vendeur?.numero_post || 'N/A' })}
                                                             </p>
                                                         </div>
                                                     </div>
                                                     
                                                     <div className="ml-11 mt-2">
                                                         <p className="text-sm text-gray-700 dark:text-gray-300">
-                                                            <span className="font-medium">Employee:</span> {confirmation.employee.nom_complet}
+                                                            <span className="font-medium">{t('employee')}:</span> {confirmation.employee.nom_complet}
                                                         </p>
                                                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                            CIN: {confirmation.employee.cin} | {confirmation.employee.adresse}
+                                                            {t('cin')}: {confirmation.employee.cin} | {confirmation.employee.adresse}
                                                         </p>
                                                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-                                                            Demandé le: {new Date(confirmation.created_at).toLocaleString('fr-FR')}
+                                                            {t('requested_on', { date: new Date(confirmation.created_at).toLocaleString('fr-FR') })}
                                                         </p>
                                                     </div>
                                                 </div>
 
                                                 <div className="flex items-center gap-2 ml-4">
                                                     <Button
-                                                        onClick={() => handleApprove(confirmation.id)}
+                                                        onClick={() => handleApproveClick(confirmation)}
                                                         disabled={processing === confirmation.id}
                                                         className="bg-green-600 hover:bg-green-700 text-white"
                                                         size="sm"
@@ -186,7 +211,7 @@ export default function Confirmations({ confirmations: initialConfirmations }: C
                                                         ) : (
                                                             <>
                                                                 <Check className="h-4 w-4 mr-1" />
-                                                                Approuver
+                                                                {t('approve')}
                                                             </>
                                                         )}
                                                     </Button>
@@ -202,7 +227,7 @@ export default function Confirmations({ confirmations: initialConfirmations }: C
                                                         ) : (
                                                             <>
                                                                 <X className="h-4 w-4 mr-1" />
-                                                                Rejeter
+                                                                {t('reject')}
                                                             </>
                                                         )}
                                                     </Button>
@@ -214,7 +239,7 @@ export default function Confirmations({ confirmations: initialConfirmations }: C
                             ) : (
                                 <div className="text-center py-8">
                                     <p className="text-gray-500 dark:text-gray-400">
-                                        Aucune demande de confirmation en attente.
+                                        {t('no_data')}
                                     </p>
                                 </div>
                             )}
@@ -222,6 +247,23 @@ export default function Confirmations({ confirmations: initialConfirmations }: C
                     </div>
                 </div>
             </div>
+
+            {/* Approval Confirmation Dialog */}
+            {approveConfirm.confirmation && (
+                <ConfirmDialog
+                    isOpen={approveConfirm.isOpen}
+                    title={t('approve_confirmation')}
+                    message={t('approve_confirmation_message', { 
+                        vendeur: approveConfirm.confirmation.vendeur?.user?.name || t('vendeur'),
+                        employee: approveConfirm.confirmation.employee.nom_complet 
+                    })}
+                    confirmText={t('approve')}
+                    cancelText={t('cancel')}
+                    variant="info"
+                    onConfirm={handleApproveConfirm}
+                    onCancel={handleApproveCancel}
+                />
+            )}
         </AuthenticatedLayout>
     );
 }

@@ -1,5 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 import InputError from '@/components/input-error';
 import { showToast } from '@/components/Toast';
 import { Button } from '@/components/ui/button';
@@ -22,10 +23,10 @@ interface EditEmployeeProps {
 }
 
 export default function EditEmployee({ employee, onSuccess, onCancel }: EditEmployeeProps) {
+    const { t } = useTranslation();
     const { data, setData, put, processing, errors, reset } = useForm({
         nom_complet: employee.nom_complet || '',
         cin: employee.cin || '',
-        type: employee.type || '',
         adresse: employee.adresse || '',
     });
 
@@ -33,7 +34,6 @@ export default function EditEmployee({ employee, onSuccess, onCancel }: EditEmpl
         reset({
             nom_complet: employee.nom_complet || '',
             cin: employee.cin || '',
-            type: employee.type || '',
             adresse: employee.adresse || '',
         });
     }, [employee, reset]);
@@ -42,14 +42,14 @@ export default function EditEmployee({ employee, onSuccess, onCancel }: EditEmpl
         e.preventDefault();
         put(`/employees/${employee.id}`, {
             onSuccess: () => {
-                showToast('Employee mis à jour avec succès', 'success');
+                showToast(t('employee_updated_success'), 'success');
                 reset();
                 if (onSuccess) {
                     onSuccess();
                 }
             },
             onError: (errors) => {
-                showToast('Erreur lors de la mise à jour de l\'employee', 'error');
+                showToast(t('employee_update_error'), 'error');
             },
         });
     };
@@ -58,7 +58,7 @@ export default function EditEmployee({ employee, onSuccess, onCancel }: EditEmpl
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Modifier l'Employee
+                    {t('edit_employee')}
                 </h3>
                 {onCancel && (
                     <Button
@@ -73,12 +73,12 @@ export default function EditEmployee({ employee, onSuccess, onCancel }: EditEmpl
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid gap-2">
-                    <Label htmlFor="nom_complet">Nom Complet *</Label>
+                    <Label htmlFor="nom_complet">{t('nom_complet')} *</Label>
                     <Input
                         id="nom_complet"
                         type="text"
                         required
-                        placeholder="Nom complet de l'employee"
+                        placeholder={t('employee_full_name_placeholder')}
                         className="w-full"
                         value={data.nom_complet}
                         onChange={(e) => setData('nom_complet', e.target.value)}
@@ -88,7 +88,7 @@ export default function EditEmployee({ employee, onSuccess, onCancel }: EditEmpl
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="cin">CIN *</Label>
+                        <Label htmlFor="cin">{t('cin')} *</Label>
                         <Input
                             id="cin"
                             type="text"
@@ -102,32 +102,18 @@ export default function EditEmployee({ employee, onSuccess, onCancel }: EditEmpl
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="type">Type *</Label>
+                        <Label htmlFor="adresse">{t('adresse')} *</Label>
                         <Input
-                            id="type"
+                            id="adresse"
                             type="text"
                             required
-                            placeholder="Type d'employee"
+                            placeholder={t('complete_address_placeholder')}
                             className="w-full"
-                            value={data.type}
-                            onChange={(e) => setData('type', e.target.value)}
+                            value={data.adresse}
+                            onChange={(e) => setData('adresse', e.target.value)}
                         />
-                        <InputError message={errors.type} />
+                        <InputError message={errors.adresse} />
                     </div>
-                </div>
-
-                <div className="grid gap-2">
-                    <Label htmlFor="adresse">Adresse *</Label>
-                    <Input
-                        id="adresse"
-                        type="text"
-                        required
-                        placeholder="Adresse complète"
-                        className="w-full"
-                        value={data.adresse}
-                        onChange={(e) => setData('adresse', e.target.value)}
-                    />
-                    <InputError message={errors.adresse} />
                 </div>
 
                 <div className="flex items-center gap-4 pt-4">
@@ -137,7 +123,7 @@ export default function EditEmployee({ employee, onSuccess, onCancel }: EditEmpl
                         className="bg-indigo-600 hover:bg-indigo-700 text-white"
                     >
                         {processing && <Spinner />}
-                        Mettre à jour
+                        {t('update')}
                     </Button>
                     {onCancel && (
                         <Button
@@ -146,7 +132,7 @@ export default function EditEmployee({ employee, onSuccess, onCancel }: EditEmpl
                             onClick={onCancel}
                             disabled={processing}
                         >
-                            Annuler
+                            {t('cancel')}
                         </Button>
                     )}
                 </div>

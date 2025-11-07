@@ -1,6 +1,7 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTranslation } from '@/hooks/useTranslation';
 import { showToast } from '@/components/Toast';
 import { Button } from '@/components/ui/button';
 import { User, LogOut } from 'lucide-react';
@@ -17,6 +18,7 @@ interface VendeurDashboardProps {
 }
 
 export default function VendeurDashboard({ selectedEmployee }: VendeurDashboardProps) {
+    const { t } = useTranslation();
     const { flash } = usePage().props as any;
 
     // Show toast messages from flash data
@@ -41,11 +43,11 @@ export default function VendeurDashboard({ selectedEmployee }: VendeurDashboardP
         <AuthenticatedLayout 
             header={
                 <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Dashboard Vendeur
+                    {t('dashboard_vendeur')}
                 </h2>
             }
         >
-            <Head title="Dashboard Vendeur" />
+            <Head title={t('dashboard_vendeur')} />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -60,10 +62,10 @@ export default function VendeurDashboard({ selectedEmployee }: VendeurDashboardP
                                         </div>
                                         <div>
                                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                                Employee Actuel
+                                                {t('current_employee')}
                                             </h3>
                                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                <span className="font-medium">{selectedEmployee.nom_complet}</span> - CIN: {selectedEmployee.cin}
+                                                <span className="font-medium">{selectedEmployee.nom_complet}</span> - {t('cin')}: {selectedEmployee.cin}
                                             </p>
                                             <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                                                 {selectedEmployee.adresse}
@@ -76,7 +78,7 @@ export default function VendeurDashboard({ selectedEmployee }: VendeurDashboardP
                                         className="flex items-center gap-2"
                                     >
                                         <LogOut className="h-4 w-4" />
-                                        Changer d'Employee
+                                        {t('change_employee')}
                                     </Button>
                                 </div>
                             </div>
@@ -86,26 +88,26 @@ export default function VendeurDashboard({ selectedEmployee }: VendeurDashboardP
                     {/* Dashboard Content */}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <h3 className="text-lg font-semibold mb-4">Bienvenue, Vendeur!</h3>
+                            <h3 className="text-lg font-semibold mb-4">{t('welcome_vendeur')}</h3>
                             <p className="mb-4">
                                 {selectedEmployee 
-                                    ? `Vous travaillez avec ${selectedEmployee.nom_complet}. Vous avez accès aux fonctionnalités de vente de l'application.`
-                                    : 'Sélectionnez un employee pour commencer à travailler.'
+                                    ? t('working_with', { name: selectedEmployee.nom_complet })
+                                    : t('select_employee_to_start')
                                 }
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                                 <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                                    <h4 className="font-medium text-blue-900 dark:text-blue-100">Ventes</h4>
+                                    <h4 className="font-medium text-blue-900 dark:text-blue-100">{t('sales')}</h4>
                                     <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
-                                        Gérez vos ventes et bons de livraison
+                                        {t('manage_sales')}
                                     </p>
                                 </div>
-                                <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                                    <h4 className="font-medium text-green-900 dark:text-green-100">Clients</h4>
-                                    <p className="text-sm text-green-700 dark:text-green-300 mt-2">
-                                        Consultez et gérez vos clients
-                                    </p>
-                                </div>
+                                    <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                                        <h4 className="font-medium text-green-900 dark:text-green-100">{t('clients')}</h4>
+                                        <p className="text-sm text-green-700 dark:text-green-300 mt-2">
+                                            {t('manage_clients_vendeur')}
+                                        </p>
+                                    </div>
                             </div>
                         </div>
                     </div>

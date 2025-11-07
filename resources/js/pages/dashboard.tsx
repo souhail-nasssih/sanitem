@@ -1,6 +1,7 @@
 // Update the path below if your AuthenticatedLayout is located elsewhere
 import { Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface Stats {
     chiffreAffaires?: number;
@@ -21,8 +22,10 @@ export default function Dashboard({
     topClients: Array<{ id: number; nom: string; factures_count: number; montant_total_factures: number; }>;
     produitsStockBas: Array<{ id: number; nom: string; reference: string; stock: number; seuil_alerte: number; }>;
 }) {
+    const { t, locale } = useTranslation();
+    
     const formatCurrency = (amount: string | number | bigint) => {
-        return new Intl.NumberFormat('fr-FR', {
+        return new Intl.NumberFormat(locale === 'ar' ? 'ar-MA' : 'fr-FR', {
             style: 'currency',
             currency: 'MAD'
         }).format(typeof amount === 'string' ? Number(amount) : amount);
@@ -33,19 +36,19 @@ export default function Dashboard({
     }
 
     const formatNumber: FormatNumber = (number) => {
-        return new Intl.NumberFormat('fr-FR').format(number);
+        return new Intl.NumberFormat(locale === 'ar' ? 'ar-MA' : 'fr-FR').format(number);
     };
 
     return (
-        <AuthenticatedLayout header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Dashboard</h2>}>
-            <Head title="Dashboard" />
+        <AuthenticatedLayout header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">{t('dashboard')}</h2>}>
+            <Head title={t('dashboard')} />
 
             {/* Statistiques principales */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
                 {/* Chiffre d'affaires total */}
                 <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">Chiffre d'Affaires</h3>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('total_revenue')}</h3>
                         <div className="flex items-center">
                             <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
@@ -56,14 +59,14 @@ export default function Dashboard({
                         {formatCurrency(stats?.chiffreAffaires || 0)}
                     </p>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Total des factures clients
+                        {t('total_client_invoices')}
                     </p>
                 </div>
 
                 {/* Créances clients */}
                 <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">Créances Clients</h3>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('client_receivables')}</h3>
                         <div className="flex items-center">
                             <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -74,14 +77,14 @@ export default function Dashboard({
                         {formatCurrency(stats?.creancesClients || 0)}
                     </p>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Factures non payées
+                        {t('unpaid_invoices')}
                     </p>
                 </div>
 
                 {/* Trésorerie nette */}
                 <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">Trésorerie Nette</h3>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('net_treasury')}</h3>
                         <div className="flex items-center">
                             <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -92,14 +95,14 @@ export default function Dashboard({
                         {formatCurrency(stats?.tresorerieNette || 0)}
                     </p>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Créances - Dettes
+                        {t('receivables_debts')}
                     </p>
                 </div>
 
                 {/* CA du mois */}
                 <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">CA Ce Mois</h3>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('revenue_this_month')}</h3>
                         <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                         </svg>
@@ -117,7 +120,7 @@ export default function Dashboard({
                                         <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                     )}
                                 </svg>
-                                {Math.abs(stats.evolutionCAMois)}% vs mois précédent
+                                {Math.abs(stats.evolutionCAMois)}% {t('vs_previous_month')}
                             </span>
                         )}
                     </p>
@@ -129,7 +132,7 @@ export default function Dashboard({
                 {/* Factures en retard */}
                 <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">Factures en Retard</h3>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('overdue_invoices')}</h3>
                         <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -138,14 +141,14 @@ export default function Dashboard({
                         {formatNumber(stats?.facturesEnRetard || 0)}
                     </p>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Échéances dépassées
+                        {t('past_due_dates')}
                     </p>
                 </div>
 
                 {/* Produits en rupture */}
                 <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">Produits en Rupture</h3>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('products_out_of_stock')}</h3>
                         <svg className="h-6 w-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                         </svg>
@@ -154,7 +157,7 @@ export default function Dashboard({
                         {formatNumber(stats?.produitsEnRupture || 0)}
                     </p>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Stock critique
+                        {t('critical_stock')}
                     </p>
                 </div>
             </div>
@@ -163,7 +166,7 @@ export default function Dashboard({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Top clients */}
                 <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Top Clients</h3>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">{t('top_clients')}</h3>
                     <div className="space-y-4">
                         {topClients && topClients.length > 0 ? (
                             topClients.map((client, index) => (
@@ -179,7 +182,7 @@ export default function Dashboard({
                                                 {client.nom}
                                             </p>
                                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                {client.factures_count} factures
+                                                {client.factures_count} {t('invoices')}
                                             </p>
                                         </div>
                                     </div>
@@ -191,14 +194,14 @@ export default function Dashboard({
                                 </div>
                             ))
                         ) : (
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Aucun client trouvé</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{t('no_client_found')}</p>
                         )}
                     </div>
                 </div>
 
                 {/* Produits en rupture de stock */}
                 <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Produits en Rupture</h3>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">{t('products_out_of_stock')}</h3>
                     <div className="space-y-4">
                         {produitsStockBas && produitsStockBas.length > 0 ? (
                             produitsStockBas.map((produit) => (
@@ -208,21 +211,21 @@ export default function Dashboard({
                                             {produit.nom}
                                         </p>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Réf: {produit.reference}
+                                            {t('reference_short')}: {produit.reference}
                                         </p>
                                     </div>
                                     <div className="text-right">
                                         <p className="text-sm font-medium text-red-600">
-                                            Stock: {produit.stock}
+                                            {t('stock')}: {produit.stock}
                                         </p>
                                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            Seuil: {produit.seuil_alerte}
+                                            {t('threshold')}: {produit.seuil_alerte}
                                         </p>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Aucun produit en rupture</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{t('no_product_out_of_stock')}</p>
                         )}
                     </div>
                 </div>

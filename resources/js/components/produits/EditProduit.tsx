@@ -1,5 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 import InputError from '@/components/input-error';
 import { showToast } from '@/components/Toast';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ interface EditProduitProps {
 }
 
 export default function EditProduit({ produit, onSuccess, onCancel }: EditProduitProps) {
+    const { t } = useTranslation();
     const { data, setData, put, processing, errors, reset } = useForm({
         reférence: produit.reférence || '',
         discription: produit.discription || '',
@@ -48,14 +50,14 @@ export default function EditProduit({ produit, onSuccess, onCancel }: EditProdui
         e.preventDefault();
         put(`/produits/${produit.id}`, {
             onSuccess: () => {
-                showToast('Produit mis à jour avec succès', 'success');
+                showToast(t('product_updated_success'), 'success');
                 reset();
                 if (onSuccess) {
                     onSuccess();
                 }
             },
             onError: (errors) => {
-                showToast('Erreur lors de la mise à jour du produit', 'error');
+                showToast(t('product_update_error'), 'error');
             },
         });
     };
@@ -64,7 +66,7 @@ export default function EditProduit({ produit, onSuccess, onCancel }: EditProdui
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Modifier le Produit
+                    {t('edit_product')}
                 </h3>
                 {onCancel && (
                     <Button
@@ -80,7 +82,7 @@ export default function EditProduit({ produit, onSuccess, onCancel }: EditProdui
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="reférence">Référence *</Label>
+                        <Label htmlFor="reférence">{t('reference')} *</Label>
                         <Input
                             id="reférence"
                             type="text"
@@ -94,7 +96,7 @@ export default function EditProduit({ produit, onSuccess, onCancel }: EditProdui
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="unite">Unité *</Label>
+                        <Label htmlFor="unite">{t('unite')} *</Label>
                         <Input
                             id="unite"
                             type="text"
@@ -109,12 +111,12 @@ export default function EditProduit({ produit, onSuccess, onCancel }: EditProdui
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="discription">Description *</Label>
+                    <Label htmlFor="discription">{t('description')} *</Label>
                     <Input
                         id="discription"
                         type="text"
                         required
-                        placeholder="Description du produit"
+                        placeholder={t('product_description_placeholder')}
                         className="w-full"
                         value={data.discription}
                         onChange={(e) => setData('discription', e.target.value)}
@@ -124,7 +126,7 @@ export default function EditProduit({ produit, onSuccess, onCancel }: EditProdui
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="qte_stock">Quantité en Stock *</Label>
+                        <Label htmlFor="qte_stock">{t('qte_stock')} *</Label>
                         <Input
                             id="qte_stock"
                             type="number"
@@ -139,7 +141,7 @@ export default function EditProduit({ produit, onSuccess, onCancel }: EditProdui
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="prix_achat">Prix d'Achat *</Label>
+                        <Label htmlFor="prix_achat">{t('prix_achat')} *</Label>
                         <Input
                             id="prix_achat"
                             type="number"
@@ -154,7 +156,7 @@ export default function EditProduit({ produit, onSuccess, onCancel }: EditProdui
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="prix_vente">Prix de Vente *</Label>
+                        <Label htmlFor="prix_vente">{t('prix_vente')} *</Label>
                         <Input
                             id="prix_vente"
                             type="number"
@@ -176,7 +178,7 @@ export default function EditProduit({ produit, onSuccess, onCancel }: EditProdui
                         className="bg-indigo-600 hover:bg-indigo-700 text-white"
                     >
                         {processing && <Spinner />}
-                        Mettre à jour
+                        {t('update')}
                     </Button>
                     {onCancel && (
                         <Button
@@ -185,7 +187,7 @@ export default function EditProduit({ produit, onSuccess, onCancel }: EditProdui
                             onClick={onCancel}
                             disabled={processing}
                         >
-                            Annuler
+                            {t('cancel')}
                         </Button>
                     )}
                 </div>

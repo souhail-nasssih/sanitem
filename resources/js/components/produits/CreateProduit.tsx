@@ -1,5 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 import InputError from '@/components/input-error';
 import { showToast } from '@/components/Toast';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ interface CreateProduitProps {
 }
 
 export default function CreateProduit({ onSuccess }: CreateProduitProps) {
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
 
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -27,7 +29,7 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
         e.preventDefault();
         post('/produits', {
             onSuccess: () => {
-                showToast('Produit créé avec succès', 'success');
+                showToast(t('product_created_success'), 'success');
                 reset();
                 setIsOpen(false);
                 if (onSuccess) {
@@ -35,7 +37,7 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                 }
             },
             onError: (errors) => {
-                showToast('Erreur lors de la création du produit', 'error');
+                showToast(t('product_create_error'), 'error');
             },
         });
     };
@@ -47,13 +49,13 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                     onClick={() => setIsOpen(true)}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white"
                 >
-                    Ajouter un Produit
+                    {t('add_product')}
                 </Button>
             ) : (
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                            Nouveau Produit
+                            {t('new_product')}
                         </h3>
                         <Button
                             variant="ghost"
@@ -67,7 +69,7 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="reférence">Référence *</Label>
+                                <Label htmlFor="reférence">{t('reference')} *</Label>
                                 <Input
                                     id="reférence"
                                     type="text"
@@ -81,7 +83,7 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="unite">Unité *</Label>
+                                <Label htmlFor="unite">{t('unite')} *</Label>
                                 <Input
                                     id="unite"
                                     type="text"
@@ -96,12 +98,12 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="discription">Description *</Label>
+                            <Label htmlFor="discription">{t('description')} *</Label>
                             <Input
                                 id="discription"
                                 type="text"
                                 required
-                                placeholder="Description du produit"
+                                placeholder={t('product_description_placeholder')}
                                 className="w-full"
                                 value={data.discription}
                                 onChange={(e) => setData('discription', e.target.value)}
@@ -111,7 +113,7 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="qte_stock">Quantité en Stock *</Label>
+                                <Label htmlFor="qte_stock">{t('qte_stock')} *</Label>
                                 <Input
                                     id="qte_stock"
                                     type="number"
@@ -126,7 +128,7 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="prix_achat">Prix d'Achat *</Label>
+                                <Label htmlFor="prix_achat">{t('prix_achat')} *</Label>
                                 <Input
                                     id="prix_achat"
                                     type="number"
@@ -141,7 +143,7 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="prix_vente">Prix de Vente *</Label>
+                                <Label htmlFor="prix_vente">{t('prix_vente')} *</Label>
                                 <Input
                                     id="prix_vente"
                                     type="number"
@@ -163,7 +165,7 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                                 className="bg-indigo-600 hover:bg-indigo-700 text-white"
                             >
                                 {processing && <Spinner />}
-                                Créer le Produit
+                                {t('create_product')}
                             </Button>
                             <Button
                                 type="button"
@@ -174,7 +176,7 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                                 }}
                                 disabled={processing}
                             >
-                                Annuler
+                                {t('cancel')}
                             </Button>
                         </div>
                     </form>

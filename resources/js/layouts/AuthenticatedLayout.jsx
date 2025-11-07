@@ -2,11 +2,13 @@ import ApplicationLogo from "@/Components/ApplicationLogo";
 import Dropdown from "@/Components/Dropdown";
 import { Link, usePage } from "@inertiajs/react";
 import { useState, useEffect, useRef, useMemo } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
     LayoutDashboard,
     Users,
     FileText,
     ChevronLeft,
+    ChevronRight,
     Menu,
     ChevronDown,
     Package,
@@ -21,11 +23,31 @@ import {
 } from "lucide-react";
 import ThemeToggle from "@/Components/ThemeToggle";
 import NotificationCenter from "@/Components/NotificationCenter";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ToastContainer from "@/Components/Toast";
 
-export default function AuthenticatedLayout({ header, children }) {
+export default function AuthenticatedLayout({ header, children, hideSidebar = false, hideNotification = false }) {
     const { url } = usePage();
-    const user = usePage().props.auth.user;
+    const pageProps = usePage().props;
+    const locale = pageProps.locale || 'fr';
+    const user = pageProps.auth.user;
+    const currentLocale = locale || 'fr';
+
+    // Auto-hide sidebar and notification on select-employee page
+    const isSelectEmployeePage = url.includes('/vendeur/select-employee');
+    const shouldHideSidebar = hideSidebar || isSelectEmployeePage;
+    const shouldHideNotification = hideNotification || isSelectEmployeePage;
+
+    // Set RTL for Arabic
+    useEffect(() => {
+        if (currentLocale === 'ar') {
+            document.documentElement.setAttribute('dir', 'rtl');
+            document.documentElement.setAttribute('lang', 'ar');
+        } else {
+            document.documentElement.setAttribute('dir', 'ltr');
+            document.documentElement.setAttribute('lang', 'fr');
+        }
+    }, [currentLocale]);
     const [sidebarOpen, setSidebarOpen] = useState(() => {
         // Initialize from localStorage, default to true if not set
         const saved = localStorage.getItem('sidebarOpen');
@@ -86,21 +108,23 @@ export default function AuthenticatedLayout({ header, children }) {
         });
     }, [user?.roles]);
 
+    const { t } = useTranslation();
+
     const navigation = useMemo(() => [
-        { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-        { name: "Produits", href: "/produits", icon: Package },
-        { name: "Employees", href: "/employees", icon: CalendarClock },
-        { name: "Fournisseurs", href: "/fournisseurs", icon: Truck },
-        { name: "Clients", href: "/clients", icon: Users },
+        { name: t('dashboard'), href: "/dashboard", icon: LayoutDashboard },
+        { name: t('produits'), href: "/produits", icon: Package },
+        { name: t('employees'), href: "/employees", icon: CalendarClock },
+        { name: t('fournisseurs'), href: "/fournisseurs", icon: Truck },
+        { name: t('clients'), href: "/clients", icon: Users },
         // { name: "Factures Fournisseurs", href: "/facture-fournisseurs", icon: FileText },
         // { name: "Factures Clients", href: "/facture-clients", icon: ReceiptText },
-        { name: "BL Fournisseurs", href: "/bl-fournisseurs", icon: ClipboardList },
-        { name: "BL Clients", href: "/bl-clients", icon: ClipboardCheck },
-        { name: "Poubelle", href: "/trash", icon: Trash2 },
+        { name: t('bl_fournisseurs'), href: "/bl-fournisseurs", icon: ClipboardList },
+        { name: t('bl_clients'), href: "/bl-clients", icon: ClipboardCheck },
+        { name: t('trash'), href: "/trash", icon: Trash2 },
         // { name: "Règlement", href: "/reglements", icon: ReceiptText },
-        ...(isResponsable ? [{ name: "Confirmations", href: "/responsable/confirmations", icon: CheckCircle2 }] : []),
-        { name: "Settings", href: "/settings/profile", icon: Settings },
-    ], [isResponsable]);
+        ...(isResponsable ? [{ name: t('confirmations'), href: "/responsable/confirmations", icon: CheckCircle2 }] : []),
+        { name: t('settings'), href: "/settings/profile", icon: Settings },
+    ], [isResponsable, t]);
 
     const isActive = (href) => {
         const currentUrl = url.split("?")[0].replace(/\/+$/, "");
@@ -135,7 +159,7 @@ export default function AuthenticatedLayout({ header, children }) {
     return (
         <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
             {/* Mobile sidebar backdrop */}
-            {isMobile && (
+            {!shouldHideSidebar && isMobile && (
                 <div
                     className={`fixed inset-0 z-20 bg-black/50 transition-opacity duration-300 ${
                         sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -148,15 +172,20 @@ export default function AuthenticatedLayout({ header, children }) {
             )}
 
             {/* Sidebar */}
-            <div
-                className={`fixed inset-y-0 left-0 z-30 flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out ${
-                    sidebarOpen ? "w-64" : "w-20"
-                }`}
-            >
+            {!shouldHideSidebar && (
+                <div
+                    className={`fixed inset-y-0 z-30 flex flex-col bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out ${
+                        currentLocale === 'ar'
+                            ? `right-0 border-l border-gray-200 dark:border-gray-700 ${sidebarOpen ? "w-64" : "w-20"}`
+                            : `left-0 border-r border-gray-200 dark:border-gray-700 ${sidebarOpen ? "w-64" : "w-20"}`
+                    }`}
+                >
                 <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                     <Link
                         href="/"
-                        className="flex items-center space-x-2 overflow-hidden transition-all duration-300"
+                        className={`flex items-center overflow-hidden transition-all duration-300 ${
+                            currentLocale === 'ar' ? 'space-x-reverse space-x-2' : 'space-x-2'
+                        }`}
                     >
                         <ApplicationLogo className="block h-8 w-auto shrink-0 fill-current text-indigo-600 dark:text-indigo-400" />
                         <span
@@ -193,7 +222,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                         }`}
                                     />
                                     <span
-                                        className={`ml-3 whitespace-nowrap transition-all duration-300 ${
+                                        className={`whitespace-nowrap transition-all duration-300 ${
+                                            currentLocale === 'ar' ? 'mr-3' : 'ml-3'
+                                        } ${
                                             sidebarOpen ? "opacity-100" : "opacity-0"
                                         }`}
                                     >
@@ -214,7 +245,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                 </span>
                             </div>
                             <div
-                                className={`ml-3 overflow-hidden transition-all duration-300 ${
+                                className={`overflow-hidden transition-all duration-300 ${
+                                    currentLocale === 'ar' ? 'mr-3' : 'ml-3'
+                                } ${
                                     sidebarOpen ? "opacity-100" : "opacity-0"
                                 }`}
                             >
@@ -229,36 +262,50 @@ export default function AuthenticatedLayout({ header, children }) {
                     </div>
                 </div>
             </div>
+            )}
 
             {/* Main content area - Corrections principales ici */}
             <div className={`flex-1 flex flex-col min-w-0 ${
-                sidebarOpen ? "lg:ml-64" : "lg:ml-20"
+                shouldHideSidebar
+                    ? "ml-0 mr-0"
+                    : currentLocale === 'ar'
+                        ? (sidebarOpen ? "lg:mr-64" : "lg:mr-20")
+                        : (sidebarOpen ? "lg:ml-64" : "lg:ml-20")
             }`}>
                 {/* Top navigation */}
                 <nav className="bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700 w-full">
                     <div className="px-4 sm:px-6 lg:px-8 w-full">
                         <div className="flex h-16 items-center justify-between w-full">
-                            <div className="flex items-center">
-                                <button
-                                    onClick={() => {
-                                        const newState = !sidebarOpen;
-                                        setSidebarOpen(newState);
-                                        localStorage.setItem('sidebarOpen', JSON.stringify(newState));
-                                    }}
-                                    className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-gray-400 dark:hover:bg-gray-700"
-                                    aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-                                >
-                                    {sidebarOpen ? (
-                                        <ChevronLeft className="h-6 w-6" />
-                                    ) : (
-                                        <Menu className="h-6 w-6" />
-                                    )}
-                                </button>
-                            </div>
+                            {!shouldHideSidebar && (
+                                <div className="flex items-center">
+                                    <button
+                                        onClick={() => {
+                                            const newState = !sidebarOpen;
+                                            setSidebarOpen(newState);
+                                            localStorage.setItem('sidebarOpen', JSON.stringify(newState));
+                                        }}
+                                        className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-gray-400 dark:hover:bg-gray-700"
+                                        aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+                                    >
+                                        {sidebarOpen ? (
+                                            currentLocale === 'ar' ? (
+                                                <ChevronRight className="h-6 w-6" />
+                                            ) : (
+                                                <ChevronLeft className="h-6 w-6" />
+                                            )
+                                        ) : (
+                                            <Menu className="h-6 w-6" />
+                                        )}
+                                    </button>
+                                </div>
+                            )}
 
-                            <div className="flex items-center ml-auto">
-                                <NotificationCenter ref={notificationCenterRef} />
-                                <ThemeToggle className="mr-4" />
+                            <div className={`flex items-center gap-2 ${
+                                currentLocale === 'ar' ? 'mr-auto' : 'ml-auto'
+                            }`}>
+                                {!shouldHideNotification && <NotificationCenter ref={notificationCenterRef} />}
+                                <LanguageSwitcher />
+                                <ThemeToggle className={currentLocale === 'ar' ? "ml-4" : "mr-4"} />
                                 <div className="relative">
                                     <Dropdown>
                                         <Dropdown.Trigger>
@@ -272,14 +319,22 @@ export default function AuthenticatedLayout({ header, children }) {
                                                         {user.name.split(" ").map((n) => n[0]).join("")}
                                                     </span>
                                                 </div>
-                                                <span className="ml-3 hidden md:inline-block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                <span className={`hidden md:inline-block text-sm font-medium text-gray-700 dark:text-gray-300 ${
+                                                    currentLocale === 'ar' ? 'mr-3' : 'ml-3'
+                                                }`}>
                                                     {user.name}
                                                 </span>
-                                                <ChevronDown className="ml-1 hidden h-5 w-5 text-gray-500 md:block dark:text-gray-400" />
+                                                <ChevronDown className={`hidden h-5 w-5 text-gray-500 md:block dark:text-gray-400 ${
+                                                    currentLocale === 'ar' ? 'mr-1' : 'ml-1'
+                                                }`} />
                                             </button>
                                         </Dropdown.Trigger>
 
-                                        <Dropdown.Content className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-700">
+                                        <Dropdown.Content className={`absolute mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-700 ${
+                                            currentLocale === 'ar'
+                                                ? 'left-0 origin-top-left'
+                                                : 'right-0 origin-top-right'
+                                        }`}>
                                             <Dropdown.Link
                                                 href="/profile"
                                                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600"

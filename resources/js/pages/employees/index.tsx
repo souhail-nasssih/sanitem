@@ -1,6 +1,7 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTranslation } from '@/hooks/useTranslation';
 import CreateEmployee from '@/components/employees/CreateEmployee';
 import EditEmployee from '@/components/employees/EditEmployee';
 import ConfirmDialog from '@/components/ConfirmDialog';
@@ -29,6 +30,7 @@ interface EmployeesIndexProps {
 }
 
 export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
+    const { t } = useTranslation();
     const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; employeeId: number | null }>({
         isOpen: false,
@@ -66,12 +68,12 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
         if (deleteConfirm.employeeId) {
             router.delete(`/employees/${deleteConfirm.employeeId}`, {
                 onSuccess: () => {
-                    showToast('Employee supprimé avec succès', 'success');
+                    showToast(t('employee_deleted_success'), 'success');
                     setDeleteConfirm({ isOpen: false, employeeId: null });
                     handleSuccess();
                 },
                 onError: (errors) => {
-                    showToast('Erreur lors de la suppression de l\'employee', 'error');
+                    showToast(t('employee_delete_error'), 'error');
                 },
             });
         }
@@ -85,11 +87,11 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
         <AuthenticatedLayout 
             header={
                 <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Employees
+                    {t('employees')}
                 </h2>
             }
         >
-            <Head title="Employees" />
+            <Head title={t('employees')} />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -113,7 +115,7 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
                     {/* Employees List */}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <h3 className="text-lg font-semibold mb-4">Liste des Employees</h3>
+                            <h3 className="text-lg font-semibold mb-4">{t('list_employees')}</h3>
                             
                             {employees && employees.data && employees.data.length > 0 ? (
                                 <div className="overflow-x-auto">
@@ -121,19 +123,16 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
                                         <thead className="bg-gray-50 dark:bg-gray-700">
                                             <tr>
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Nom Complet
+                                                    {t('nom_complet')}
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    CIN
+                                                    {t('cin')}
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Type
+                                                    {t('adresse')}
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Adresse
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Actions
+                                                    {t('actions')}
                                                 </th>
                                             </tr>
                                         </thead>
@@ -145,9 +144,6 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                                         {employee.cin}
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                                        {employee.type}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                                         {employee.adresse}
@@ -179,7 +175,7 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
                                 </div>
                             ) : (
                                 <p className="text-gray-500 dark:text-gray-400">
-                                    Aucun employee trouvé. Créez votre premier employee en cliquant sur "Ajouter un Employee".
+                                    {t('no_employees_found')}
                                 </p>
                             )}
                         </div>
@@ -190,10 +186,10 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
             {/* Delete Confirmation Dialog */}
             <ConfirmDialog
                 isOpen={deleteConfirm.isOpen}
-                title="Supprimer l'employee"
-                message="Êtes-vous sûr de vouloir supprimer cet employee ? Cette action est irréversible."
-                confirmText="Supprimer"
-                cancelText="Annuler"
+                title={t('delete_employee')}
+                message={t('are_you_sure') + ' ' + t('this_action_cannot_be_undone')}
+                confirmText={t('delete')}
+                cancelText={t('cancel')}
                 variant="danger"
                 onConfirm={handleDeleteConfirm}
                 onCancel={handleDeleteCancel}

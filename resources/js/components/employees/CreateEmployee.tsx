@@ -1,5 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 import InputError from '@/components/input-error';
 import { showToast } from '@/components/Toast';
 import { Button } from '@/components/ui/button';
@@ -12,12 +13,12 @@ interface CreateEmployeeProps {
 }
 
 export default function CreateEmployee({ onSuccess }: CreateEmployeeProps) {
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
 
     const { data, setData, post, processing, errors, reset } = useForm({
         nom_complet: '',
         cin: '',
-        type: '',
         adresse: '',
     });
 
@@ -25,7 +26,7 @@ export default function CreateEmployee({ onSuccess }: CreateEmployeeProps) {
         e.preventDefault();
         post('/employees', {
             onSuccess: () => {
-                showToast('Employee créé avec succès', 'success');
+                showToast(t('employee_created_success'), 'success');
                 reset();
                 setIsOpen(false);
                 if (onSuccess) {
@@ -33,7 +34,7 @@ export default function CreateEmployee({ onSuccess }: CreateEmployeeProps) {
                 }
             },
             onError: (errors) => {
-                showToast('Erreur lors de la création de l\'employee', 'error');
+                showToast(t('employee_create_error'), 'error');
             },
         });
     };
@@ -45,13 +46,13 @@ export default function CreateEmployee({ onSuccess }: CreateEmployeeProps) {
                     onClick={() => setIsOpen(true)}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white"
                 >
-                    Ajouter un Employee
+                    {t('add_employee')}
                 </Button>
             ) : (
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                            Nouveau Employee
+                            {t('new_employee')}
                         </h3>
                         <Button
                             variant="ghost"
@@ -64,12 +65,12 @@ export default function CreateEmployee({ onSuccess }: CreateEmployeeProps) {
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="nom_complet">Nom Complet *</Label>
+                            <Label htmlFor="nom_complet">{t('nom_complet')} *</Label>
                             <Input
                                 id="nom_complet"
                                 type="text"
                                 required
-                                placeholder="Nom complet de l'employee"
+                                placeholder={t('employee_full_name_placeholder')}
                                 className="w-full"
                                 value={data.nom_complet}
                                 onChange={(e) => setData('nom_complet', e.target.value)}
@@ -79,7 +80,7 @@ export default function CreateEmployee({ onSuccess }: CreateEmployeeProps) {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="cin">CIN *</Label>
+                                <Label htmlFor="cin">{t('cin')} *</Label>
                                 <Input
                                     id="cin"
                                     type="text"
@@ -93,32 +94,18 @@ export default function CreateEmployee({ onSuccess }: CreateEmployeeProps) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="type">Type *</Label>
+                                <Label htmlFor="adresse">{t('adresse')} *</Label>
                                 <Input
-                                    id="type"
+                                    id="adresse"
                                     type="text"
                                     required
-                                    placeholder="Type d'employee"
+                                    placeholder={t('complete_address_placeholder')}
                                     className="w-full"
-                                    value={data.type}
-                                    onChange={(e) => setData('type', e.target.value)}
+                                    value={data.adresse}
+                                    onChange={(e) => setData('adresse', e.target.value)}
                                 />
-                                <InputError message={errors.type} />
+                                <InputError message={errors.adresse} />
                             </div>
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="adresse">Adresse *</Label>
-                            <Input
-                                id="adresse"
-                                type="text"
-                                required
-                                placeholder="Adresse complète"
-                                className="w-full"
-                                value={data.adresse}
-                                onChange={(e) => setData('adresse', e.target.value)}
-                            />
-                            <InputError message={errors.adresse} />
                         </div>
 
                         <div className="flex items-center gap-4 pt-4">
@@ -128,7 +115,7 @@ export default function CreateEmployee({ onSuccess }: CreateEmployeeProps) {
                                 className="bg-indigo-600 hover:bg-indigo-700 text-white"
                             >
                                 {processing && <Spinner />}
-                                Créer l'Employee
+                                {t('create_employee')}
                             </Button>
                             <Button
                                 type="button"
@@ -139,7 +126,7 @@ export default function CreateEmployee({ onSuccess }: CreateEmployeeProps) {
                                 }}
                                 disabled={processing}
                             >
-                                Annuler
+                                {t('cancel')}
                             </Button>
                         </div>
                     </form>

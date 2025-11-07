@@ -10,6 +10,9 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+// Language switching route
+Route::post('language/{locale}', [App\Http\Controllers\LanguageController::class, 'switch'])->name('language.switch');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Responsable dashboard
     Route::middleware(['role:Responsable'])->group(function () {
