@@ -41,7 +41,7 @@ interface DetailBL {
 
 interface BonLivraison {
     id: number;
-    numero_bl: number;
+    numero_bl: string;
     date_bl: string;
     client_id: number;
     vendeur_id: number;
@@ -82,7 +82,6 @@ export default function EditBonLivraison({ bonLivraison, clients, vendeurs, prod
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const { data, setData, put, processing, errors, reset } = useForm({
-        numero_bl: bonLivraison.numero_bl?.toString() || '',
         date_bl: bonLivraison.date_bl || '',
         client_id: bonLivraison.client_id?.toString() || '',
         vendeur_id: bonLivraison.vendeur_id?.toString() || '',
@@ -145,7 +144,6 @@ export default function EditBonLivraison({ bonLivraison, clients, vendeurs, prod
             setProductDetails([]);
         }
         reset({
-            numero_bl: bonLivraison.numero_bl?.toString() || '',
             date_bl: bonLivraison.date_bl || '',
             client_id: bonLivraison.client_id?.toString() || '',
             vendeur_id: bonLivraison.vendeur_id?.toString() || '',
@@ -221,18 +219,18 @@ export default function EditBonLivraison({ bonLivraison, clients, vendeurs, prod
             <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="numero_bl">{t('numero_bl')} *</Label>
+                        <Label htmlFor="numero_bl">{t('numero_bl')}</Label>
                         <Input
                             id="numero_bl"
-                            type="number"
-                            min="1"
-                            required
-                            placeholder="1"
-                            className="w-full"
-                            value={data.numero_bl}
-                            onChange={(e) => setData('numero_bl', e.target.value)}
+                            type="text"
+                            readOnly
+                            disabled
+                            className="w-full bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
+                            value={bonLivraison.numero_bl || ''}
                         />
-                        <InputError message={errors.numero_bl} />
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {t('cannot_be_modified') || 'Numéro non modifiable'}
+                        </p>
                     </div>
 
                     <div className="grid gap-2">

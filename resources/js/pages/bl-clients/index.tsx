@@ -25,7 +25,7 @@ interface Vendeur {
 
 interface BonLivraison {
     id: number;
-    numero_bl: number;
+    numero_bl: string;
     date_bl: string;
     client_id: number;
     vendeur_id: number;
@@ -50,9 +50,10 @@ interface BLClientsIndexProps {
         reférence: string;
         discription: string;
     }[];
+    nextNumeroBL?: string;
 }
 
-export default function BLClientsIndex({ bonLivraisons, clients = [], vendeurs = [], produits = [] }: BLClientsIndexProps) {
+export default function BLClientsIndex({ bonLivraisons, clients = [], vendeurs = [], produits = [], nextNumeroBL }: BLClientsIndexProps) {
     const { t, locale } = useTranslation();
     const [editingBonLivraison, setEditingBonLivraison] = useState<BonLivraison | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; bonLivraisonId: number | null }>({
@@ -124,6 +125,7 @@ export default function BLClientsIndex({ bonLivraisons, clients = [], vendeurs =
                             clients={clients}
                             vendeurs={vendeurs}
                             produits={produits}
+                            nextNumeroBL={nextNumeroBL}
                             onSuccess={handleSuccess} 
                         />
                     )}

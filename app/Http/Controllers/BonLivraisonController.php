@@ -25,11 +25,15 @@ class BonLivraisonController extends Controller
         $vendeurs = Vendeur::with('user')->get();
         $produits = Produit::select('id', 'reférence', 'discription', 'prix_vente')->orderBy('reférence')->get();
         
+        // Get the next BL number for display in the form
+        $nextNumeroBL = BonLivraison::generateNextNumero();
+        
         return inertia('bl-clients/index', [
             'bonLivraisons' => $bonLivraisons,
             'clients' => $clients,
             'vendeurs' => $vendeurs,
             'produits' => $produits,
+            'nextNumeroBL' => $nextNumeroBL,
         ]);
     }
 
@@ -39,7 +43,6 @@ class BonLivraisonController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'numero_bl' => ['required', 'integer', 'min:1'],
             'date_bl' => ['required', 'date'],
             'client_id' => ['required', 'exists:clients,id'],
             'vendeur_id' => ['required', 'exists:vendeurs,id'],
@@ -49,24 +52,42 @@ class BonLivraisonController extends Controller
             'details.*.prix' => ['required', 'numeric', 'min:0'],
         ]);
 
-        $bonLivraison = BonLivraison::create([
-            'numero_bl' => $validated['numero_bl'],
-            'date_bl' => $validated['date_bl'],
-            'client_id' => $validated['client_id'],
-            'vendeur_id' => $validated['vendeur_id'],
-        ]);
+        // Use database transaction to ensure atomicity and prevent race conditions
+        return \DB::transaction(function () use ($validated) {
+            // Generate the next BL number automatically
+            $numeroBL = BonLivraison::generateNextNumero();
+            
+            // Verify uniqueness (should not happen, but safety check)
+            while (BonLivraison::where('numero_bl', $numeroBL)->exists()) {
+                // Extract number and increment
+                if (preg_match('/BL(\d+)/', $numeroBL, $matches)) {
+                    $number = (int) $matches[1] + 1;
+                    $numeroBL = 'BL' . str_pad($number, 5, '0', STR_PAD_LEFT);
+                } else {
+                    $numeroBL = BonLivraison::generateNextNumero();
+                    break;
+                }
+            }
 
-        foreach ($validated['details'] as $detail) {
-            DetailBL::create([
-                'bon_livraison_id' => $bonLivraison->id,
-                'produit_id' => $detail['produit_id'],
-                'qte' => $detail['qte'],
-                'prix' => $detail['prix'],
+            $bonLivraison = BonLivraison::create([
+                'numero_bl' => $numeroBL,
+                'date_bl' => $validated['date_bl'],
+                'client_id' => $validated['client_id'],
+                'vendeur_id' => $validated['vendeur_id'],
             ]);
-        }
 
-        return redirect()->route('bl-clients.index')
-            ->with('success', 'Bon de Livraison créé avec succès.');
+            foreach ($validated['details'] as $detail) {
+                DetailBL::create([
+                    'bon_livraison_id' => $bonLivraison->id,
+                    'produit_id' => $detail['produit_id'],
+                    'qte' => $detail['qte'],
+                    'prix' => $detail['prix'],
+                ]);
+            }
+
+            return redirect()->route('bl-clients.index')
+                ->with('success', 'Bon de Livraison créé avec succès.');
+        });
     }
 
     /**
@@ -75,7 +96,6 @@ class BonLivraisonController extends Controller
     public function update(Request $request, BonLivraison $bonLivraison)
     {
         $validated = $request->validate([
-            'numero_bl' => ['required', 'integer', 'min:1'],
             'date_bl' => ['required', 'date'],
             'client_id' => ['required', 'exists:clients,id'],
             'vendeur_id' => ['required', 'exists:vendeurs,id'],
@@ -85,8 +105,8 @@ class BonLivraisonController extends Controller
             'details.*.prix' => ['required', 'numeric', 'min:0'],
         ]);
 
+        // Do not allow modification of numero_bl - it's auto-generated and immutable
         $bonLivraison->update([
-            'numero_bl' => $validated['numero_bl'],
             'date_bl' => $validated['date_bl'],
             'client_id' => $validated['client_id'],
             'vendeur_id' => $validated['vendeur_id'],

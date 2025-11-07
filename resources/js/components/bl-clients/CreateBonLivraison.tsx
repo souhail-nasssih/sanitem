@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+import { useForm, router } from '@inertiajs/react';
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import InputError from '@/components/input-error';
@@ -35,6 +35,7 @@ interface CreateBonLivraisonProps {
     clients: Client[];
     vendeurs: Vendeur[];
     produits: Produit[];
+    nextNumeroBL?: string;
     onSuccess?: () => void;
 }
 
@@ -44,7 +45,7 @@ interface ProductDetail {
     prix: string;
 }
 
-export default function CreateBonLivraison({ clients, vendeurs, produits, onSuccess }: CreateBonLivraisonProps) {
+export default function CreateBonLivraison({ clients, vendeurs, produits, nextNumeroBL, onSuccess }: CreateBonLivraisonProps) {
     const { t, locale } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [productDetails, setProductDetails] = useState<ProductDetail[]>([]);
@@ -64,7 +65,6 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, onSucc
     };
 
     const { data, setData, post, processing, errors, reset } = useForm({
-        numero_bl: '',
         date_bl: getTodayDate(),
         client_id: '',
         vendeur_id: '',
@@ -132,9 +132,17 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, onSucc
             return;
         }
 
-        setData('details', validDetails);
-        
-        post('/bl-clients', {
+        // Prepare all form data including details
+        const formData = {
+            date_bl: data.date_bl,
+            client_id: data.client_id,
+            vendeur_id: data.vendeur_id,
+            details: validDetails,
+        };
+
+        // Use router.post directly with complete data to ensure all data is sent
+        router.post('/bl-clients', formData, {
+            preserveScroll: true,
             onSuccess: () => {
                 showToast(t('bl_client_created_success'), 'success');
                 reset();
@@ -149,6 +157,8 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, onSucc
                 }
             },
             onError: (errors) => {
+                console.error('BL Client creation errors:', errors);
+                console.error('Form data sent:', formData);
                 showToast(t('bl_client_create_error'), 'error');
             },
         });
@@ -213,18 +223,18 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, onSucc
                     <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="numero_bl">{t('numero_bl')} *</Label>
+                                <Label htmlFor="numero_bl">{t('numero_bl')}</Label>
                                 <Input
                                     id="numero_bl"
-                                    type="number"
-                                    min="1"
-                                    required
-                                    placeholder="1"
-                                    className="w-full"
-                                    value={data.numero_bl}
-                                    onChange={(e) => setData('numero_bl', e.target.value)}
+                                    type="text"
+                                    readOnly
+                                    disabled
+                                    className="w-full bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
+                                    value={nextNumeroBL || 'BL00001'}
                                 />
-                                <InputError message={errors.numero_bl} />
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {t('auto_generated') || 'Numéro généré automatiquement'}
+                                </p>
                             </div>
 
                             <div className="grid gap-2">

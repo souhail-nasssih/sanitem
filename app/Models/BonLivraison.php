@@ -16,6 +16,33 @@ class BonLivraison extends Model
     ];
 
     /**
+     * Generate the next BL number in format BL00001
+     */
+    public static function generateNextNumero(): string
+    {
+        // Get the last BL number
+        $lastBL = self::orderBy('id', 'desc')->first();
+        
+        if (!$lastBL || !$lastBL->numero_bl) {
+            // If no BL exists, start with BL00001
+            return 'BL00001';
+        }
+        
+        // Extract the number part from the last BL number (e.g., "BL00001" -> 1)
+        $lastNumero = $lastBL->numero_bl;
+        if (preg_match('/BL(\d+)/', $lastNumero, $matches)) {
+            $lastNumber = (int) $matches[1];
+            $nextNumber = $lastNumber + 1;
+        } else {
+            // If format is unexpected, start from 1
+            $nextNumber = 1;
+        }
+        
+        // Format as BL00001, BL00002, etc. (5 digits)
+        return 'BL' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+    }
+
+    /**
      * Get the client that owns the bon livraison.
      */
     public function client(): BelongsTo
