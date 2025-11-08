@@ -7,7 +7,7 @@ import EditBonLivraison from '@/components/bl-clients/EditBonLivraison';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { showToast } from '@/Components/Toast';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Eye } from 'lucide-react';
 
 interface Client {
     id: number;
@@ -203,8 +203,18 @@ export default function BLClientsIndex({ bonLivraisons, clients = [], vendeurs =
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"
+                                                                onClick={() => router.visit(`/bl-clients/${bonLivraison.id}`)}
+                                                                className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1.5 sm:p-2"
+                                                                title={t('view_details') || 'View Details'}
+                                                            >
+                                                                <Eye className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
                                                                 onClick={() => handleEdit(bonLivraison)}
                                                                 className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 p-1.5 sm:p-2"
+                                                                title={t('edit') || 'Edit'}
                                                             >
                                                                 <Pencil className="h-4 w-4" />
                                                             </Button>
@@ -213,6 +223,7 @@ export default function BLClientsIndex({ bonLivraisons, clients = [], vendeurs =
                                                                 size="sm"
                                                                 onClick={() => handleDeleteClick(bonLivraison.id)}
                                                                 className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 p-1.5 sm:p-2"
+                                                                title={t('delete') || 'Delete'}
                                                             >
                                                                 <Trash2 className="h-4 w-4" />
                                                             </Button>

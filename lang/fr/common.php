@@ -236,6 +236,7 @@ return [
     'select_vendeur' => 'Sélectionner un vendeur',
     'vendeur' => 'Vendeur',
     'vendeur_required' => 'Le vendeur est requis',
+    'bl_client_details' => 'Détails du BL Client',
     'deleted_items' => 'Éléments Supprimés',
     'trash_description' => 'Cette page affichera les éléments supprimés qui peuvent être restaurés.',
     // Settings

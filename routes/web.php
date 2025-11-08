@@ -43,10 +43,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Dashboard - redirect based on role
-    Route::get('dashboard', function () {
+    Route::get('dashboard', function (\Illuminate\Http\Request $request) {
         $user = auth()->user();
         $user->load('roles');
-        
+
         if ($user->hasRole('Responsable')) {
             return redirect()->route('responsable.dashboard');
         } elseif ($user->hasRole('Employee')) {
@@ -58,7 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             }
             return redirect()->route('vendeur.dashboard');
         }
-        
+
         return Inertia::render('dashboard');
     })->name('dashboard');
 
@@ -96,6 +96,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // BL Clients
     Route::get('bl-clients', [App\Http\Controllers\BonLivraisonController::class, 'index'])->name('bl-clients.index');
+    Route::get('bl-clients/{bonLivraison}', [App\Http\Controllers\BonLivraisonController::class, 'show'])->name('bl-clients.show');
     Route::post('bl-clients', [App\Http\Controllers\BonLivraisonController::class, 'store'])->name('bl-clients.store');
     Route::put('bl-clients/{bonLivraison}', [App\Http\Controllers\BonLivraisonController::class, 'update'])->name('bl-clients.update');
     Route::delete('bl-clients/{bonLivraison}', [App\Http\Controllers\BonLivraisonController::class, 'destroy'])->name('bl-clients.destroy');

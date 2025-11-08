@@ -20,21 +20,21 @@ class BonLivraisonController extends Controller
         $bonLivraisons = BonLivraison::with(['client', 'vendeur.user', 'detailBLs.produit'])
             ->latest()
             ->paginate(10);
-        
+
         $clients = Client::orderBy('nom_complet')->get();
         $vendeurs = Vendeur::with('user')->get();
         $produits = Produit::select('id', 'reférence', 'discription', 'prix_vente', 'qte_stock')->orderBy('reférence')->get();
-        
+
         // Get the next BL number for display in the form
         $nextNumeroBL = BonLivraison::generateNextNumero();
-        
+
         // Get current user's vendeur ID - create one if user is Responsable or Vendeur
         $currentVendeurId = null;
         $user = $request->user();
         if ($user) {
             // Load roles and vendeur relationship
             $user->load('roles', 'vendeur');
-            
+
             if ($user->vendeur) {
                 // User already has a vendeur record
                 $currentVendeurId = $user->vendeur->id;
@@ -47,7 +47,7 @@ class BonLivraisonController extends Controller
                 $currentVendeurId = $vendeur->id;
             }
         }
-        
+
         return inertia('bl-clients/index', [
             'bonLivraisons' => $bonLivraisons,
             'clients' => $clients,
@@ -59,19 +59,43 @@ class BonLivraisonController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(BonLivraison $bonLivraison)
+    {
+        $bonLivraison->load([
+            'client',
+            'vendeur.user',
+            'detailBLs.produit'
+        ]);
+
+        // Ensure detailBLs is accessible - Inertia may serialize it as detail_b_l_s
+        $bonLivraisonData = $bonLivraison->toArray();
+        
+        // Also add it explicitly as detailBLs for frontend compatibility
+        if (isset($bonLivraisonData['detail_b_l_s'])) {
+            $bonLivraisonData['detailBLs'] = $bonLivraisonData['detail_b_l_s'];
+        }
+
+        return inertia('bl-clients/show', [
+            'bonLivraison' => $bonLivraisonData,
+        ]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
         $user = $request->user();
-        
+
         // Get vendeur_id from request or use/create current user's vendeur
         $vendeurId = $request->input('vendeur_id');
-        
+
         if (!$vendeurId && $user) {
             // Load roles and vendeur relationship
             $user->load('roles', 'vendeur');
-            
+
             if ($user->vendeur) {
                 // User already has a vendeur record
                 $vendeurId = $user->vendeur->id;
@@ -108,7 +132,7 @@ class BonLivraisonController extends Controller
         return \DB::transaction(function () use ($validated) {
             // Generate the next BL number automatically
             $numeroBL = BonLivraison::generateNextNumero();
-            
+
             // Verify uniqueness (should not happen, but safety check)
             while (BonLivraison::where('numero_bl', $numeroBL)->exists()) {
                 // Extract number and increment

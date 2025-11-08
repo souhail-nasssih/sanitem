@@ -236,6 +236,7 @@ return [
     'select_vendeur' => 'اختر بائع',
     'vendeur' => 'البائع',
     'vendeur_required' => 'البائع مطلوب',
+    'bl_client_details' => 'تفاصيل إيصال العميل',
     'deleted_items' => 'العناصر المحذوفة',
     'trash_description' => 'ستعرض هذه الصفحة العناصر المحذوفة التي يمكن استعادتها.',
     // Settings
