@@ -196,6 +196,11 @@ return [
     // Client CRUD
     'add_client' => 'Ajouter un Client',
     'new_client' => 'Nouveau Client',
+    'add_fournisseur' => 'Ajouter un Fournisseur',
+    'new_fournisseur' => 'Nouveau Fournisseur',
+    'select_fournisseur' => 'Sélectionner un fournisseur',
+    'fournisseur_will_be_created_automatically' => 'Le fournisseur sera créé automatiquement lors de la création du BL Fournisseur',
+    'fournisseur_create_error' => 'Erreur lors de la création du fournisseur',
     'create_client' => 'Créer le Client',
     'edit_client' => 'Modifier le Client',
     'list_clients' => 'Liste des Clients',

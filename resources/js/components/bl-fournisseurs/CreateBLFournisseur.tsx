@@ -8,11 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
-import { Trash2, Search } from 'lucide-react';
+import { Trash2, Search, Plus, X } from 'lucide-react';
 
 interface Fournisseur {
     id: number;
     nom_complet: string;
+    numero_tel?: string;
+    adresse?: string;
 }
 
 interface Employee {
@@ -52,6 +54,8 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
     const [showProductDropdown, setShowProductDropdown] = useState(false);
     const [selectedProductId, setSelectedProductId] = useState<string>('');
     const [quantity, setQuantity] = useState('');
+    const [showCreateFournisseur, setShowCreateFournisseur] = useState(false);
+    const [newFournisseurs, setNewFournisseurs] = useState<Fournisseur[]>([]);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Get today's date in YYYY-MM-DD format
@@ -68,6 +72,13 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
         fournisseur_id: '',
         employee_id: currentEmployeeId?.toString() || '',
         details: [] as ProductDetail[],
+    });
+
+    // Fournisseur creation form
+    const { data: fournisseurData, setData: setFournisseurData, errors: fournisseurErrors, reset: resetFournisseur } = useForm({
+        nom_complet: '',
+        numero_tel: '',
+        adresse: '',
     });
 
     // Set employee_id when currentEmployeeId changes or when form opens
@@ -123,9 +134,10 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
         setProductDetails(productDetails.filter((_, i) => i !== index));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        
+    // Combine existing fournisseurs with newly created ones
+    const allFournisseurs = [...fournisseurs, ...newFournisseurs];
+
+    const createBLFournisseur = (fournisseurId: string) => {
         const validDetails = productDetails
             .filter(detail => detail.produit_id && detail.qte && detail.prix && detail.discription)
             .map(detail => ({
@@ -143,7 +155,7 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
         // Prepare all form data including details
         const formData = {
             date_bl_fournisseur: data.date_bl_fournisseur,
-            fournisseur_id: data.fournisseur_id,
+            fournisseur_id: fournisseurId,
             employee_id: data.employee_id,
             details: validDetails,
         };
@@ -154,12 +166,15 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
             onSuccess: () => {
                 showToast(t('bl_supplier_created_success'), 'success');
                 reset();
+                resetFournisseur();
                 setData('date_bl_fournisseur', getTodayDate());
                 setData('employee_id', currentEmployeeId?.toString() || '');
                 setProductDetails([]);
                 setSelectedProductId('');
                 setQuantity('');
                 setProductSearch('');
+                setShowCreateFournisseur(false);
+                setNewFournisseurs([]);
                 setIsOpen(false);
                 if (onSuccess) {
                     onSuccess();
@@ -171,6 +186,74 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                 showToast(t('bl_supplier_create_error'), 'error');
             },
         });
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const validDetails = productDetails
+            .filter(detail => detail.produit_id && detail.qte && detail.prix && detail.discription)
+            .map(detail => ({
+                produit_id: parseInt(detail.produit_id),
+                qte: parseFloat(detail.qte),
+                prix: parseFloat(detail.prix),
+                discription: detail.discription,
+            }));
+
+        if (validDetails.length === 0) {
+            showToast(t('add_at_least_one_product'), 'error');
+            return;
+        }
+
+        // Check if user is creating a new fournisseur
+        if (showCreateFournisseur && fournisseurData.nom_complet && fournisseurData.numero_tel && fournisseurData.adresse) {
+            // First create the fournisseur, then create the BL fournisseur
+            router.post('/fournisseurs', fournisseurData, {
+                preserveScroll: true,
+                onSuccess: (page) => {
+                    // Get the created fournisseur from flash data
+                    const pageProps = page.props as { flash?: { created_fournisseur?: Fournisseur }; fournisseurs?: Fournisseur[] };
+                    let created: Fournisseur | null = null;
+
+                    if (pageProps.flash?.created_fournisseur) {
+                        created = pageProps.flash.created_fournisseur;
+                    } else {
+                        // Fallback: reload fournisseurs list to get the newly created fournisseur
+                        router.reload({
+                            only: ['fournisseurs'],
+                            onSuccess: (reloadedPage) => {
+                                const reloadedProps = reloadedPage.props as { fournisseurs?: Fournisseur[] };
+                                const reloadedFournisseurs = reloadedProps.fournisseurs || [];
+                                const found = reloadedFournisseurs.find((f: Fournisseur) => f.nom_complet === fournisseurData.nom_complet);
+                                if (found) {
+                                    createBLFournisseur(found.id.toString());
+                                } else {
+                                    showToast(t('fournisseur_create_error') || 'Error creating fournisseur', 'error');
+                                }
+                            },
+                        });
+                        return;
+                    }
+
+                    if (created) {
+                        // Now create the BL fournisseur with the newly created fournisseur
+                        createBLFournisseur(created.id.toString());
+                    } else {
+                        showToast(t('fournisseur_create_error') || 'Error creating fournisseur', 'error');
+                    }
+                },
+                onError: () => {
+                    showToast(t('fournisseur_create_error') || 'Error creating fournisseur', 'error');
+                },
+            });
+        } else {
+            // Fournisseur is already selected, proceed with BL fournisseur creation
+            if (!data.fournisseur_id) {
+                showToast(t('select_fournisseur') || 'Please select a fournisseur', 'error');
+                return;
+            }
+            createBLFournisseur(data.fournisseur_id);
+        }
     };
 
     // Reset form when opening
@@ -217,12 +300,15 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                             onClick={() => {
                                 setIsOpen(false);
                                 reset();
+                                resetFournisseur();
                                 setData('date_bl_fournisseur', getTodayDate());
                                 setData('employee_id', currentEmployeeId?.toString() || '');
                                 setProductDetails([]);
                                 setSelectedProductId('');
                                 setQuantity('');
                                 setProductSearch('');
+                                setShowCreateFournisseur(false);
+                                setNewFournisseurs([]);
                             }}
                             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                         >
@@ -263,26 +349,103 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="fournisseur_id">{t('fournisseur')} *</Label>
-                                <Select
-                                    value={data.fournisseur_id}
-                                    onValueChange={(value) => setData('fournisseur_id', value)}
-                                    required
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={t('select') + ' ' + t('fournisseur')} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {fournisseurs.map((fournisseur) => (
-                                            <SelectItem key={fournisseur.id} value={fournisseur.id.toString()}>
-                                                {fournisseur.nom_complet}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="fournisseur_id">{t('fournisseur')} *</Label>
+                                    {!showCreateFournisseur && (
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setShowCreateFournisseur(true)}
+                                            className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 h-8 px-2 text-xs"
+                                        >
+                                            <Plus className="h-3 w-3 mr-1" />
+                                            {t('add_fournisseur') || 'Add Fournisseur'}
+                                        </Button>
+                                    )}
+                                </div>
+                                {!showCreateFournisseur ? (
+                                    <Select
+                                        value={data.fournisseur_id}
+                                        onValueChange={(value) => setData('fournisseur_id', value)}
+                                        required
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder={t('select') + ' ' + t('fournisseur')} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {allFournisseurs.map((fournisseur) => (
+                                                <SelectItem key={fournisseur.id} value={fournisseur.id.toString()}>
+                                                    {fournisseur.nom_complet}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                ) : (
+                                    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{t('new_fournisseur') || 'New Fournisseur'}</h4>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    setShowCreateFournisseur(false);
+                                                    resetFournisseur();
+                                                }}
+                                                className="h-6 w-6 p-0"
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                        <div className="space-y-3">
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="nom_complet">{t('nom_complet')} *</Label>
+                                                <Input
+                                                    id="nom_complet"
+                                                    type="text"
+                                                    required
+                                                    placeholder={t('supplier_full_name_placeholder') || 'Full name'}
+                                                    className="w-full"
+                                                    value={fournisseurData.nom_complet}
+                                                    onChange={(e) => setFournisseurData('nom_complet', e.target.value)}
+                                                />
+                                                <InputError message={fournisseurErrors.nom_complet} />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="numero_tel">{t('numero_tel')} *</Label>
+                                                <Input
+                                                    id="numero_tel"
+                                                    type="text"
+                                                    required
+                                                    placeholder="+212 6XX XXX XXX"
+                                                    className="w-full"
+                                                    value={fournisseurData.numero_tel}
+                                                    onChange={(e) => setFournisseurData('numero_tel', e.target.value)}
+                                                />
+                                                <InputError message={fournisseurErrors.numero_tel} />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="adresse">{t('adresse')} *</Label>
+                                                <Input
+                                                    id="adresse"
+                                                    type="text"
+                                                    required
+                                                    placeholder={t('complete_address_placeholder') || 'Complete address'}
+                                                    className="w-full"
+                                                    value={fournisseurData.adresse}
+                                                    onChange={(e) => setFournisseurData('adresse', e.target.value)}
+                                                />
+                                                <InputError message={fournisseurErrors.adresse} />
+                                            </div>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                {t('fournisseur_will_be_created_automatically') || 'Le fournisseur sera créé automatiquement lors de la création du BL Fournisseur'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
                                 <InputError message={errors.fournisseur_id} />
                             </div>
-
                         </div>
 
                         {/* Products Section */}
@@ -434,12 +597,15 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                                 onClick={() => {
                                     setIsOpen(false);
                                     reset();
+                                    resetFournisseur();
                                     setData('date_bl_fournisseur', getTodayDate());
                                     setData('employee_id', currentEmployeeId?.toString() || '');
                                     setProductDetails([]);
                                     setSelectedProductId('');
                                     setQuantity('');
                                     setProductSearch('');
+                                    setShowCreateFournisseur(false);
+                                    setNewFournisseurs([]);
                                 }}
                                 disabled={processing}
                             >

@@ -53,7 +53,15 @@ class FournisseurController extends Controller
             'adresse' => ['required', 'string', 'max:255'],
         ]);
 
-        Fournisseur::create($validated);
+        $fournisseur = Fournisseur::create($validated);
+
+        // If request is from Inertia, return redirect back with fournisseur data
+        if ($request->header('X-Inertia')) {
+            return back()->with([
+                'success' => 'Fournisseur créé avec succès.',
+                'created_fournisseur' => $fournisseur,
+            ]);
+        }
 
         return redirect()->route('fournisseurs.index')
             ->with('success', 'Fournisseur créé avec succès.');

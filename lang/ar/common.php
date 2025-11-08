@@ -196,6 +196,11 @@ return [
     // Client CRUD
     'add_client' => 'إضافة عميل',
     'new_client' => 'عميل جديد',
+    'add_fournisseur' => 'إضافة مورد',
+    'new_fournisseur' => 'مورد جديد',
+    'select_fournisseur' => 'اختر موردًا',
+    'fournisseur_will_be_created_automatically' => 'سيتم إنشاء المورد تلقائيًا عند إنشاء إيصال المورد',
+    'fournisseur_create_error' => 'خطأ في إنشاء المورد',
     'create_client' => 'إنشاء العميل',
     'edit_client' => 'تعديل العميل',
     'list_clients' => 'قائمة العملاء',
