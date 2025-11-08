@@ -48,9 +48,10 @@ interface BLFournisseursIndexProps {
     fournisseurs?: Fournisseur[];
     employees?: Employee[];
     produits?: Produit[];
+    nextNumeroBL?: string;
 }
 
-export default function BLFournisseursIndex({ blFournisseurs, fournisseurs = [], employees = [], produits = [] }: BLFournisseursIndexProps) {
+export default function BLFournisseursIndex({ blFournisseurs, fournisseurs = [], employees = [], produits = [], nextNumeroBL }: BLFournisseursIndexProps) {
     const { t, locale } = useTranslation();
     const [editingBLFournisseur, setEditingBLFournisseur] = useState<BLFournisseur | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; blFournisseurId: number | null }>({
@@ -122,6 +123,7 @@ export default function BLFournisseursIndex({ blFournisseurs, fournisseurs = [],
                             fournisseurs={fournisseurs}
                             employees={employees}
                             produits={produits}
+                            nextNumeroBL={nextNumeroBL}
                             onSuccess={handleSuccess} 
                         />
                     )}

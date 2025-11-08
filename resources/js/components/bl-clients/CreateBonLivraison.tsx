@@ -46,7 +46,7 @@ interface ProductDetail {
 }
 
 export default function CreateBonLivraison({ clients, vendeurs, produits, nextNumeroBL, onSuccess }: CreateBonLivraisonProps) {
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [productDetails, setProductDetails] = useState<ProductDetail[]>([]);
     const [productSearch, setProductSearch] = useState('');
@@ -64,7 +64,7 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
         return `${year}-${month}-${day}`;
     };
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, processing, errors, reset } = useForm({
         date_bl: getTodayDate(),
         client_id: '',
         vendeur_id: '',
@@ -73,7 +73,7 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
 
     // Filter products based on search
     const filteredProducts = produits.filter(
-        produit => 
+        produit =>
             !productDetails.some(detail => detail.produit_id === produit.id.toString()) &&
             (produit.reférence.toLowerCase().includes(productSearch.toLowerCase()) ||
              produit.discription.toLowerCase().includes(productSearch.toLowerCase()))
@@ -118,7 +118,7 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         const validDetails = productDetails
             .filter(detail => detail.produit_id && detail.qte && detail.prix)
             .map(detail => ({
@@ -319,7 +319,7 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
                                             className="pl-10"
                                         />
                                     </div>
-                                    
+
                                     {/* Dropdown List */}
                                     {showProductDropdown && filteredProducts.length > 0 && (
                                         <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto">

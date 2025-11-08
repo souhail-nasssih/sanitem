@@ -25,11 +25,15 @@ class BLfournisseurController extends Controller
         $employees = Employee::orderBy('nom_complet')->get();
         $produits = Produit::select('id', 'reférence', 'discription', 'prix_achat')->orderBy('reférence')->get();
         
+        // Get the next BL number for display in the form
+        $nextNumeroBL = BLfournisseur::generateNextNumero();
+        
         return inertia('bl-fournisseurs/index', [
             'blFournisseurs' => $blFournisseurs,
             'fournisseurs' => $fournisseurs,
             'employees' => $employees,
             'produits' => $produits,
+            'nextNumeroBL' => $nextNumeroBL,
         ]);
     }
 
@@ -39,7 +43,6 @@ class BLfournisseurController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'numero_bl' => ['required', 'integer', 'min:1'],
             'date_bl_fournisseur' => ['required', 'date'],
             'fournisseur_id' => ['required', 'exists:fournisseurs,id'],
             'employee_id' => ['required', 'exists:employees,id'],
@@ -50,31 +53,49 @@ class BLfournisseurController extends Controller
             'details.*.discription' => ['required', 'string', 'max:255'],
         ]);
 
-        $blFournisseur = BLfournisseur::create([
-            'numero_bl' => $validated['numero_bl'],
-            'date_bl_fournisseur' => $validated['date_bl_fournisseur'],
-            'fournisseur_id' => $validated['fournisseur_id'],
-            'employee_id' => $validated['employee_id'],
-        ]);
+        // Use database transaction to ensure atomicity and prevent race conditions
+        return \DB::transaction(function () use ($validated) {
+            // Generate the next BL number automatically
+            $numeroBL = BLfournisseur::generateNextNumero();
+            
+            // Verify uniqueness (should not happen, but safety check)
+            while (BLfournisseur::where('numero_bl', $numeroBL)->exists()) {
+                // Extract number and increment
+                if (preg_match('/BL(\d+)/', $numeroBL, $matches)) {
+                    $number = (int) $matches[1] + 1;
+                    $numeroBL = 'BL' . str_pad($number, 5, '0', STR_PAD_LEFT);
+                } else {
+                    $numeroBL = BLfournisseur::generateNextNumero();
+                    break;
+                }
+            }
 
-        foreach ($validated['details'] as $detail) {
-            DetailBLfournisseur::create([
-                'bl_fournisseur_id' => $blFournisseur->id,
-                'produit_id' => $detail['produit_id'],
-                'qte' => $detail['qte'],
-                'prix' => $detail['prix'],
-                'discription' => $detail['discription'],
+            $blFournisseur = BLfournisseur::create([
+                'numero_bl' => $numeroBL,
+                'date_bl_fournisseur' => $validated['date_bl_fournisseur'],
+                'fournisseur_id' => $validated['fournisseur_id'],
+                'employee_id' => $validated['employee_id'],
             ]);
 
-            // Update product stock: add the purchased quantity
-            $produit = Produit::find($detail['produit_id']);
-            if ($produit) {
-                $produit->increment('qte_stock', $detail['qte']);
-            }
-        }
+            foreach ($validated['details'] as $detail) {
+                DetailBLfournisseur::create([
+                    'bl_fournisseur_id' => $blFournisseur->id,
+                    'produit_id' => $detail['produit_id'],
+                    'qte' => $detail['qte'],
+                    'prix' => $detail['prix'],
+                    'discription' => $detail['discription'],
+                ]);
 
-        return redirect()->route('bl-fournisseurs.index')
-            ->with('success', 'BL Fournisseur créé avec succès.');
+                // Update product stock: add the purchased quantity
+                $produit = Produit::find($detail['produit_id']);
+                if ($produit) {
+                    $produit->increment('qte_stock', $detail['qte']);
+                }
+            }
+
+            return redirect()->route('bl-fournisseurs.index')
+                ->with('success', 'BL Fournisseur créé avec succès.');
+        });
     }
 
     /**
@@ -83,7 +104,7 @@ class BLfournisseurController extends Controller
     public function update(Request $request, BLfournisseur $blFournisseur)
     {
         $validated = $request->validate([
-            'numero_bl' => ['required', 'integer', 'min:1'],
+            'numero_bl' => ['required', 'string'],
             'date_bl_fournisseur' => ['required', 'date'],
             'fournisseur_id' => ['required', 'exists:fournisseurs,id'],
             'employee_id' => ['required', 'exists:employees,id'],

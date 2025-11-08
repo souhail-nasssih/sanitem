@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('bon_livraisons', function (Blueprint $table) {
             $table->id();
-            $table->integer('numero_bl');
+            $table->string('numero_bl');
             $table->date('date_bl');
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
             $table->foreignId('vendeur_id')->constrained('vendeurs')->onDelete('cascade');

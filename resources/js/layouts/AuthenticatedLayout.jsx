@@ -31,12 +31,13 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
     const pageProps = usePage().props;
     const locale = pageProps.locale || 'fr';
     const user = pageProps.auth.user;
+    const hasPendingConfirmation = pageProps.hasPendingConfirmation || false;
     const currentLocale = locale || 'fr';
 
-    // Auto-hide sidebar and notification on select-employee page
+    // Auto-hide sidebar and notification on select-employee page or when waiting for confirmation
     const isSelectEmployeePage = url.includes('/vendeur/select-employee');
-    const shouldHideSidebar = hideSidebar || isSelectEmployeePage;
-    const shouldHideNotification = hideNotification || isSelectEmployeePage;
+    const shouldHideSidebar = hideSidebar || isSelectEmployeePage || hasPendingConfirmation;
+    const shouldHideNotification = hideNotification || isSelectEmployeePage || hasPendingConfirmation;
 
     // Set RTL for Arabic
     useEffect(() => {

@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+import { useForm, router } from '@inertiajs/react';
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import InputError from '@/components/input-error';
@@ -31,6 +31,7 @@ interface CreateBLFournisseurProps {
     fournisseurs: Fournisseur[];
     employees: Employee[];
     produits: Produit[];
+    nextNumeroBL?: string;
     onSuccess?: () => void;
 }
 
@@ -41,8 +42,8 @@ interface ProductDetail {
     discription: string;
 }
 
-export default function CreateBLFournisseur({ fournisseurs, employees, produits, onSuccess }: CreateBLFournisseurProps) {
-    const { t, locale } = useTranslation();
+export default function CreateBLFournisseur({ fournisseurs, employees, produits, nextNumeroBL, onSuccess }: CreateBLFournisseurProps) {
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [productDetails, setProductDetails] = useState<ProductDetail[]>([]);
     const [productSearch, setProductSearch] = useState('');
@@ -60,8 +61,7 @@ export default function CreateBLFournisseur({ fournisseurs, employees, produits,
         return `${year}-${month}-${day}`;
     };
 
-    const { data, setData, post, processing, errors, reset } = useForm({
-        numero_bl: '',
+    const { data, setData, processing, errors, reset } = useForm({
         date_bl_fournisseur: getTodayDate(),
         fournisseur_id: '',
         employee_id: '',
@@ -131,9 +131,17 @@ export default function CreateBLFournisseur({ fournisseurs, employees, produits,
             return;
         }
 
-        setData('details', validDetails);
-        
-        post('/bl-fournisseurs', {
+        // Prepare all form data including details
+        const formData = {
+            date_bl_fournisseur: data.date_bl_fournisseur,
+            fournisseur_id: data.fournisseur_id,
+            employee_id: data.employee_id,
+            details: validDetails,
+        };
+
+        // Use router.post directly with complete data to ensure all data is sent
+        router.post('/bl-fournisseurs', formData, {
+            preserveScroll: true,
             onSuccess: () => {
                 showToast(t('bl_supplier_created_success'), 'success');
                 reset();
@@ -148,6 +156,8 @@ export default function CreateBLFournisseur({ fournisseurs, employees, produits,
                 }
             },
             onError: (errors) => {
+                console.error('BL Fournisseur creation errors:', errors);
+                console.error('Form data sent:', formData);
                 showToast(t('bl_supplier_create_error'), 'error');
             },
         });
@@ -212,18 +222,18 @@ export default function CreateBLFournisseur({ fournisseurs, employees, produits,
                     <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="numero_bl">{t('numero_bl')} *</Label>
+                                <Label htmlFor="numero_bl">{t('numero_bl')}</Label>
                                 <Input
                                     id="numero_bl"
-                                    type="number"
-                                    min="1"
-                                    required
-                                    placeholder="1"
-                                    className="w-full"
-                                    value={data.numero_bl}
-                                    onChange={(e) => setData('numero_bl', e.target.value)}
+                                    type="text"
+                                    readOnly
+                                    disabled
+                                    className="w-full bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
+                                    value={nextNumeroBL || 'BL00001'}
                                 />
-                                <InputError message={errors.numero_bl} />
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {t('auto_generated') || 'Numéro généré automatiquement'}
+                                </p>
                             </div>
 
                             <div className="grid gap-2">

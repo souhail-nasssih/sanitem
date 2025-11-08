@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\VendeurEmployeeConfirmation;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -39,10 +40,21 @@ class HandleInertiaRequests extends Middleware
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
         $user = $request->user();
-        
+
         // Always load roles if user exists
         if ($user) {
             $user->load('roles');
+        }
+
+        // Check if user is Vendeur with pending confirmation
+        $hasPendingConfirmation = false;
+        if ($user && $user->hasRole('Vendeur')) {
+            $vendeur = $user->vendeur;
+            if ($vendeur) {
+                $hasPendingConfirmation = VendeurEmployeeConfirmation::where('vendeur_id', $vendeur->id)
+                    ->where('status', 'pending')
+                    ->exists();
+            }
         }
 
         return [
@@ -55,6 +67,7 @@ class HandleInertiaRequests extends Middleware
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'locale' => app()->getLocale(),
             'translations' => $this->getTranslations(),
+            'hasPendingConfirmation' => $hasPendingConfirmation,
         ];
     }
 
