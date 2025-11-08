@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class ClientController extends Controller
 {
@@ -53,7 +54,15 @@ class ClientController extends Controller
             'adresse' => ['required', 'string', 'max:255'],
         ]);
 
-        Client::create($validated);
+        $client = Client::create($validated);
+
+        // If request is from Inertia, return redirect back with client data
+        if ($request->header('X-Inertia')) {
+            return back()->with([
+                'success' => 'Client créé avec succès.',
+                'created_client' => $client,
+            ]);
+        }
 
         return redirect()->route('clients.index')
             ->with('success', 'Client créé avec succès.');

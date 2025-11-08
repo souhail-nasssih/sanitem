@@ -25,6 +25,7 @@ interface Produit {
     reférence: string;
     discription: string;
     prix_achat: number;
+    qte_stock: number;
 }
 
 interface CreateBLFournisseurProps {
@@ -334,8 +335,13 @@ export default function CreateBLFournisseur({ fournisseurs, employees, produits,
                                                     <div className="text-sm text-gray-500 dark:text-gray-400">
                                                         {produit.discription}
                                                     </div>
-                                                    <div className="text-sm text-indigo-600 dark:text-indigo-400">
-                                                        {t('prix')}: {produit.prix_achat.toFixed(2)} MAD
+                                                    <div className="flex items-center justify-between mt-1">
+                                                        <div className="text-sm text-indigo-600 dark:text-indigo-400">
+                                                            {t('prix')}: {produit.prix_achat.toFixed(2)} MAD
+                                                        </div>
+                                                        <div className={`text-sm font-medium ${produit.qte_stock <= 10 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                                                            {t('in_stock')}: {produit.qte_stock}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             ))}
@@ -354,9 +360,14 @@ export default function CreateBLFournisseur({ fournisseurs, employees, produits,
                                                         <p className="font-semibold text-gray-900 dark:text-white">
                                                             {produit.reférence} - {produit.discription}
                                                         </p>
-                                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                            {t('prix')}: {produit.prix_achat.toFixed(2)} MAD
-                                                        </p>
+                                                        <div className="flex items-center justify-between mt-1">
+                                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                                {t('prix')}: {produit.prix_achat.toFixed(2)} MAD
+                                                            </p>
+                                                            <p className={`text-sm font-medium ${produit.qte_stock <= 10 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                                                                {t('in_stock')}: {produit.qte_stock}
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                     <div className="grid gap-2">
                                                         <Label>{t('quantite')} *</Label>

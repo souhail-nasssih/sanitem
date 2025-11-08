@@ -51,9 +51,10 @@ interface BLClientsIndexProps {
         discription: string;
     }[];
     nextNumeroBL?: string;
+    currentVendeurId?: number | null;
 }
 
-export default function BLClientsIndex({ bonLivraisons, clients = [], vendeurs = [], produits = [], nextNumeroBL }: BLClientsIndexProps) {
+export default function BLClientsIndex({ bonLivraisons, clients = [], vendeurs = [], produits = [], nextNumeroBL, currentVendeurId }: BLClientsIndexProps) {
     const { t, locale } = useTranslation();
     const [editingBonLivraison, setEditingBonLivraison] = useState<BonLivraison | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; bonLivraisonId: number | null }>({
@@ -126,6 +127,7 @@ export default function BLClientsIndex({ bonLivraisons, clients = [], vendeurs =
                             vendeurs={vendeurs}
                             produits={produits}
                             nextNumeroBL={nextNumeroBL}
+                            currentVendeurId={currentVendeurId}
                             onSuccess={handleSuccess} 
                         />
                     )}

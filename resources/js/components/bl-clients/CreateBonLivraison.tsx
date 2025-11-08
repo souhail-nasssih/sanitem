@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
-import { Trash2, Search } from 'lucide-react';
+import { Trash2, Search, Plus, X } from 'lucide-react';
 
 interface Client {
     id: number;
@@ -29,13 +29,15 @@ interface Produit {
     reférence: string;
     discription: string;
     prix_vente: number;
+    qte_stock: number;
 }
 
 interface CreateBonLivraisonProps {
     clients: Client[];
-    vendeurs: Vendeur[];
+    vendeurs?: Vendeur[];
     produits: Produit[];
     nextNumeroBL?: string;
+    currentVendeurId?: number | null;
     onSuccess?: () => void;
 }
 
@@ -45,7 +47,7 @@ interface ProductDetail {
     prix: string;
 }
 
-export default function CreateBonLivraison({ clients, vendeurs, produits, nextNumeroBL, onSuccess }: CreateBonLivraisonProps) {
+export default function CreateBonLivraison({ clients, produits, nextNumeroBL, currentVendeurId, onSuccess }: CreateBonLivraisonProps) {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [productDetails, setProductDetails] = useState<ProductDetail[]>([]);
@@ -53,6 +55,8 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
     const [showProductDropdown, setShowProductDropdown] = useState(false);
     const [selectedProductId, setSelectedProductId] = useState<string>('');
     const [quantity, setQuantity] = useState('');
+    const [showCreateClient, setShowCreateClient] = useState(false);
+    const [newClients, setNewClients] = useState<Client[]>([]);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Get today's date in YYYY-MM-DD format
@@ -67,8 +71,15 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
     const { data, setData, processing, errors, reset } = useForm({
         date_bl: getTodayDate(),
         client_id: '',
-        vendeur_id: '',
+        vendeur_id: currentVendeurId?.toString() || '',
         details: [] as ProductDetail[],
+    });
+
+    // Client creation form
+    const { data: clientData, setData: setClientData, errors: clientErrors, reset: resetClient } = useForm({
+        nom_complet: '',
+        numero_tel: '',
+        adresse: '',
     });
 
     // Filter products based on search
@@ -116,6 +127,10 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
         setProductDetails(productDetails.filter((_, i) => i !== index));
     };
 
+
+    // Combine existing clients with newly created ones
+    const allClients = [...clients, ...newClients];
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -132,11 +147,79 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
             return;
         }
 
+        // Check if user is creating a new client
+        if (showCreateClient && clientData.nom_complet && clientData.numero_tel && clientData.adresse) {
+            // First create the client, then create the BL client
+            router.post('/clients', clientData, {
+                preserveScroll: true,
+                onSuccess: (page) => {
+                    // Get the created client from flash data
+                    const pageProps = page.props as { flash?: { created_client?: Client }; clients?: Client[] };
+                    let created: Client | null = null;
+
+                    if (pageProps.flash?.created_client) {
+                        created = pageProps.flash.created_client;
+                    } else {
+                        // Fallback: reload clients list to get the newly created client
+                        router.reload({
+                            only: ['clients'],
+                            onSuccess: (reloadedPage) => {
+                                const reloadedProps = reloadedPage.props as { clients?: Client[] };
+                                const reloadedClients = reloadedProps.clients || [];
+                                const found = reloadedClients.find((c: Client) => c.nom_complet === clientData.nom_complet);
+                                if (found) {
+                                    createBLClient(found.id.toString());
+                                } else {
+                                    showToast(t('client_create_error'), 'error');
+                                }
+                            },
+                        });
+                        return;
+                    }
+
+                    if (created) {
+                        // Now create the BL client with the newly created client
+                        createBLClient(created.id.toString());
+                    } else {
+                        showToast(t('client_create_error'), 'error');
+                    }
+                },
+                onError: () => {
+                    showToast(t('client_create_error'), 'error');
+                },
+            });
+        } else {
+            // Client is already selected, proceed with BL client creation
+            if (!data.client_id) {
+                showToast(t('select_client') || 'Please select a client', 'error');
+                return;
+            }
+            createBLClient(data.client_id);
+        }
+    };
+
+    const createBLClient = (clientId: string) => {
+        const validDetails = productDetails
+            .filter(detail => detail.produit_id && detail.qte && detail.prix)
+            .map(detail => ({
+                produit_id: parseInt(detail.produit_id),
+                qte: parseFloat(detail.qte),
+                prix: parseFloat(detail.prix),
+            }));
+
+        // Always use currentVendeurId first, then fall back to data.vendeur_id
+        const vendeurId = currentVendeurId?.toString() || (data.vendeur_id && data.vendeur_id.trim() !== '' ? data.vendeur_id : '');
+
+        if (!vendeurId) {
+            showToast(t('vendeur_required'), 'error');
+            return;
+        }
+
         // Prepare all form data including details
         const formData = {
             date_bl: data.date_bl,
-            client_id: data.client_id,
-            vendeur_id: data.vendeur_id,
+            client_id: clientId,
+            vendeur_id: vendeurId,
             details: validDetails,
         };
 
@@ -146,11 +229,15 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
             onSuccess: () => {
                 showToast(t('bl_client_created_success'), 'success');
                 reset();
+                resetClient();
                 setData('date_bl', getTodayDate());
+                setData('vendeur_id', currentVendeurId?.toString() || '');
                 setProductDetails([]);
                 setSelectedProductId('');
                 setQuantity('');
                 setProductSearch('');
+                setShowCreateClient(false);
+                setNewClients([]);
                 setIsOpen(false);
                 if (onSuccess) {
                     onSuccess();
@@ -168,8 +255,20 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
     useEffect(() => {
         if (isOpen) {
             setData('date_bl', getTodayDate());
+            if (currentVendeurId) {
+                setData('vendeur_id', currentVendeurId.toString());
+            } else {
+                setData('vendeur_id', '');
+            }
         }
-    }, [isOpen]);
+    }, [isOpen, currentVendeurId, setData]);
+
+    // Ensure vendeur_id is set when currentVendeurId changes
+    useEffect(() => {
+        if (currentVendeurId && !data.vendeur_id) {
+            setData('vendeur_id', currentVendeurId.toString());
+        }
+    }, [currentVendeurId, data.vendeur_id, setData]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -208,11 +307,15 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
                             onClick={() => {
                                 setIsOpen(false);
                                 reset();
+                                resetClient();
                                 setData('date_bl', getTodayDate());
+                                setData('vendeur_id', currentVendeurId?.toString() || '');
                                 setProductDetails([]);
                                 setSelectedProductId('');
                                 setQuantity('');
                                 setProductSearch('');
+                                setShowCreateClient(false);
+                                setNewClients([]);
                             }}
                             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                         >
@@ -253,45 +356,102 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="client_id">{t('client')} *</Label>
-                                <Select
-                                    value={data.client_id}
-                                    onValueChange={(value) => setData('client_id', value)}
-                                    required
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={t('select_client')} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {clients.map((client) => (
-                                            <SelectItem key={client.id} value={client.id.toString()}>
-                                                {client.nom_complet}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="client_id">{t('client')} *</Label>
+                                    {!showCreateClient && (
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setShowCreateClient(true)}
+                                            className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 h-8 px-2 text-xs"
+                                        >
+                                            <Plus className="h-3 w-3 mr-1" />
+                                            {t('add_client')}
+                                        </Button>
+                                    )}
+                                </div>
+                                {!showCreateClient ? (
+                                    <Select
+                                        value={data.client_id}
+                                        onValueChange={(value) => setData('client_id', value)}
+                                        required
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder={t('select_client')} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {allClients.map((client) => (
+                                                <SelectItem key={client.id} value={client.id.toString()}>
+                                                    {client.nom_complet}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                ) : (
+                                    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{t('new_client')}</h4>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    setShowCreateClient(false);
+                                                    resetClient();
+                                                }}
+                                                className="h-6 w-6 p-0"
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                        <div className="space-y-3">
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="nom_complet">{t('nom_complet')} *</Label>
+                                                <Input
+                                                    id="nom_complet"
+                                                    type="text"
+                                                    required
+                                                    placeholder={t('client_full_name_placeholder')}
+                                                    className="w-full"
+                                                    value={clientData.nom_complet}
+                                                    onChange={(e) => setClientData('nom_complet', e.target.value)}
+                                                />
+                                                <InputError message={clientErrors.nom_complet} />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="numero_tel">{t('numero_tel')} *</Label>
+                                                <Input
+                                                    id="numero_tel"
+                                                    type="text"
+                                                    required
+                                                    placeholder="0612345678"
+                                                    className="w-full"
+                                                    value={clientData.numero_tel}
+                                                    onChange={(e) => setClientData('numero_tel', e.target.value)}
+                                                />
+                                                <InputError message={clientErrors.numero_tel} />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="adresse">{t('adresse')} *</Label>
+                                                <Input
+                                                    id="adresse"
+                                                    type="text"
+                                                    required
+                                                    placeholder={t('complete_address_placeholder')}
+                                                    className="w-full"
+                                                    value={clientData.adresse}
+                                                    onChange={(e) => setClientData('adresse', e.target.value)}
+                                                />
+                                                <InputError message={clientErrors.adresse} />
+                                            </div>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                {t('client_will_be_created_automatically') || 'Le client sera créé automatiquement lors de la création du BL Client'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
                                 <InputError message={errors.client_id} />
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="vendeur_id">{t('vendeur')} *</Label>
-                                <Select
-                                    value={data.vendeur_id}
-                                    onValueChange={(value) => setData('vendeur_id', value)}
-                                    required
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={t('select_vendeur')} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {vendeurs.map((vendeur) => (
-                                            <SelectItem key={vendeur.id} value={vendeur.id.toString()}>
-                                                {vendeur.user?.name || `Vendeur #${vendeur.numero_post}`}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <InputError message={errors.vendeur_id} />
                             </div>
                         </div>
 
@@ -335,8 +495,13 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
                                                     <div className="text-sm text-gray-500 dark:text-gray-400">
                                                         {produit.discription}
                                                     </div>
-                                                    <div className="text-sm text-indigo-600 dark:text-indigo-400">
-                                                        {t('prix')}: {produit.prix_vente.toFixed(2)} MAD
+                                                    <div className="flex items-center justify-between mt-1">
+                                                        <div className="text-sm text-indigo-600 dark:text-indigo-400">
+                                                            {t('prix')}: {produit.prix_vente.toFixed(2)} MAD
+                                                        </div>
+                                                        <div className={`text-sm font-medium ${produit.qte_stock <= 10 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                                                            {t('in_stock')}: {produit.qte_stock}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             ))}
@@ -355,9 +520,14 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
                                                         <p className="font-semibold text-gray-900 dark:text-white">
                                                             {produit.reférence} - {produit.discription}
                                                         </p>
-                                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                            {t('prix')}: {produit.prix_vente.toFixed(2)} MAD
-                                                        </p>
+                                                        <div className="flex items-center justify-between mt-1">
+                                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                                {t('prix')}: {produit.prix_vente.toFixed(2)} MAD
+                                                            </p>
+                                                            <p className={`text-sm font-medium ${produit.qte_stock <= 10 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                                                                {t('in_stock')}: {produit.qte_stock}
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                     <div className="grid gap-2">
                                                         <Label>{t('quantite')} *</Label>
@@ -434,11 +604,15 @@ export default function CreateBonLivraison({ clients, vendeurs, produits, nextNu
                                 onClick={() => {
                                     setIsOpen(false);
                                     reset();
+                                    resetClient();
                                     setData('date_bl', getTodayDate());
+                                    setData('vendeur_id', currentVendeurId?.toString() || '');
                                     setProductDetails([]);
                                     setSelectedProductId('');
                                     setQuantity('');
                                     setProductSearch('');
+                                    setShowCreateClient(false);
+                                    setNewClients([]);
                                 }}
                                 disabled={processing}
                             >

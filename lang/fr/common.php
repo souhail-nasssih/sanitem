@@ -235,6 +235,7 @@ return [
     'select_client' => 'Sélectionner un client',
     'select_vendeur' => 'Sélectionner un vendeur',
     'vendeur' => 'Vendeur',
+    'vendeur_required' => 'Le vendeur est requis',
     'deleted_items' => 'Éléments Supprimés',
     'trash_description' => 'Cette page affichera les éléments supprimés qui peuvent être restaurés.',
     // Settings

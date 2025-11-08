@@ -23,7 +23,7 @@ class BLfournisseurController extends Controller
         
         $fournisseurs = Fournisseur::orderBy('nom_complet')->get();
         $employees = Employee::orderBy('nom_complet')->get();
-        $produits = Produit::select('id', 'reférence', 'discription', 'prix_achat')->orderBy('reférence')->get();
+        $produits = Produit::select('id', 'reférence', 'discription', 'prix_achat', 'qte_stock')->orderBy('reférence')->get();
         
         // Get the next BL number for display in the form
         $nextNumeroBL = BLfournisseur::generateNextNumero();
