@@ -307,6 +307,8 @@ return [
     'bl_supplier_create_error' => 'خطأ في إنشاء إيصال المورد',
     'bl_supplier_update_error' => 'خطأ في تحديث إيصال المورد',
     'bl_supplier_delete_error' => 'خطأ في حذف إيصال المورد',
+    'bl_supplier_details' => 'تفاصيل إيصال المورد',
+    'view_details' => 'عرض التفاصيل',
     // Supplier Details
     'supplier_details' => 'تفاصيل المورد',
     'supplier_information' => 'معلومات المورد',

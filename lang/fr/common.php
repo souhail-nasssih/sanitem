@@ -307,6 +307,8 @@ return [
     'bl_supplier_create_error' => 'Erreur lors de la création du BL fournisseur',
     'bl_supplier_update_error' => 'Erreur lors de la mise à jour du BL fournisseur',
     'bl_supplier_delete_error' => 'Erreur lors de la suppression du BL fournisseur',
+    'bl_supplier_details' => 'Détails du BL Fournisseur',
+    'view_details' => 'Voir les détails',
     // Supplier Details
     'supplier_details' => 'Détails du Fournisseur',
     'supplier_information' => 'Informations du Fournisseur',

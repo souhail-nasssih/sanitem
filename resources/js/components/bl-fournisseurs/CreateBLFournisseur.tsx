@@ -30,9 +30,10 @@ interface Produit {
 
 interface CreateBLFournisseurProps {
     fournisseurs: Fournisseur[];
-    employees: Employee[];
+    employees?: Employee[];
     produits: Produit[];
     nextNumeroBL?: string;
+    currentEmployeeId?: number | null;
     onSuccess?: () => void;
 }
 
@@ -43,7 +44,7 @@ interface ProductDetail {
     discription: string;
 }
 
-export default function CreateBLFournisseur({ fournisseurs, employees, produits, nextNumeroBL, onSuccess }: CreateBLFournisseurProps) {
+export default function CreateBLFournisseur({ fournisseurs, produits, nextNumeroBL, currentEmployeeId, onSuccess }: CreateBLFournisseurProps) {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [productDetails, setProductDetails] = useState<ProductDetail[]>([]);
@@ -65,9 +66,16 @@ export default function CreateBLFournisseur({ fournisseurs, employees, produits,
     const { data, setData, processing, errors, reset } = useForm({
         date_bl_fournisseur: getTodayDate(),
         fournisseur_id: '',
-        employee_id: '',
+        employee_id: currentEmployeeId?.toString() || '',
         details: [] as ProductDetail[],
     });
+
+    // Set employee_id when currentEmployeeId changes or when form opens
+    useEffect(() => {
+        if (currentEmployeeId && (isOpen || !data.employee_id)) {
+            setData('employee_id', currentEmployeeId.toString());
+        }
+    }, [currentEmployeeId, isOpen, data.employee_id, setData]);
 
     // Filter products based on search
     const filteredProducts = produits.filter(
@@ -147,6 +155,7 @@ export default function CreateBLFournisseur({ fournisseurs, employees, produits,
                 showToast(t('bl_supplier_created_success'), 'success');
                 reset();
                 setData('date_bl_fournisseur', getTodayDate());
+                setData('employee_id', currentEmployeeId?.toString() || '');
                 setProductDetails([]);
                 setSelectedProductId('');
                 setQuantity('');
@@ -209,6 +218,7 @@ export default function CreateBLFournisseur({ fournisseurs, employees, produits,
                                 setIsOpen(false);
                                 reset();
                                 setData('date_bl_fournisseur', getTodayDate());
+                                setData('employee_id', currentEmployeeId?.toString() || '');
                                 setProductDetails([]);
                                 setSelectedProductId('');
                                 setQuantity('');
@@ -273,26 +283,6 @@ export default function CreateBLFournisseur({ fournisseurs, employees, produits,
                                 <InputError message={errors.fournisseur_id} />
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="employee_id">{t('employee')} *</Label>
-                                <Select
-                                    value={data.employee_id}
-                                    onValueChange={(value) => setData('employee_id', value)}
-                                    required
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={t('select') + ' ' + t('employee')} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {employees.map((employee) => (
-                                            <SelectItem key={employee.id} value={employee.id.toString()}>
-                                                {employee.nom_complet}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <InputError message={errors.employee_id} />
-                            </div>
                         </div>
 
                         {/* Products Section */}
@@ -445,6 +435,7 @@ export default function CreateBLFournisseur({ fournisseurs, employees, produits,
                                     setIsOpen(false);
                                     reset();
                                     setData('date_bl_fournisseur', getTodayDate());
+                                    setData('employee_id', currentEmployeeId?.toString() || '');
                                     setProductDetails([]);
                                     setSelectedProductId('');
                                     setQuantity('');

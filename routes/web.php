@@ -90,6 +90,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // BL Fournisseurs
     Route::get('bl-fournisseurs', [App\Http\Controllers\BLfournisseurController::class, 'index'])->name('bl-fournisseurs.index');
+    Route::get('bl-fournisseurs/{blFournisseur}', [App\Http\Controllers\BLfournisseurController::class, 'show'])->name('bl-fournisseurs.show');
     Route::post('bl-fournisseurs', [App\Http\Controllers\BLfournisseurController::class, 'store'])->name('bl-fournisseurs.store');
     Route::put('bl-fournisseurs/{blFournisseur}', [App\Http\Controllers\BLfournisseurController::class, 'update'])->name('bl-fournisseurs.update');
     Route::delete('bl-fournisseurs/{blFournisseur}', [App\Http\Controllers\BLfournisseurController::class, 'destroy'])->name('bl-fournisseurs.destroy');

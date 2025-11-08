@@ -15,7 +15,7 @@ class BLfournisseurController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $blFournisseurs = BLfournisseur::with(['fournisseur', 'employee', 'detailBLFournisseurs'])
             ->latest()
@@ -28,12 +28,69 @@ class BLfournisseurController extends Controller
         // Get the next BL number for display in the form
         $nextNumeroBL = BLfournisseur::generateNextNumero();
         
+        // Get current user's employee ID
+        $currentEmployeeId = null;
+        $user = $request->user();
+        if ($user) {
+            // Load roles
+            $user->load('roles');
+            
+            // Check if user has Employee role or if there's a selected employee in session
+            if ($user->hasRole('Employee')) {
+                // Find employee by matching user name with employee nom_complet
+                $employee = Employee::where('nom_complet', $user->name)->first();
+                if ($employee) {
+                    $currentEmployeeId = $employee->id;
+                }
+            } elseif ($request->session()->has('selected_employee_id')) {
+                // Use selected employee from session (for Vendeurs)
+                $currentEmployeeId = $request->session()->get('selected_employee_id');
+            } elseif ($user->hasRole('Responsable')) {
+                // For Responsable, find or create an employee record
+                $employee = Employee::where('nom_complet', $user->name)->first();
+                if (!$employee) {
+                    // Create employee record for Responsable
+                    $employee = Employee::create([
+                        'nom_complet' => $user->name,
+                        'cin' => 'RESP-' . $user->id,
+                        'adresse' => 'N/A',
+                    ]);
+                }
+                $currentEmployeeId = $employee->id;
+            }
+        }
+        
         return inertia('bl-fournisseurs/index', [
             'blFournisseurs' => $blFournisseurs,
             'fournisseurs' => $fournisseurs,
             'employees' => $employees,
             'produits' => $produits,
             'nextNumeroBL' => $nextNumeroBL,
+            'currentEmployeeId' => $currentEmployeeId,
+        ]);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(BLfournisseur $blFournisseur)
+    {
+        $blFournisseur->load([
+            'fournisseur',
+            'employee',
+            'detailBLFournisseurs.produit'
+        ]);
+
+        // Ensure detailBLFournisseurs is accessible - Inertia may serialize it differently
+        $blFournisseurData = $blFournisseur->toArray();
+        
+        // Also add it explicitly as detailBLFournisseurs for frontend compatibility
+        if (isset($blFournisseurData['detail_b_l_fournisseurs'])) {
+            $blFournisseurData['detailBLFournisseurs'] = $blFournisseurData['detail_b_l_fournisseurs'];
+        }
+
+        return inertia('bl-fournisseurs/show', [
+            'blFournisseur' => $blFournisseurData,
         ]);
     }
 
@@ -42,16 +99,59 @@ class BLfournisseurController extends Controller
      */
     public function store(Request $request)
     {
+        $user = $request->user();
+        
+        // Get employee_id from request or use current user's employee
+        $employeeId = $request->input('employee_id');
+        
+        if (!$employeeId && $user) {
+            // Load roles
+            $user->load('roles');
+            
+            // Check if user has Employee role or if there's a selected employee in session
+            if ($user->hasRole('Employee')) {
+                // Find employee by matching user name with employee nom_complet
+                $employee = Employee::where('nom_complet', $user->name)->first();
+                if ($employee) {
+                    $employeeId = $employee->id;
+                }
+            } elseif ($request->session()->has('selected_employee_id')) {
+                // Use selected employee from session (for Vendeurs)
+                $employeeId = $request->session()->get('selected_employee_id');
+            } elseif ($user->hasRole('Responsable')) {
+                // For Responsable, find or create an employee record
+                $employee = Employee::where('nom_complet', $user->name)->first();
+                if (!$employee) {
+                    // Create employee record for Responsable
+                    $employee = Employee::create([
+                        'nom_complet' => $user->name,
+                        'cin' => 'RESP-' . $user->id,
+                        'adresse' => 'N/A',
+                    ]);
+                }
+                $employeeId = $employee->id;
+            }
+        }
+
         $validated = $request->validate([
             'date_bl_fournisseur' => ['required', 'date'],
             'fournisseur_id' => ['required', 'exists:fournisseurs,id'],
-            'employee_id' => ['required', 'exists:employees,id'],
+            'employee_id' => ['nullable', 'exists:employees,id'],
             'details' => ['required', 'array', 'min:1'],
             'details.*.produit_id' => ['required', 'exists:produits,id'],
             'details.*.qte' => ['required', 'numeric', 'min:0.01'],
             'details.*.prix' => ['required', 'numeric', 'min:0'],
             'details.*.discription' => ['required', 'string', 'max:255'],
         ]);
+
+        // Ensure employee_id is set
+        if (!$employeeId) {
+            return redirect()->back()
+                ->withErrors(['employee_id' => 'Employee is required.'])
+                ->withInput();
+        }
+
+        $validated['employee_id'] = $employeeId;
 
         // Use database transaction to ensure atomicity and prevent race conditions
         return \DB::transaction(function () use ($validated) {
