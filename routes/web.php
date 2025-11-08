@@ -16,9 +16,7 @@ Route::post('language/{locale}', [App\Http\Controllers\LanguageController::class
 Route::middleware(['auth', 'verified'])->group(function () {
     // Responsable dashboard
     Route::middleware(['role:Responsable'])->group(function () {
-        Route::get('responsable/dashboard', function () {
-            return Inertia::render('responsable/dashboard');
-        })->name('responsable.dashboard');
+        Route::get('responsable/dashboard', [App\Http\Controllers\ResponsableController::class, 'dashboard'])->name('responsable.dashboard');
     });
 
     // Employee dashboard
