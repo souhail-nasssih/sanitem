@@ -159,6 +159,12 @@ class BonLivraisonController extends Controller
                     'qte' => $detail['qte'],
                     'prix' => $detail['prix'],
                 ]);
+
+                // Update product stock: decrement the sold quantity
+                $produit = Produit::find($detail['produit_id']);
+                if ($produit) {
+                    $produit->decrement('qte_stock', $detail['qte']);
+                }
             }
 
             return redirect()->route('bl-clients.index')
@@ -181,6 +187,17 @@ class BonLivraisonController extends Controller
             'details.*.prix' => ['required', 'numeric', 'min:0'],
         ]);
 
+        // Get existing details before deletion to restore stock
+        $existingDetails = $bonLivraison->detailBLs;
+
+        // Restore stock: add back old quantities
+        foreach ($existingDetails as $existingDetail) {
+            $produit = Produit::find($existingDetail->produit_id);
+            if ($produit) {
+                $produit->increment('qte_stock', $existingDetail->qte);
+            }
+        }
+
         // Do not allow modification of numero_bl - it's auto-generated and immutable
         $bonLivraison->update([
             'date_bl' => $validated['date_bl'],
@@ -191,7 +208,7 @@ class BonLivraisonController extends Controller
         // Delete existing details
         $bonLivraison->detailBLs()->delete();
 
-        // Create new details
+        // Create new details and update stock
         foreach ($validated['details'] as $detail) {
             DetailBL::create([
                 'bon_livraison_id' => $bonLivraison->id,
@@ -199,6 +216,12 @@ class BonLivraisonController extends Controller
                 'qte' => $detail['qte'],
                 'prix' => $detail['prix'],
             ]);
+
+            // Update product stock: decrement the sold quantity
+            $produit = Produit::find($detail['produit_id']);
+            if ($produit) {
+                $produit->decrement('qte_stock', $detail['qte']);
+            }
         }
 
         return redirect()->route('bl-clients.index')
@@ -210,6 +233,17 @@ class BonLivraisonController extends Controller
      */
     public function destroy(BonLivraison $bonLivraison)
     {
+        // Get details before deletion to restore stock
+        $details = $bonLivraison->detailBLs;
+
+        // Restore stock: add back quantities to products
+        foreach ($details as $detail) {
+            $produit = Produit::find($detail->produit_id);
+            if ($produit) {
+                $produit->increment('qte_stock', $detail->qte);
+            }
+        }
+
         $bonLivraison->delete();
 
         return redirect()->route('bl-clients.index')
