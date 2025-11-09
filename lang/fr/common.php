@@ -339,6 +339,10 @@ return [
     'fill_all_fields' => 'Veuillez remplir tous les champs.',
     'add' => 'Ajouter',
     'search_products' => 'Rechercher un produit...',
+    'search_bls' => 'Rechercher des BL par numéro, date, fournisseur/client ou vendeur...',
+    'filtered_from' => 'filtré sur',
+    'no_bl_suppliers_found_search' => 'Aucun BL fournisseur trouvé correspondant à',
+    'no_bl_clients_found_search' => 'Aucun BL client trouvé correspondant à',
     'product_not_found' => 'Produit non trouvé',
     // Dashboard Statistics
     'total_clients' => 'Total des clients',

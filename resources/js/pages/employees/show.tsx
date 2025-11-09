@@ -2,8 +2,9 @@ import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, User, FileText, Eye, Monitor, X, ChevronLeft } from 'lucide-react';
-import { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { ArrowLeft, Calendar, User, FileText, Eye, Monitor, X, ChevronLeft, Search } from 'lucide-react';
+import { useState, useMemo } from 'react';
 
 interface Fournisseur {
     id: number;
@@ -107,8 +108,10 @@ interface EmployeeShowProps {
 
 export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowProps) {
     const { t, locale } = useTranslation();
+    const [activeTab, setActiveTab] = useState<'fournisseurs' | 'clients'>('fournisseurs');
     const [selectedBLFournisseur, setSelectedBLFournisseur] = useState<BLFournisseur | null>(null);
     const [selectedBLClient, setSelectedBLClient] = useState<BonLivraison | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const calculateTotal = (details: DetailBLFournisseur[] = []) => {
         if (!details || !Array.isArray(details)) return 0;
@@ -122,9 +125,47 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
 
     // Get BLs - check all possible property names
     const employeeAny = employee as EmployeeFull & { bl_fournisseurs?: BLFournisseur[] };
-    const blFournisseurs = employeeAny.bl_fournisseurs ||
+    const allBLFournisseurs = employeeAny.bl_fournisseurs ||
                           employee.blFournisseurs ||
                           [];
+
+    // Filter BL Fournisseurs based on search query
+    const blFournisseurs = useMemo(() => {
+        if (!searchQuery.trim()) {
+            return allBLFournisseurs;
+        }
+        const query = searchQuery.toLowerCase().trim();
+        return allBLFournisseurs.filter((bl) => {
+            const numeroBL = bl.numero_bl?.toLowerCase() || '';
+            const dateBL = new Date(bl.date_bl_fournisseur).toLocaleDateString().toLowerCase();
+            const fournisseurName = bl.fournisseur?.nom_complet?.toLowerCase() || '';
+            const vendeurName = bl.vendeur?.user?.name?.toLowerCase() || bl.vendeur?.numero_post?.toLowerCase() || '';
+            
+            return numeroBL.includes(query) ||
+                   dateBL.includes(query) ||
+                   fournisseurName.includes(query) ||
+                   vendeurName.includes(query);
+        });
+    }, [allBLFournisseurs, searchQuery]);
+
+    // Filter BL Clients based on search query
+    const filteredBLClients = useMemo(() => {
+        if (!searchQuery.trim()) {
+            return blClients;
+        }
+        const query = searchQuery.toLowerCase().trim();
+        return blClients.filter((bl) => {
+            const numeroBL = bl.numero_bl?.toLowerCase() || '';
+            const dateBL = new Date(bl.date_bl).toLocaleDateString().toLowerCase();
+            const clientName = bl.client?.nom_complet?.toLowerCase() || '';
+            const vendeurName = bl.vendeur?.user?.name?.toLowerCase() || bl.vendeur?.numero_post?.toLowerCase() || '';
+            
+            return numeroBL.includes(query) ||
+                   dateBL.includes(query) ||
+                   clientName.includes(query) ||
+                   vendeurName.includes(query);
+        });
+    }, [blClients, searchQuery]);
 
     // Get details for a BL - check all possible property names
     const getBLDetails = (bl: BLFournisseur): DetailBLFournisseur[] => {
@@ -201,13 +242,83 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                         </div>
                     </div>
 
-                    {/* BL Fournisseurs List */}
+                    {/* Tabs */}
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
-                        <div className="p-4 sm:p-6">
+                        <div className="border-b border-gray-200 dark:border-gray-700">
+                            <nav className="flex -mb-px" aria-label="Tabs">
+                                <button
+                                    onClick={() => {
+                                        setActiveTab('fournisseurs');
+                                        setSelectedBLFournisseur(null);
+                                    }}
+                                    className={`
+                                        flex-1 py-4 px-6 text-center text-sm font-medium transition-colors
+                                        ${activeTab === 'fournisseurs'
+                                            ? 'border-b-2 border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                                            : 'text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                                        }
+                                    `}
+                                >
+                                    {t('bl_fournisseurs') || 'BL Fournisseurs'} ({activeTab === 'fournisseurs' ? blFournisseurs.length : allBLFournisseurs.length})
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setActiveTab('clients');
+                                        setSelectedBLClient(null);
+                                    }}
+                                    className={`
+                                        flex-1 py-4 px-6 text-center text-sm font-medium transition-colors
+                                        ${activeTab === 'clients'
+                                            ? 'border-b-2 border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                                            : 'text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                                        }
+                                    `}
+                                >
+                                    {t('bl_clients') || 'BL Clients'} ({activeTab === 'clients' ? filteredBLClients.length : blClients.length})
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
+
+                    {/* Search Bar */}
+                    {!selectedBLFournisseur && !selectedBLClient && (
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+                            <div className="p-4">
+                                <div className="relative">
+                                    <Search className={`absolute top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 ${locale === 'ar' ? 'right-3' : 'left-3'}`} />
+                                    <Input
+                                        type="text"
+                                        placeholder={t('search_bls') || 'Search BLs by number, date, supplier/client name, or vendeur...'}
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className={`pl-10 pr-10 ${locale === 'ar' ? 'pr-10 pl-10 text-right' : ''}`}
+                                    />
+                                    {searchQuery && (
+                                        <button
+                                            onClick={() => setSearchQuery('')}
+                                            className={`absolute top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 ${locale === 'ar' ? 'left-3' : 'right-3'}`}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* BL Fournisseurs List */}
+                    {activeTab === 'fournisseurs' && (
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+                            <div className="p-4 sm:p-6">
                             {!selectedBLFournisseur ? (
                                 <>
                                     <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                                         {t('bl_suppliers_created') || 'BL Suppliers Created'} ({blFournisseurs.length})
+                                        {searchQuery && (
+                                            <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+                                                ({t('filtered_from') || 'filtered from'} {allBLFournisseurs.length})
+                                            </span>
+                                        )}
                                     </h4>
                                     {blFournisseurs && blFournisseurs.length > 0 ? (
                                         <div className="space-y-4">
@@ -267,7 +378,10 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                                         </div>
                                     ) : (
                                         <p className="text-gray-500 dark:text-gray-400">
-                                            {t('no_bl_suppliers_found_employee') || 'No BL suppliers found for this employee'}
+                                            {searchQuery
+                                                ? (t('no_bl_suppliers_found_search') || `No BL suppliers found matching "${searchQuery}"`)
+                                                : (t('no_bl_suppliers_found_employee') || 'No BL suppliers found for this employee')
+                                            }
                                         </p>
                                     )}
                                 </>
@@ -429,19 +543,26 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                                 </div>
                             )}
                         </div>
-                    </div>
+                        </div>
+                    )}
 
                     {/* BL Clients List */}
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <div className="p-4 sm:p-6">
-                            {!selectedBLClient ? (
+                    {activeTab === 'clients' && (
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                            <div className="p-4 sm:p-6">
+                                {!selectedBLClient ? (
                                 <>
                                     <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                                        {t('bl_clients_created') || 'BL Clients Created'} ({blClients.length})
+                                        {t('bl_clients_created') || 'BL Clients Created'} ({filteredBLClients.length})
+                                        {searchQuery && (
+                                            <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+                                                ({t('filtered_from') || 'filtered from'} {blClients.length})
+                                            </span>
+                                        )}
                                     </h4>
-                                    {blClients && blClients.length > 0 ? (
+                                    {filteredBLClients && filteredBLClients.length > 0 ? (
                                         <div className="space-y-4">
-                                            {blClients.map((bl) => {
+                                            {filteredBLClients.map((bl) => {
                                                 const details = getBLClientDetails(bl);
                                                 return (
                                                     <div
@@ -497,7 +618,10 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                                         </div>
                                     ) : (
                                         <p className="text-gray-500 dark:text-gray-400">
-                                            {t('no_bl_clients_found_employee') || 'No BL clients found for this employee'}
+                                            {searchQuery
+                                                ? (t('no_bl_clients_found_search') || `No BL clients found matching "${searchQuery}"`)
+                                                : (t('no_bl_clients_found_employee') || 'No BL clients found for this employee')
+                                            }
                                         </p>
                                     )}
                                 </>
@@ -645,7 +769,8 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                                 </div>
                             )}
                         </div>
-                    </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

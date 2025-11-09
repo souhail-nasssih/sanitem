@@ -339,6 +339,10 @@ return [
     'fill_all_fields' => 'يرجى ملء جميع الحقول.',
     'add' => 'إضافة',
     'search_products' => 'البحث عن منتج...',
+    'search_bls' => 'البحث عن إيصالات التسليم بالرقم أو التاريخ أو المورد/العميل أو البائع...',
+    'filtered_from' => 'مفلتر من',
+    'no_bl_suppliers_found_search' => 'لم يتم العثور على إيصالات موردين تطابق',
+    'no_bl_clients_found_search' => 'لم يتم العثور على إيصالات عملاء تطابق',
     'product_not_found' => 'المنتج غير موجود',
     // Dashboard Statistics
     'total_clients' => 'إجمالي العملاء',
