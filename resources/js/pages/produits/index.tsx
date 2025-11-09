@@ -38,7 +38,15 @@ export default function ProduitsIndex({ produits }: ProduitsIndexProps) {
         isOpen: false,
         produitId: null,
     });
+    const page = usePage();
+    const user = (page.props as { auth?: { user?: { roles?: Array<{ name?: string } | string> } } }).auth?.user;
     const { flash } = usePage().props as { flash?: { success?: string; error?: string } };
+
+    // Check if user is Vendeur - hide edit/delete buttons
+    const isVendeur = user?.roles?.some(role => {
+        const roleName = typeof role === 'string' ? role : role?.name;
+        return roleName === 'Vendeur';
+    }) || false;
 
     // Show toast messages from flash data
     useEffect(() => {
@@ -97,8 +105,8 @@ export default function ProduitsIndex({ produits }: ProduitsIndexProps) {
 
             <div className="py-4 sm:py-6 md:py-8 lg:py-12">
                 <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-                    {/* Create Produit Component */}
-                    {!editingProduit && <CreateProduit onSuccess={handleSuccess} />}
+                    {/* Create Produit Component - Hidden for Vendeur */}
+                    {!editingProduit && !isVendeur && <CreateProduit onSuccess={handleSuccess} />}
 
                     {/* Edit Produit Component */}
                     {editingProduit && (
@@ -142,9 +150,11 @@ export default function ProduitsIndex({ produits }: ProduitsIndexProps) {
                                                 <th className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden lg:table-cell`}>
                                                     {t('prix_vente')}
                                                 </th>
-                                                <th className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
-                                                    {t('actions')}
-                                                </th>
+                                                {!isVendeur && (
+                                                    <th className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
+                                                        {t('actions')}
+                                                    </th>
+                                                )}
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -171,26 +181,28 @@ export default function ProduitsIndex({ produits }: ProduitsIndexProps) {
                                                     <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 hidden lg:table-cell ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
                                                         {produit.prix_vente.toFixed(2)} MAD
                                                     </td>
-                                                    <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                        <div className={`flex items-center gap-1 sm:gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={() => handleEdit(produit)}
-                                                                className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 p-1.5 sm:p-2"
-                                                            >
-                                                                <Pencil className="h-4 w-4" />
-                                                            </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={() => handleDeleteClick(produit.id)}
-                                                                className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 p-1.5 sm:p-2"
-                                                            >
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </Button>
-                                                        </div>
-                                                    </td>
+                                                    {!isVendeur && (
+                                                        <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            <div className={`flex items-center gap-1 sm:gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    onClick={() => handleEdit(produit)}
+                                                                    className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 p-1.5 sm:p-2"
+                                                                >
+                                                                    <Pencil className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    onClick={() => handleDeleteClick(produit.id)}
+                                                                    className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 p-1.5 sm:p-2"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </div>
+                                                        </td>
+                                                    )}
                                                 </tr>
                                             ))}
                                         </tbody>

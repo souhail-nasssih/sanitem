@@ -2,7 +2,14 @@ import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, User, FileText, Eye, Monitor } from 'lucide-react';
+import { ArrowLeft, Calendar, User, FileText, Eye, Monitor, X } from 'lucide-react';
+import { useState } from 'react';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 
 interface Fournisseur {
     id: number;
@@ -28,6 +35,11 @@ interface DetailBLFournisseur {
     produit?: Produit;
 }
 
+interface Employee {
+    id: number;
+    nom_complet: string;
+}
+
 interface BLFournisseur {
     id: number;
     numero_bl: string;
@@ -36,6 +48,7 @@ interface BLFournisseur {
     employee_id: number;
     vendeur_id?: number;
     fournisseur?: Fournisseur;
+    employee?: Employee;
     vendeur?: Vendeur;
     detailBLFournisseurs?: DetailBLFournisseur[];
     detail_b_l_fournisseurs?: DetailBLFournisseur[];
@@ -81,7 +94,7 @@ interface BonLivraison {
     updated_at: string;
 }
 
-interface Employee {
+interface EmployeeFull {
     id: number;
     nom_complet: string;
     cin: string;
@@ -94,12 +107,14 @@ interface Employee {
 }
 
 interface EmployeeShowProps {
-    employee: Employee;
+    employee: EmployeeFull;
     blClients?: BonLivraison[];
 }
 
 export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowProps) {
     const { t, locale } = useTranslation();
+    const [selectedBLFournisseur, setSelectedBLFournisseur] = useState<BLFournisseur | null>(null);
+    const [selectedBLClient, setSelectedBLClient] = useState<BonLivraison | null>(null);
 
     const calculateTotal = (details: DetailBLFournisseur[] = []) => {
         if (!details || !Array.isArray(details)) return 0;
@@ -112,7 +127,7 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
     };
 
     // Get BLs - check all possible property names
-    const employeeAny = employee as Employee & { bl_fournisseurs?: BLFournisseur[] };
+    const employeeAny = employee as EmployeeFull & { bl_fournisseurs?: BLFournisseur[] };
     const blFournisseurs = employeeAny.bl_fournisseurs ||
                           employee.blFournisseurs ||
                           [];
@@ -231,7 +246,7 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        onClick={() => router.visit(`/bl-fournisseurs/${bl.id}`)}
+                                                        onClick={() => setSelectedBLFournisseur(bl)}
                                                         className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                                                     >
                                                         <Eye className="h-4 w-4 mr-1" />
@@ -301,7 +316,7 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        onClick={() => router.visit(`/bl-clients/${bl.id}`)}
+                                                        onClick={() => setSelectedBLClient(bl)}
                                                         className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                                                     >
                                                         <Eye className="h-4 w-4 mr-1" />
@@ -332,6 +347,292 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                     </div>
                 </div>
             </div>
+
+            {/* BL Fournisseur Details Modal */}
+            <Dialog open={!!selectedBLFournisseur} onOpenChange={(open) => !open && setSelectedBLFournisseur(null)}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white">
+                            {t('bl_supplier_details') || 'BL Supplier Details'} - {selectedBLFournisseur?.numero_bl}
+                        </DialogTitle>
+                    </DialogHeader>
+                    {selectedBLFournisseur && (
+                        <div className="space-y-6">
+                            {/* Header Info */}
+                            <div className="pb-4 border-b border-gray-200 dark:border-gray-700">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                        <Calendar className="h-4 w-4" />
+                                        <span>
+                                            <strong>{t('date_bl')}:</strong> {new Date(selectedBLFournisseur.date_bl_fournisseur).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                    {selectedBLFournisseur.employee && (
+                                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                            <User className="h-4 w-4" />
+                                            <span>
+                                                <strong>{t('employee')}:</strong> {selectedBLFournisseur.employee.nom_complet}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {selectedBLFournisseur.vendeur && (
+                                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                            <Monitor className="h-4 w-4" />
+                                            <span>
+                                                <strong>{t('vendeur')}:</strong> {selectedBLFournisseur.vendeur.user?.name || selectedBLFournisseur.vendeur.numero_post}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Fournisseur Information */}
+                            {selectedBLFournisseur.fournisseur && (
+                                <div className="pb-4 border-b border-gray-200 dark:border-gray-700">
+                                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                                        {t('supplier_information') || 'Supplier Information'}
+                                    </h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <span className="text-gray-500 dark:text-gray-400">{t('nom_complet')}:</span>
+                                            <p className="font-medium text-gray-900 dark:text-white">{selectedBLFournisseur.fournisseur.nom_complet}</p>
+                                        </div>
+                                        {selectedBLFournisseur.fournisseur.numero_tel && (
+                                            <div>
+                                                <span className="text-gray-500 dark:text-gray-400">{t('numero_tel')}:</span>
+                                                <p className="font-medium text-gray-900 dark:text-white">{selectedBLFournisseur.fournisseur.numero_tel}</p>
+                                            </div>
+                                        )}
+                                        {selectedBLFournisseur.fournisseur.adresse && (
+                                            <div className="sm:col-span-2">
+                                                <span className="text-gray-500 dark:text-gray-400">{t('adresse')}:</span>
+                                                <p className="font-medium text-gray-900 dark:text-white">{selectedBLFournisseur.fournisseur.adresse}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Products List */}
+                            <div>
+                                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                                    {t('products') || 'Products'}
+                                </h4>
+                                {(() => {
+                                    const details = getBLDetails(selectedBLFournisseur);
+                                    return details && details.length > 0 ? (
+                                        <div className="overflow-x-auto">
+                                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                <thead className="bg-gray-50 dark:bg-gray-700">
+                                                    <tr>
+                                                        <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
+                                                            {t('reference') || 'Reference'}
+                                                        </th>
+                                                        <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
+                                                            {t('description') || 'Description'}
+                                                        </th>
+                                                        <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
+                                                            {t('quantite') || 'Quantity'}
+                                                        </th>
+                                                        <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
+                                                            {t('prix') || 'Price'}
+                                                        </th>
+                                                        <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
+                                                            {t('discription') || 'Product Description'}
+                                                        </th>
+                                                        <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
+                                                            {t('total') || 'Total'}
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                                    {details.map((detail: DetailBLFournisseur) => (
+                                                        <tr key={detail.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                            <td className={`px-4 py-3 text-sm text-gray-900 dark:text-white ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                                {detail.produit?.reférence || '-'}
+                                                            </td>
+                                                            <td className={`px-4 py-3 text-sm text-gray-500 dark:text-gray-300 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                                {detail.produit?.discription || '-'}
+                                                            </td>
+                                                            <td className={`px-4 py-3 text-sm text-gray-500 dark:text-gray-300 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                                {detail.qte}
+                                                            </td>
+                                                            <td className={`px-4 py-3 text-sm text-gray-500 dark:text-gray-300 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                                {detail.prix.toFixed(2)} MAD
+                                                            </td>
+                                                            <td className={`px-4 py-3 text-sm text-gray-500 dark:text-gray-300 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                                {detail.discription || '-'}
+                                                            </td>
+                                                            <td className={`px-4 py-3 text-sm font-medium text-gray-900 dark:text-white ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                                {(detail.qte * detail.prix).toFixed(2)} MAD
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-500 dark:text-gray-400">{t('no_products') || 'No products found'}</p>
+                                    );
+                                })()}
+                            </div>
+
+                            {/* Total */}
+                            {(() => {
+                                const details = getBLDetails(selectedBLFournisseur);
+                                return (
+                                    <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                                        <div className={`flex items-center justify-between ${locale === 'fr' ? 'flex-row-reverse' : ''}`}>
+                                            <span className={`text-2xl font-bold text-indigo-600 dark:text-indigo-400 ${locale === 'fr' ? 'order-1' : locale === 'ar' ? 'order-2' : ''}`}>
+                                                {calculateTotal(details).toFixed(2)} MAD
+                                            </span>
+                                            <span className={`text-lg font-semibold text-gray-900 dark:text-white ${locale === 'fr' ? 'order-2' : locale === 'ar' ? 'order-1' : ''}`}>
+                                                {t('total') || 'Total'}:
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            {/* BL Client Details Modal */}
+            <Dialog open={!!selectedBLClient} onOpenChange={(open) => !open && setSelectedBLClient(null)}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white">
+                            {t('bl_client_details') || 'BL Client Details'} - {selectedBLClient?.numero_bl}
+                        </DialogTitle>
+                    </DialogHeader>
+                    {selectedBLClient && (
+                        <div className="space-y-6">
+                            {/* Header Info */}
+                            <div className="pb-4 border-b border-gray-200 dark:border-gray-700">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                        <Calendar className="h-4 w-4" />
+                                        <span>
+                                            <strong>{t('date_bl')}:</strong> {new Date(selectedBLClient.date_bl).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                    {selectedBLClient.vendeur && (
+                                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                                            <Monitor className="h-4 w-4" />
+                                            <span>
+                                                <strong>{t('vendeur')}:</strong> {selectedBLClient.vendeur.user?.name || selectedBLClient.vendeur.numero_post}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Client Information */}
+                            {selectedBLClient.client && (
+                                <div className="pb-4 border-b border-gray-200 dark:border-gray-700">
+                                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                                        {t('client_information') || 'Client Information'}
+                                    </h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <span className="text-gray-500 dark:text-gray-400">{t('nom_complet')}:</span>
+                                            <p className="font-medium text-gray-900 dark:text-white">{selectedBLClient.client.nom_complet}</p>
+                                        </div>
+                                        {selectedBLClient.client.numero_tel && (
+                                            <div>
+                                                <span className="text-gray-500 dark:text-gray-400">{t('numero_tel')}:</span>
+                                                <p className="font-medium text-gray-900 dark:text-white">{selectedBLClient.client.numero_tel}</p>
+                                            </div>
+                                        )}
+                                        {selectedBLClient.client.adresse && (
+                                            <div className="sm:col-span-2">
+                                                <span className="text-gray-500 dark:text-gray-400">{t('adresse')}:</span>
+                                                <p className="font-medium text-gray-900 dark:text-white">{selectedBLClient.client.adresse}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Products List */}
+                            <div>
+                                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                                    {t('products') || 'Products'}
+                                </h4>
+                                {(() => {
+                                    const details = getBLClientDetails(selectedBLClient);
+                                    return details && details.length > 0 ? (
+                                        <div className="overflow-x-auto">
+                                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                <thead className="bg-gray-50 dark:bg-gray-700">
+                                                    <tr>
+                                                        <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
+                                                            {t('reference') || 'Reference'}
+                                                        </th>
+                                                        <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
+                                                            {t('description') || 'Description'}
+                                                        </th>
+                                                        <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
+                                                            {t('quantite') || 'Quantity'}
+                                                        </th>
+                                                        <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
+                                                            {t('prix') || 'Price'}
+                                                        </th>
+                                                        <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
+                                                            {t('total') || 'Total'}
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                                    {details.map((detail) => (
+                                                        <tr key={detail.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                            <td className={`px-4 py-3 text-sm text-gray-900 dark:text-white ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                                {detail.produit?.reférence || '-'}
+                                                            </td>
+                                                            <td className={`px-4 py-3 text-sm text-gray-500 dark:text-gray-300 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                                {detail.produit?.discription || '-'}
+                                                            </td>
+                                                            <td className={`px-4 py-3 text-sm text-gray-500 dark:text-gray-300 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                                {detail.qte}
+                                                            </td>
+                                                            <td className={`px-4 py-3 text-sm text-gray-500 dark:text-gray-300 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                                {detail.prix.toFixed(2)} MAD
+                                                            </td>
+                                                            <td className={`px-4 py-3 text-sm font-medium text-gray-900 dark:text-white ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                                {(detail.qte * detail.prix).toFixed(2)} MAD
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-500 dark:text-gray-400">{t('no_products') || 'No products found'}</p>
+                                    );
+                                })()}
+                            </div>
+
+                            {/* Total */}
+                            {(() => {
+                                const details = getBLClientDetails(selectedBLClient);
+                                return (
+                                    <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                                        <div className={`flex items-center justify-between ${locale === 'fr' ? 'flex-row-reverse' : ''}`}>
+                                            <span className={`text-2xl font-bold text-indigo-600 dark:text-indigo-400 ${locale === 'fr' ? 'order-1' : locale === 'ar' ? 'order-2' : ''}`}>
+                                                {calculateBLClientTotal(details).toFixed(2)} MAD
+                                            </span>
+                                            <span className={`text-lg font-semibold text-gray-900 dark:text-white ${locale === 'fr' ? 'order-2' : locale === 'ar' ? 'order-1' : ''}`}>
+                                                {t('total') || 'Total'}:
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </AuthenticatedLayout>
     );
 }

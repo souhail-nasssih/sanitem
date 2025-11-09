@@ -31,6 +31,7 @@ class EmployeeController extends Controller
                       ->orderBy('numero_bl', 'desc');
             },
             'blFournisseurs.fournisseur',
+            'blFournisseurs.employee',
             'blFournisseurs.vendeur.user',
             'blFournisseurs.detailBLFournisseurs' => function ($query) {
                 $query->orderBy('id');

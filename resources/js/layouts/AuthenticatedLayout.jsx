@@ -110,23 +110,46 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
         });
     }, [user?.roles]);
 
+    // Check if user is Vendeur - handle both array and object formats
+    const isVendeur = useMemo(() => {
+        if (!user?.roles) return false;
+        return user.roles.some(role => {
+            const roleName = typeof role === 'string' ? role : role?.name;
+            return roleName === 'Vendeur';
+        });
+    }, [user?.roles]);
+
     const { t } = useTranslation();
 
-    const navigation = useMemo(() => [
-        { name: t('dashboard'), href: "/dashboard", icon: LayoutDashboard },
-        { name: t('produits'), href: "/produits", icon: Package },
-        { name: t('employees'), href: "/employees", icon: CalendarClock },
-        { name: t('fournisseurs'), href: "/fournisseurs", icon: Truck },
-        { name: t('clients'), href: "/clients", icon: Users },
-        // { name: "Factures Fournisseurs", href: "/facture-fournisseurs", icon: FileText },
-        // { name: "Factures Clients", href: "/facture-clients", icon: ReceiptText },
-        { name: t('bl_fournisseurs'), href: "/bl-fournisseurs", icon: ClipboardList },
-        { name: t('bl_clients'), href: "/bl-clients", icon: ClipboardCheck },
-        { name: t('trash'), href: "/trash", icon: Trash2 },
-        // { name: "Règlement", href: "/reglements", icon: ReceiptText },
-        ...(isResponsable ? [{ name: t('confirmations'), href: "/responsable/confirmations", icon: CheckCircle2 }] : []),
-        { name: t('settings'), href: "/settings/profile", icon: Settings },
-    ], [isResponsable, t]);
+    // Filter navigation for Vendeur role - only show Dashboard, Produits, BL Fournisseurs, and BL Clients
+    const navigation = useMemo(() => {
+        // Base navigation items
+        const allNavigationItems = [
+            { name: t('dashboard'), href: "/dashboard", icon: LayoutDashboard },
+            { name: t('produits'), href: "/produits", icon: Package },
+            { name: t('employees'), href: "/employees", icon: CalendarClock },
+            { name: t('fournisseurs'), href: "/fournisseurs", icon: Truck },
+            { name: t('clients'), href: "/clients", icon: Users },
+            // { name: "Factures Fournisseurs", href: "/facture-fournisseurs", icon: FileText },
+            // { name: "Factures Clients", href: "/facture-clients", icon: ReceiptText },
+            { name: t('bl_fournisseurs'), href: "/bl-fournisseurs", icon: ClipboardList },
+            { name: t('bl_clients'), href: "/bl-clients", icon: ClipboardCheck },
+            { name: t('trash'), href: "/trash", icon: Trash2 },
+            // { name: "Règlement", href: "/reglements", icon: ReceiptText },
+            ...(isResponsable ? [{ name: t('confirmations'), href: "/responsable/confirmations", icon: CheckCircle2 }] : []),
+            { name: t('settings'), href: "/settings/profile", icon: Settings },
+        ];
+
+        if (isVendeur) {
+            return allNavigationItems.filter(item => 
+                item.href === "/dashboard" ||
+                item.href === "/produits" ||
+                item.href === "/bl-fournisseurs" ||
+                item.href === "/bl-clients"
+            );
+        }
+        return allNavigationItems;
+    }, [isVendeur, isResponsable, t]);
 
     const isActive = (href) => {
         const currentUrl = url.split("?")[0].replace(/\/+$/, "");
