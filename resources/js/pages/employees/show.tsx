@@ -136,8 +136,9 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
 
     // Get details for a BL Client - check all possible property names
     const getBLClientDetails = (bl: BonLivraison): DetailBL[] => {
-        const blAny = bl as BonLivraison & { detail_b_l_s?: DetailBL[] };
+        const blAny = bl as BonLivraison & { detail_b_l_s?: DetailBL[]; detail_b_ls?: DetailBL[] };
         return blAny.detail_b_l_s ||
+               blAny.detail_b_ls ||
                bl.detailBLs ||
                [];
     };

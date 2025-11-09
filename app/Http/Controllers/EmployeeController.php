@@ -53,6 +53,18 @@ class EmployeeController extends Controller
             ->orderBy('numero_bl', 'desc')
             ->get();
 
+        // Ensure detailBLs is accessible - Inertia may serialize it as detail_b_l_s
+        $blClients = $blClients->map(function ($blClient) {
+            $blClientData = $blClient->toArray();
+            
+            // Also add it explicitly as detailBLs for frontend compatibility
+            if (isset($blClientData['detail_b_l_s'])) {
+                $blClientData['detailBLs'] = $blClientData['detail_b_l_s'];
+            }
+            
+            return $blClientData;
+        });
+
         return inertia('employees/show', [
             'employee' => $employee,
             'blClients' => $blClients,
