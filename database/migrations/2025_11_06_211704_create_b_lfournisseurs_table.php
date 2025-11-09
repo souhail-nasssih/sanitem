@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('date_bl_fournisseur');
             $table->foreignId('fournisseur_id')->constrained('fournisseurs')->onDelete('cascade');
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
+            $table->foreignId('vendeur_id')->nullable()->constrained('vendeurs')->onDelete('cascade');
             $table->timestamps();
         });
     }

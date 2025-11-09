@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('date_bl');
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
             $table->foreignId('vendeur_id')->constrained('vendeurs')->onDelete('cascade');
+            $table->foreignId('employee_id')->nullable()->constrained('employees')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +27,13 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Drop foreign key constraint if it exists
+        if (Schema::hasTable('bon_livraisons')) {
+            Schema::table('bon_livraisons', function (Blueprint $table) {
+                $table->dropForeign(['employee_id']);
+            });
+        }
+
         Schema::dropIfExists('bon_livraisons');
     }
 };

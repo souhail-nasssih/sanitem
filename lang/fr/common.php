@@ -118,6 +118,11 @@ return [
     'no_products_found' => 'Aucun produit trouvé. Créez votre premier produit en cliquant sur "Ajouter un Produit".',
     'no_employees_found' => 'Aucun employee trouvé. Créez votre premier employee en cliquant sur "Ajouter un Employee".',
     'no_employee_available' => 'Aucun employee disponible. Veuillez contacter l\'administrateur.',
+    'employee_details' => 'Détails de l\'Employee',
+    'bl_suppliers_created' => 'BL Fournisseurs Créés',
+    'no_bl_suppliers_found_employee' => 'Aucun BL fournisseur trouvé pour cet employee',
+    'bl_clients_created' => 'BL Clients Créés',
+    'no_bl_clients_found_employee' => 'Aucun BL client trouvé pour cet employee',
     // Confirmation
     'security_confirmation' => 'Confirmation de sécurité',
     'enter_employee_cin' => 'Veuillez entrer le CIN de :name pour confirmer la sélection.',

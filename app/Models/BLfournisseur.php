@@ -13,6 +13,7 @@ class BLfournisseur extends Model
         'date_bl_fournisseur',
         'fournisseur_id',
         'employee_id',
+        'vendeur_id',
     ];
 
     /**
@@ -56,6 +57,14 @@ class BLfournisseur extends Model
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    /**
+     * Get the vendeur that owns the BL fournisseur.
+     */
+    public function vendeur(): BelongsTo
+    {
+        return $this->belongsTo(Vendeur::class);
     }
 
     /**

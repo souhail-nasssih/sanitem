@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\BonLivraison;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
@@ -16,6 +17,44 @@ class EmployeeController extends Controller
 
         return inertia('employees/index', [
             'employees' => $employees,
+        ]);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Employee $employee)
+    {
+        $employee->load([
+            'blFournisseurs' => function ($query) {
+                $query->orderBy('date_bl_fournisseur', 'desc')
+                      ->orderBy('numero_bl', 'desc');
+            },
+            'blFournisseurs.fournisseur',
+            'blFournisseurs.vendeur.user',
+            'blFournisseurs.detailBLFournisseurs' => function ($query) {
+                $query->orderBy('id');
+            },
+            'blFournisseurs.detailBLFournisseurs.produit'
+        ]);
+
+        // Get BL clients directly linked to the employee via employee_id
+        $blClients = $employee->bonLivraisons()
+            ->with([
+                'client',
+                'vendeur.user',
+                'detailBLs' => function ($query) {
+                    $query->orderBy('id');
+                },
+                'detailBLs.produit'
+            ])
+            ->orderBy('date_bl', 'desc')
+            ->orderBy('numero_bl', 'desc')
+            ->get();
+
+        return inertia('employees/show', [
+            'employee' => $employee,
+            'blClients' => $blClients,
         ]);
     }
 

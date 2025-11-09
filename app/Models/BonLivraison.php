@@ -13,6 +13,7 @@ class BonLivraison extends Model
         'date_bl',
         'client_id',
         'vendeur_id',
+        'employee_id',
     ];
 
     /**
@@ -56,6 +57,14 @@ class BonLivraison extends Model
     public function vendeur(): BelongsTo
     {
         return $this->belongsTo(Vendeur::class);
+    }
+
+    /**
+     * Get the employee that owns the bon livraison.
+     */
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
     }
 
     /**

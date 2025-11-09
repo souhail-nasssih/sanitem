@@ -118,6 +118,11 @@ return [
     'no_products_found' => 'لم يتم العثور على منتجات. قم بإنشاء منتجك الأول بالنقر على "إضافة منتج".',
     'no_employees_found' => 'لم يتم العثور على موظفين. قم بإنشاء موظفك الأول بالنقر على "إضافة موظف".',
     'no_employee_available' => 'لا يوجد موظف متاح. يرجى الاتصال بالمسؤول.',
+    'employee_details' => 'تفاصيل الموظف',
+    'bl_suppliers_created' => 'إيصالات الموردين المُنشأة',
+    'no_bl_suppliers_found_employee' => 'لم يتم العثور على إيصالات موردين لهذا الموظف',
+    'bl_clients_created' => 'إيصالات العملاء المُنشأة',
+    'no_bl_clients_found_employee' => 'لم يتم العثور على إيصالات عملاء لهذا الموظف',
     // Confirmation
     'security_confirmation' => 'تأكيد الأمان',
     'enter_employee_cin' => 'يرجى إدخال رقم الهوية لـ :name لتأكيد الاختيار.',

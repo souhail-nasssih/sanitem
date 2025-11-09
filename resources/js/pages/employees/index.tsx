@@ -7,7 +7,7 @@ import EditEmployee from '@/components/employees/EditEmployee';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { showToast } from '@/Components/Toast';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Eye } from 'lucide-react';
 
 interface Employee {
     id: number;
@@ -153,6 +153,15 @@ export default function EmployeesIndex({ employees }: EmployeesIndexProps) {
                                                     </td>
                                                     <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
                                                         <div className={`flex items-center gap-1 sm:gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => router.visit(`/employees/${employee.id}`)}
+                                                                title={t('view_details') || 'View Details'}
+                                                                className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1.5 sm:p-2"
+                                                            >
+                                                                <Eye className="h-4 w-4" />
+                                                            </Button>
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"

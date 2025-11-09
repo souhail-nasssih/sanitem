@@ -7,6 +7,7 @@ use App\Models\DetailBL;
 use App\Models\Client;
 use App\Models\Vendeur;
 use App\Models\Produit;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -109,10 +110,17 @@ class BonLivraisonController extends Controller
             }
         }
 
+        // Get employee_id from session if vendeur has selected an employee
+        $employeeId = null;
+        if ($request->session()->has('selected_employee_id')) {
+            $employeeId = $request->session()->get('selected_employee_id');
+        }
+
         $validated = $request->validate([
             'date_bl' => ['required', 'date'],
             'client_id' => ['required', 'exists:clients,id'],
             'vendeur_id' => ['nullable', 'exists:vendeurs,id'],
+            'employee_id' => ['nullable', 'exists:employees,id'],
             'details' => ['required', 'array', 'min:1'],
             'details.*.produit_id' => ['required', 'exists:produits,id'],
             'details.*.qte' => ['required', 'numeric', 'min:0.01'],
@@ -127,6 +135,11 @@ class BonLivraisonController extends Controller
         }
 
         $validated['vendeur_id'] = $vendeurId;
+        
+        // Set employee_id if available from session
+        if ($employeeId) {
+            $validated['employee_id'] = $employeeId;
+        }
 
         // Use database transaction to ensure atomicity and prevent race conditions
         return \DB::transaction(function () use ($validated) {
@@ -150,6 +163,7 @@ class BonLivraisonController extends Controller
                 'date_bl' => $validated['date_bl'],
                 'client_id' => $validated['client_id'],
                 'vendeur_id' => $validated['vendeur_id'],
+                'employee_id' => $validated['employee_id'] ?? null,
             ]);
 
             foreach ($validated['details'] as $detail) {
@@ -177,15 +191,30 @@ class BonLivraisonController extends Controller
      */
     public function update(Request $request, BonLivraison $bonLivraison)
     {
+        // Get employee_id from session if vendeur has selected an employee
+        $employeeId = null;
+        if ($request->session()->has('selected_employee_id')) {
+            $employeeId = $request->session()->get('selected_employee_id');
+        }
+
         $validated = $request->validate([
             'date_bl' => ['required', 'date'],
             'client_id' => ['required', 'exists:clients,id'],
             'vendeur_id' => ['required', 'exists:vendeurs,id'],
+            'employee_id' => ['nullable', 'exists:employees,id'],
             'details' => ['required', 'array', 'min:1'],
             'details.*.produit_id' => ['required', 'exists:produits,id'],
             'details.*.qte' => ['required', 'numeric', 'min:0.01'],
             'details.*.prix' => ['required', 'numeric', 'min:0'],
         ]);
+
+        // Set employee_id if available from session, otherwise keep existing or use from request
+        if ($employeeId) {
+            $validated['employee_id'] = $employeeId;
+        } elseif (!isset($validated['employee_id'])) {
+            // Preserve existing employee_id if not provided
+            $validated['employee_id'] = $bonLivraison->employee_id;
+        }
 
         // Get existing details before deletion to restore stock
         $existingDetails = $bonLivraison->detailBLs;
@@ -203,6 +232,7 @@ class BonLivraisonController extends Controller
             'date_bl' => $validated['date_bl'],
             'client_id' => $validated['client_id'],
             'vendeur_id' => $validated['vendeur_id'],
+            'employee_id' => $validated['employee_id'] ?? null,
         ]);
 
         // Delete existing details

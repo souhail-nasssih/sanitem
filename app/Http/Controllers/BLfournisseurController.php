@@ -7,6 +7,7 @@ use App\Models\DetailBLfournisseur;
 use App\Models\Fournisseur;
 use App\Models\Employee;
 use App\Models\Produit;
+use App\Models\Vendeur;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -17,7 +18,7 @@ class BLfournisseurController extends Controller
      */
     public function index(Request $request)
     {
-        $blFournisseurs = BLfournisseur::with(['fournisseur', 'employee', 'detailBLFournisseurs'])
+        $blFournisseurs = BLfournisseur::with(['fournisseur', 'employee', 'vendeur.user', 'detailBLFournisseurs'])
             ->latest()
             ->paginate(10);
         
@@ -78,6 +79,7 @@ class BLfournisseurController extends Controller
         $blFournisseur->load([
             'fournisseur',
             'employee',
+            'vendeur.user',
             'detailBLFournisseurs.produit'
         ]);
 
@@ -133,10 +135,27 @@ class BLfournisseurController extends Controller
             }
         }
 
+        // Get vendeur_id from current user if available
+        $vendeurId = null;
+        if ($user) {
+            $user->load('vendeur');
+            if ($user->vendeur) {
+                $vendeurId = $user->vendeur->id;
+            } elseif ($user->hasRole('Responsable') || $user->hasRole('Vendeur')) {
+                // Create a vendeur record for Responsable or Vendeur if they don't have one
+                $vendeur = Vendeur::firstOrCreate(
+                    ['user_id' => $user->id],
+                    ['numero_post' => $user->name]
+                );
+                $vendeurId = $vendeur->id;
+            }
+        }
+
         $validated = $request->validate([
             'date_bl_fournisseur' => ['required', 'date'],
             'fournisseur_id' => ['required', 'exists:fournisseurs,id'],
             'employee_id' => ['nullable', 'exists:employees,id'],
+            'vendeur_id' => ['nullable', 'exists:vendeurs,id'],
             'details' => ['required', 'array', 'min:1'],
             'details.*.produit_id' => ['required', 'exists:produits,id'],
             'details.*.qte' => ['required', 'numeric', 'min:0.01'],
@@ -152,6 +171,11 @@ class BLfournisseurController extends Controller
         }
 
         $validated['employee_id'] = $employeeId;
+        
+        // Set vendeur_id if available
+        if ($vendeurId) {
+            $validated['vendeur_id'] = $vendeurId;
+        }
 
         // Use database transaction to ensure atomicity and prevent race conditions
         return \DB::transaction(function () use ($validated) {
@@ -175,6 +199,7 @@ class BLfournisseurController extends Controller
                 'date_bl_fournisseur' => $validated['date_bl_fournisseur'],
                 'fournisseur_id' => $validated['fournisseur_id'],
                 'employee_id' => $validated['employee_id'],
+                'vendeur_id' => $validated['vendeur_id'] ?? null,
             ]);
 
             foreach ($validated['details'] as $detail) {
@@ -203,11 +228,30 @@ class BLfournisseurController extends Controller
      */
     public function update(Request $request, BLfournisseur $blFournisseur)
     {
+        $user = $request->user();
+        
+        // Get vendeur_id from current user if available
+        $vendeurId = null;
+        if ($user) {
+            $user->load('vendeur');
+            if ($user->vendeur) {
+                $vendeurId = $user->vendeur->id;
+            } elseif ($user->hasRole('Responsable') || $user->hasRole('Vendeur')) {
+                // Create a vendeur record for Responsable or Vendeur if they don't have one
+                $vendeur = Vendeur::firstOrCreate(
+                    ['user_id' => $user->id],
+                    ['numero_post' => $user->name]
+                );
+                $vendeurId = $vendeur->id;
+            }
+        }
+
         $validated = $request->validate([
             'numero_bl' => ['required', 'string'],
             'date_bl_fournisseur' => ['required', 'date'],
             'fournisseur_id' => ['required', 'exists:fournisseurs,id'],
             'employee_id' => ['required', 'exists:employees,id'],
+            'vendeur_id' => ['nullable', 'exists:vendeurs,id'],
             'details' => ['required', 'array', 'min:1'],
             'details.*.produit_id' => ['required', 'exists:produits,id'],
             'details.*.qte' => ['required', 'numeric', 'min:0.01'],
@@ -215,11 +259,19 @@ class BLfournisseurController extends Controller
             'details.*.discription' => ['required', 'string', 'max:255'],
         ]);
 
+        // Set vendeur_id if available, otherwise preserve existing
+        if ($vendeurId) {
+            $validated['vendeur_id'] = $vendeurId;
+        } elseif (!isset($validated['vendeur_id'])) {
+            $validated['vendeur_id'] = $blFournisseur->vendeur_id;
+        }
+
         $blFournisseur->update([
             'numero_bl' => $validated['numero_bl'],
             'date_bl_fournisseur' => $validated['date_bl_fournisseur'],
             'fournisseur_id' => $validated['fournisseur_id'],
             'employee_id' => $validated['employee_id'],
+            'vendeur_id' => $validated['vendeur_id'] ?? null,
         ]);
 
         // Get existing details before deletion to restore stock

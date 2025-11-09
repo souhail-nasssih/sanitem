@@ -20,4 +20,12 @@ class Employee extends Model
     {
         return $this->hasMany(BLfournisseur::class);
     }
+
+    /**
+     * Get the bon livraisons (BL clients) for the employee.
+     */
+    public function bonLivraisons(): HasMany
+    {
+        return $this->hasMany(BonLivraison::class);
+    }
 }

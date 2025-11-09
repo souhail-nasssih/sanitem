@@ -70,6 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Employees
     Route::get('employees', [App\Http\Controllers\EmployeeController::class, 'index'])->name('employees.index');
+    Route::get('employees/{employee}', [App\Http\Controllers\EmployeeController::class, 'show'])->name('employees.show');
     Route::post('employees', [App\Http\Controllers\EmployeeController::class, 'store'])->name('employees.store');
     Route::put('employees/{employee}', [App\Http\Controllers\EmployeeController::class, 'update'])->name('employees.update');
     Route::delete('employees/{employee}', [App\Http\Controllers\EmployeeController::class, 'destroy'])->name('employees.destroy');
