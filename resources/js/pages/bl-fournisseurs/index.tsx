@@ -7,7 +7,7 @@ import EditBLFournisseur from '@/components/bl-fournisseurs/EditBLFournisseur';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { showToast } from '@/Components/Toast';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2, Eye } from 'lucide-react';
+import { Pencil, Trash2, Eye, FileText, Calendar, Truck, User, Package } from 'lucide-react';
 
 interface Fournisseur {
     id: number;
@@ -158,16 +158,28 @@ export default function BLFournisseursIndex({ blFournisseurs, fournisseurs = [],
                                         <thead className="bg-gray-50 dark:bg-gray-700">
                                             <tr>
                                                 <th className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
-                                                    {t('numero_bl')}
+                                                    <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                        <FileText className="h-4 w-4" />
+                                                        <span>{t('numero_bl')}</span>
+                                                    </div>
                                                 </th>
                                                 <th className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
-                                                    {t('date_bl')}
+                                                    <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                        <Calendar className="h-4 w-4" />
+                                                        <span>{t('date_bl')}</span>
+                                                    </div>
                                                 </th>
                                                 <th className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell`}>
-                                                    {t('fournisseur')}
+                                                    <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                        <Truck className="h-4 w-4" />
+                                                        <span>{t('fournisseur')}</span>
+                                                    </div>
                                                 </th>
                                                 <th className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden md:table-cell`}>
-                                                    {t('employee')}
+                                                    <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                        <User className="h-4 w-4" />
+                                                        <span>{t('employee')}</span>
+                                                    </div>
                                                 </th>
                                                 <th className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
                                                     {t('actions')}
@@ -179,22 +191,35 @@ export default function BLFournisseursIndex({ blFournisseurs, fournisseurs = [],
                                                 <tr key={blFournisseur.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                                                     <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-sm font-medium text-gray-900 dark:text-white ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
                                                         <div className="flex flex-col">
-                                                            <span>{blFournisseur.numero_bl}</span>
+                                                            <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                                <FileText className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                                                <span>{blFournisseur.numero_bl}</span>
+                                                            </div>
                                                             {blFournisseur.fournisseur && (
-                                                                <span className="text-xs text-gray-500 dark:text-gray-400 sm:hidden">
-                                                                    {blFournisseur.fournisseur.nom_complet}
-                                                                </span>
+                                                                <div className={`flex items-center gap-1 mt-1 text-xs text-gray-500 dark:text-gray-400 sm:hidden ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                                    <Truck className="h-3 w-3" />
+                                                                    <span>{blFournisseur.fournisseur.nom_complet}</span>
+                                                                </div>
                                                             )}
                                                         </div>
                                                     </td>
                                                     <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                        {new Date(blFournisseur.date_bl_fournisseur).toLocaleDateString()}
+                                                        <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                            <Calendar className="h-4 w-4 text-gray-400" />
+                                                            <span>{new Date(blFournisseur.date_bl_fournisseur).toLocaleDateString()}</span>
+                                                        </div>
                                                     </td>
                                                     <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-sm text-gray-500 dark:text-gray-300 hidden sm:table-cell ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                        {blFournisseur.fournisseur?.nom_complet || '-'}
+                                                        <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                            <Truck className="h-4 w-4 text-gray-400" />
+                                                            <span>{blFournisseur.fournisseur?.nom_complet || '-'}</span>
+                                                        </div>
                                                     </td>
                                                     <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-sm text-gray-500 dark:text-gray-300 hidden md:table-cell ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                        {blFournisseur.employee?.nom_complet || '-'}
+                                                        <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                            <User className="h-4 w-4 text-gray-400" />
+                                                            <span>{blFournisseur.employee?.nom_complet || '-'}</span>
+                                                        </div>
                                                     </td>
                                                     <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
                                                         <div className={`flex items-center gap-1 sm:gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>

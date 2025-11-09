@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
-import { Trash2, Search, Plus, X } from 'lucide-react';
+import { Trash2, Search, Plus, X, FileText, Calendar, Truck, Package, Hash, DollarSign, Coins } from 'lucide-react';
 
 interface Fournisseur {
     id: number;
@@ -319,7 +319,10 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                     <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="numero_bl">{t('numero_bl')}</Label>
+                                <Label htmlFor="numero_bl" className="flex items-center gap-2">
+                                    <FileText className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                    <span>{t('numero_bl')}</span>
+                                </Label>
                                 <Input
                                     id="numero_bl"
                                     type="text"
@@ -334,7 +337,10 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="date_bl_fournisseur">{t('date_bl')} *</Label>
+                                <Label htmlFor="date_bl_fournisseur" className="flex items-center gap-2">
+                                    <Calendar className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                    <span>{t('date_bl')} *</span>
+                                </Label>
                                 <Input
                                     id="date_bl_fournisseur"
                                     type="date"
@@ -350,7 +356,10 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div className="grid gap-2">
                                 <div className="flex items-center justify-between">
-                                    <Label htmlFor="fournisseur_id">{t('fournisseur')} *</Label>
+                                    <Label htmlFor="fournisseur_id" className="flex items-center gap-2">
+                                        <Truck className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                        <span>{t('fournisseur')} *</span>
+                                    </Label>
                                     {!showCreateFournisseur && (
                                         <Button
                                             type="button"
@@ -451,7 +460,10 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                         {/* Products Section */}
                         <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                             <div className="flex items-center justify-between">
-                                <Label className="text-base font-semibold">{t('products')}</Label>
+                                <Label className="text-base font-semibold flex items-center gap-2">
+                                    <Package className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                    <span>{t('products')}</span>
+                                </Label>
                             </div>
 
                             {/* Product Search and Selection */}
@@ -523,7 +535,10 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                                                         </div>
                                                     </div>
                                                     <div className="grid gap-2">
-                                                        <Label>{t('quantite')} *</Label>
+                                                        <Label className="flex items-center gap-2">
+                                                            <Package className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                                            <span>{t('quantite')} *</span>
+                                                        </Label>
                                                         <Input
                                                             type="number"
                                                             step="0.01"
@@ -551,7 +566,10 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                             {/* Added Products List */}
                             {productDetails.length > 0 && (
                                 <div className="mt-6 space-y-3">
-                                    <Label className="text-base font-semibold">{t('added_products')}</Label>
+                                    <Label className="text-base font-semibold flex items-center gap-2">
+                                        <Package className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                        <span>{t('added_products')}</span>
+                                    </Label>
                                     {productDetails.map((detail, index) => {
                                         const produit = produits.find(p => p.id.toString() === detail.produit_id);
                                         return (

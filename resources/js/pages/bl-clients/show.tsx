@@ -2,7 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, User } from 'lucide-react';
+import { ArrowLeft, Calendar, User, FileText, Monitor, Users, Phone, MapPin, Package, Hash, DollarSign, Coins } from 'lucide-react';
 
 interface Client {
     id: number;
@@ -99,19 +99,22 @@ export default function BLClientShow({ bonLivraison }: BLClientShowProps) {
                         <div className="p-4 sm:p-6">
                             {/* Header */}
                             <div className="mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-                                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                                    {t('numero_bl')}: {bonLivraison.numero_bl}
-                                </h3>
+                                <div className={`flex items-center gap-3 mb-4 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                    <FileText className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                                        {t('numero_bl')}: {bonLivraison.numero_bl}
+                                    </h3>
+                                </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                                        <Calendar className="h-4 w-4" />
+                                        <Calendar className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                                         <span>
                                             <strong>{t('date_bl')}:</strong> {new Date(bonLivraison.date_bl).toLocaleDateString()}
                                         </span>
                                     </div>
                                     {bonLivraison.vendeur && (
                                         <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                                            <User className="h-4 w-4" />
+                                            <Monitor className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                                             <span>
                                                 <strong>{t('vendeur')}:</strong> {bonLivraison.vendeur.user?.name || `Vendeur #${bonLivraison.vendeur.numero_post}`}
                                             </span>
@@ -123,23 +126,35 @@ export default function BLClientShow({ bonLivraison }: BLClientShowProps) {
                             {/* Client Information */}
                             {bonLivraison.client && (
                                 <div className="mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-                                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-                                        {t('client_information') || 'Client Information'}
-                                    </h4>
+                                    <div className={`flex items-center gap-2 mb-3 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                        <Users className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                            {t('client_information') || 'Client Information'}
+                                        </h4>
+                                    </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                         <div>
-                                            <span className="text-gray-500 dark:text-gray-400">{t('nom_complet')}:</span>
+                                            <div className={`flex items-center gap-2 mb-1 text-gray-500 dark:text-gray-400 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                <User className="h-4 w-4" />
+                                                <span>{t('nom_complet')}:</span>
+                                            </div>
                                             <p className="font-medium text-gray-900 dark:text-white">{bonLivraison.client.nom_complet}</p>
                                         </div>
                                         {bonLivraison.client.numero_tel && (
                                             <div>
-                                                <span className="text-gray-500 dark:text-gray-400">{t('numero_tel')}:</span>
+                                                <div className={`flex items-center gap-2 mb-1 text-gray-500 dark:text-gray-400 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                    <Phone className="h-4 w-4" />
+                                                    <span>{t('numero_tel')}:</span>
+                                                </div>
                                                 <p className="font-medium text-gray-900 dark:text-white">{bonLivraison.client.numero_tel}</p>
                                             </div>
                                         )}
                                         {bonLivraison.client.adresse && (
                                             <div className="sm:col-span-2">
-                                                <span className="text-gray-500 dark:text-gray-400">{t('adresse')}:</span>
+                                                <div className={`flex items-center gap-2 mb-1 text-gray-500 dark:text-gray-400 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                    <MapPin className="h-4 w-4" />
+                                                    <span>{t('adresse')}:</span>
+                                                </div>
                                                 <p className="font-medium text-gray-900 dark:text-white">{bonLivraison.client.adresse}</p>
                                             </div>
                                         )}
@@ -149,28 +164,46 @@ export default function BLClientShow({ bonLivraison }: BLClientShowProps) {
 
                             {/* Products List */}
                             <div className="mb-6">
-                                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                                    {t('products') || 'Products'}
-                                </h4>
+                                <div className={`flex items-center gap-2 mb-4 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                    <Package className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                        {t('products') || 'Products'}
+                                    </h4>
+                                </div>
                                 {details && details.length > 0 ? (
                                     <div className="overflow-x-auto">
                                         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                             <thead className="bg-gray-50 dark:bg-gray-700">
                                                 <tr>
                                                     <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
-                                                        {t('reference') || 'Reference'}
+                                                        <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                            <Hash className="h-4 w-4" />
+                                                            <span>{t('reference') || 'Reference'}</span>
+                                                        </div>
                                                     </th>
                                                     <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
-                                                        {t('description') || 'Description'}
+                                                        <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                            <FileText className="h-4 w-4" />
+                                                            <span>{t('description') || 'Description'}</span>
+                                                        </div>
                                                     </th>
                                                     <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
-                                                        {t('quantite') || 'Quantity'}
+                                                        <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                            <Package className="h-4 w-4" />
+                                                            <span>{t('quantite') || 'Quantity'}</span>
+                                                        </div>
                                                     </th>
                                                     <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
-                                                        {t('prix') || 'Price'}
+                                                        <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                            <DollarSign className="h-4 w-4" />
+                                                            <span>{t('prix') || 'Price'}</span>
+                                                        </div>
                                                     </th>
                                                     <th className={`px-4 py-3 ${locale === 'ar' ? 'text-right' : 'text-left'} text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider`}>
-                                                        {t('total') || 'Total'}
+                                                        <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                                                            <Coins className="h-4 w-4" />
+                                                            <span>{t('total') || 'Total'}</span>
+                                                        </div>
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -205,12 +238,17 @@ export default function BLClientShow({ bonLivraison }: BLClientShowProps) {
                             {/* Total */}
                             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                                 <div className={`flex items-center justify-between ${locale === 'fr' ? 'flex-row-reverse' : ''}`}>
-                                    <span className={`text-2xl font-bold text-indigo-600 dark:text-indigo-400 ${locale === 'fr' ? 'order-1' : locale === 'ar' ? 'order-2' : ''}`}>
-                                        {calculateTotal(details).toFixed(2)} MAD
-                                    </span>
-                                    <span className={`text-lg font-semibold text-gray-900 dark:text-white ${locale === 'fr' ? 'order-2' : locale === 'ar' ? 'order-1' : ''}`}>
-                                        {t('total') || 'Total'}:
-                                    </span>
+                                    <div className={`flex items-center gap-2 ${locale === 'fr' ? 'order-1' : locale === 'ar' ? 'order-2' : ''}`}>
+                                        <Coins className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                                        <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                                            {calculateTotal(details).toFixed(2)} MAD
+                                        </span>
+                                    </div>
+                                    <div className={`flex items-center gap-2 ${locale === 'fr' ? 'order-2' : locale === 'ar' ? 'order-1' : ''}`}>
+                                        <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                                            {t('total') || 'Total'}:
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
