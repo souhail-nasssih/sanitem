@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import { Bell, X, Check, Trash2, AlertTriangle, AlertCircle, Calendar, Clock, User, LogIn } from 'lucide-react';
 import { showToast } from '@/Components/Toast';
@@ -89,7 +89,7 @@ const NotificationCenter = forwardRef((props, ref) => {
     };
 
     // Charger le nombre de notifications non lues
-    const fetchUnreadCount = async () => {
+    const fetchUnreadCount = useCallback(async () => {
         try {
             // Vérifier si le token CSRF existe
             const csrfToken = document.querySelector('meta[name="csrf-token"]');
@@ -120,7 +120,7 @@ const NotificationCenter = forwardRef((props, ref) => {
         } catch (error) {
             console.error('❌ Error fetching unread count:', error);
         }
-    };
+    }, []);
 
     // Marquer une notification comme lue
     const markAsRead = async (notificationId) => {
@@ -263,11 +263,17 @@ const NotificationCenter = forwardRef((props, ref) => {
         channel.listen('.notification.created', (data) => {
             const newNotification = data.notification;
             
-            // Add notification to the list
-            setNotifications(prev => [newNotification, ...prev]);
+            // Check if notification already exists to avoid duplicates
+            setNotifications(prev => {
+                const exists = prev.some(n => n.id === newNotification.id);
+                if (exists) {
+                    return prev;
+                }
+                return [newNotification, ...prev];
+            });
             
-            // Increment unread count
-            setUnreadCount(prev => prev + 1);
+            // Refresh unread count from server to get accurate count
+            fetchUnreadCount();
             
             // Show popup notification
             setPopupNotification(newNotification);
@@ -282,7 +288,7 @@ const NotificationCenter = forwardRef((props, ref) => {
         return () => {
             echo.leave(`user.${user.id}`);
         };
-    }, [user?.id]);
+    }, [user?.id, fetchUnreadCount]);
 
     // Recharger les notifications
     const refreshNotifications = async () => {
