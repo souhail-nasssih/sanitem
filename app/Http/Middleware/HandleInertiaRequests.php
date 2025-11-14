@@ -41,9 +41,9 @@ class HandleInertiaRequests extends Middleware
 
         $user = $request->user();
 
-        // Always load roles if user exists
+        // Always load roles and vendeur relationship if user exists
         if ($user) {
-            $user->load('roles');
+            $user->load('roles', 'vendeur');
         }
 
         // Check if user is Vendeur with pending confirmation

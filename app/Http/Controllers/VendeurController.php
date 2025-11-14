@@ -116,6 +116,18 @@ class VendeurController extends Controller
             ->first();
 
         if (!$confirmation) {
+            // Check if there's a rejected confirmation - redirect to select-employee
+            $rejectedConfirmation = VendeurEmployeeConfirmation::where('vendeur_id', $vendeur->id)
+                ->where('status', 'rejected')
+                ->with(['employee'])
+                ->latest()
+                ->first();
+
+            if ($rejectedConfirmation) {
+                return redirect()->route('vendeur.select-employee')
+                    ->with('error', 'Votre demande a été rejetée. Veuillez sélectionner un autre employé.');
+            }
+
             // Check if there's an approved confirmation
             $approvedConfirmation = VendeurEmployeeConfirmation::where('vendeur_id', $vendeur->id)
                 ->where('status', 'approved')

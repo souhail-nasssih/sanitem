@@ -4,6 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useTranslation } from '@/hooks/useTranslation';
 import { showToast } from '@/Components/Toast';
 import { Loader2 } from 'lucide-react';
+import echo from '@/echo';
 
 interface Employee {
     id: number;
@@ -38,7 +39,8 @@ interface WaitingProps {
 export default function Waiting({ confirmation }: WaitingProps) {
     const { t } = useTranslation();
     const [isPolling, setIsPolling] = useState(true);
-    const { flash } = usePage().props as any;
+    const { flash, auth } = usePage().props as any;
+    const vendeurId = auth?.user?.vendeur?.id;
 
     // Show toast messages from flash data
     useEffect(() => {
@@ -49,6 +51,33 @@ export default function Waiting({ confirmation }: WaitingProps) {
             showToast(flash.error, 'error');
         }
     }, [flash]);
+
+    // Setup WebSocket listener for real-time rejection
+    useEffect(() => {
+        if (!vendeurId || !isPolling) return;
+
+        const channel = echo.private(`vendeur.${vendeurId}`);
+
+        channel.listen('.confirmation.rejected', (data) => {
+            setIsPolling(false);
+            showToast(t('confirmation_rejected'), 'error');
+            setTimeout(() => {
+                router.visit('/vendeur/select-employee');
+            }, 1500);
+        });
+
+        channel.listen('.confirmation.approved', (data) => {
+            setIsPolling(false);
+            showToast(t('confirmation_approved_redirect'), 'success');
+            setTimeout(() => {
+                router.visit('/vendeur/dashboard');
+            }, 1000);
+        });
+
+        return () => {
+            echo.leave(`vendeur.${vendeurId}`);
+        };
+    }, [vendeurId, isPolling, t]);
 
     // Poll for confirmation status
     useEffect(() => {

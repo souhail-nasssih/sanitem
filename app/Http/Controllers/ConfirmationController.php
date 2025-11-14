@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\VendeurEmployeeConfirmationApproved;
+use App\Events\VendeurEmployeeConfirmationRejected;
 use App\Events\VendeurEmployeeConfirmationRequested;
 use App\Models\VendeurEmployeeConfirmation;
 use Illuminate\Http\Request;
@@ -80,6 +81,9 @@ class ConfirmationController extends Controller
             'approved_by' => $request->user()->id,
             'approved_at' => now(),
         ]);
+
+        // Broadcast rejection event
+        event(new VendeurEmployeeConfirmationRejected($confirmation));
 
         return response()->json([
             'success' => true,
