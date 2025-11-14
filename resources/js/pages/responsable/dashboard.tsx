@@ -125,7 +125,7 @@ export default function ResponsableDashboard({ stats, lowStockProducts, recentBL
                         <div className="rounded-lg bg-white p-4 sm:p-6 shadow-sm dark:bg-gray-800">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white">{t('produits')}</h3>
-                                <Package className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                                <Package className="h-6 w-6 text-blue-600 dark:text-indigo-400" />
                             </div>
                             <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                                 {formatNumber(stats.totalProduits)}
@@ -201,7 +201,7 @@ export default function ResponsableDashboard({ stats, lowStockProducts, recentBL
                         <div className="rounded-lg bg-white p-4 sm:p-6 shadow-sm dark:bg-gray-800">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white">{t('bl_clients')}</h3>
-                                <ClipboardCheck className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                                <ClipboardCheck className="h-6 w-6 text-blue-600 dark:text-indigo-400" />
                             </div>
                             <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                                 {formatNumber(stats.totalBLClients)}
@@ -268,7 +268,7 @@ export default function ResponsableDashboard({ stats, lowStockProducts, recentBL
                                             </div>
                                         </div>
                                     ))}
-                                    <Link href="/produits" className="block text-center text-sm text-indigo-600 dark:text-indigo-400 hover:underline mt-4">
+                                    <Link href="/produits" className="block text-center text-sm text-blue-600 dark:text-indigo-400 hover:underline mt-4">
                                         {t('view_all_products')}
                                     </Link>
                                 </div>
@@ -281,7 +281,7 @@ export default function ResponsableDashboard({ stats, lowStockProducts, recentBL
                         <div className="rounded-lg bg-white p-4 sm:p-6 shadow-sm dark:bg-gray-800">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('recent_activity')}</h3>
-                                <Calendar className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                                <Calendar className="h-6 w-6 text-blue-600 dark:text-indigo-400" />
                             </div>
                             <div className="space-y-3">
                                 <div>

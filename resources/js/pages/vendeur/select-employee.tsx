@@ -122,14 +122,14 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
                                                 onClick={() => handleSelectEmployee(employee.id)}
                                                 className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                                                     selectedEmployeeId === employee.id
-                                                        ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 dark:border-indigo-400'
+                                                        ? 'border-blue-500 bg-blue-50 dark:bg-indigo-900/20 dark:border-indigo-400'
                                                         : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                                                 }`}
                                             >
                                                 <div className="flex items-start gap-3">
                                                     <div className={`p-2 rounded-full ${
                                                         selectedEmployeeId === employee.id
-                                                            ? 'bg-indigo-500 text-white'
+                                                            ? 'bg-blue-500 text-white'
                                                             : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                                                     }`}>
                                                         <UserIcon className="h-5 w-5" />
@@ -143,7 +143,7 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
                                                         </p>
                                                     </div>
                                                     {selectedEmployeeId === employee.id && (
-                                                        <div className="text-indigo-500">
+                                                        <div className="text-blue-500">
                                                             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                                                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                                             </svg>
@@ -156,10 +156,10 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
 
                                         {/* CIN Confirmation Section */}
                                         {selectedEmployee && (
-                                            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg">
+                                            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-blue-50 dark:bg-indigo-900/20 border border-blue-200 dark:border-indigo-800 rounded-lg">
                                                 <div className="flex items-start gap-2 sm:gap-3 mb-3 sm:mb-4">
-                                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 rounded-full">
-                                                    <Shield className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                                <div className="p-2 bg-blue-100 dark:bg-indigo-900/40 rounded-full">
+                                                    <Shield className="h-5 w-5 text-blue-600 dark:text-indigo-400" />
                                                 </div>
                                                 <div className="flex-1">
                                                     <h4 className="font-medium text-gray-900 dark:text-white mb-1">
@@ -193,7 +193,7 @@ export default function SelectEmployee({ employees }: SelectEmployeeProps) {
                                             <Button
                                                 type="submit"
                                                 disabled={!selectedEmployeeId || !cinInput.trim() || (selectedEmployee && cinInput.trim() !== selectedEmployee.cin)}
-                                                className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 {t('send_confirmation_request')}
                                             </Button>

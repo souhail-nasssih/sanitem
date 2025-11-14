@@ -172,7 +172,7 @@ export default function FournisseurShow({ fournisseur }: FournisseurShowProps) {
                                                         )}
                                                     </div>
                                                 </div>
-                                                <div className={`text-lg font-bold text-indigo-600 dark:text-indigo-400 ${locale === 'ar' ? 'text-left' : 'text-right'}`}>
+                                                <div className={`text-lg font-bold text-blue-600 dark:text-indigo-400 ${locale === 'ar' ? 'text-left' : 'text-right'}`}>
                                                     {t('total')}: {calculateTotal(blFournisseur.detail_b_l_fournisseurs || blFournisseur.detail_b_lfournisseurs || blFournisseur.detailBLFournisseurs || []).toFixed(2)} MAD
                                                 </div>
                                             </div>

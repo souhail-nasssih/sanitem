@@ -57,8 +57,8 @@ export default function VendeurDashboard({ selectedEmployee }: VendeurDashboardP
                                 <div className="p-4 sm:p-6 text-gray-900 dark:text-gray-100">
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
                                         <div className="flex items-center gap-3 sm:gap-4">
-                                        <div className="p-3 bg-indigo-100 dark:bg-indigo-900/20 rounded-full">
-                                            <User className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                                        <div className="p-3 bg-blue-100 dark:bg-indigo-900/20 rounded-full">
+                                            <User className="h-6 w-6 text-blue-600 dark:text-indigo-400" />
                                         </div>
                                         <div>
                                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">

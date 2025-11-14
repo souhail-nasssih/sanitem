@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -12,6 +13,11 @@ Route::get('/', function () {
 
 // Language switching route
 Route::post('language/{locale}', [App\Http\Controllers\LanguageController::class, 'switch'])->name('language.switch');
+
+// Broadcasting authentication route
+Route::middleware(['auth'])->post('/broadcasting/auth', function () {
+    return Broadcast::auth(request());
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Responsable dashboard
@@ -111,33 +117,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 require __DIR__.'/settings.php';
 
-// Temporary API endpoints for NotificationCenter (prevent 404s)
+// Notification API endpoints
 Route::middleware(['auth', 'verified'])->prefix('api')->group(function () {
-    Route::get('notifications', function () {
-        return response()->json([
-            'data' => [],
-        ]);
-    });
-
-    Route::get('notifications/unread-count', function () {
-        return response()->json([
-            'count' => 0,
-        ]);
-    });
-
-    Route::post('notifications/check-due-dates', function () {
-        return response()->json(['success' => true]);
-    });
-
-    Route::post('notifications/{notification}/read', function () {
-        return response()->json(['success' => true]);
-    });
-
-    Route::post('notifications/read-all', function () {
-        return response()->json(['success' => true]);
-    });
-
-    Route::delete('notifications/{notification}', function () {
-        return response()->json(['success' => true]);
-    });
+    Route::get('notifications', [App\Http\Controllers\NotificationController::class, 'index']);
+    Route::get('notifications/unread-count', [App\Http\Controllers\NotificationController::class, 'unreadCount']);
+    Route::post('notifications/check-due-dates', [App\Http\Controllers\NotificationController::class, 'checkDueDates']);
+    Route::post('notifications/{notification}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead']);
+    Route::post('notifications/read-all', [App\Http\Controllers\NotificationController::class, 'markAllAsRead']);
+    Route::delete('notifications/{notification}', [App\Http\Controllers\NotificationController::class, 'destroy']);
 });

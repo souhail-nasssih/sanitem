@@ -106,21 +106,21 @@ export default function BLFournisseurShow({ blFournisseur }: BLFournisseurShowPr
                             {/* Header */}
                             <div className="mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
                                 <div className={`flex items-center gap-3 mb-4 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
-                                    <FileText className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                                    <FileText className="h-6 w-6 text-blue-600 dark:text-indigo-400" />
                                     <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                                         {t('numero_bl')}: {blFournisseur.numero_bl}
                                     </h3>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                                        <Calendar className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                        <Calendar className="h-4 w-4 text-blue-600 dark:text-indigo-400" />
                                         <span>
                                             <strong>{t('date_bl')}:</strong> {new Date(blFournisseur.date_bl_fournisseur).toLocaleDateString()}
                                         </span>
                                     </div>
                                     {blFournisseur.employee && (
                                         <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                                            <User className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                            <User className="h-4 w-4 text-blue-600 dark:text-indigo-400" />
                                             <span>
                                                 <strong>{t('employee')}:</strong> {blFournisseur.employee.nom_complet}
                                             </span>
@@ -128,7 +128,7 @@ export default function BLFournisseurShow({ blFournisseur }: BLFournisseurShowPr
                                     )}
                                     {blFournisseur.vendeur && (
                                         <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                                            <Monitor className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                            <Monitor className="h-4 w-4 text-blue-600 dark:text-indigo-400" />
                                             <span>
                                                 <strong>{t('vendeur')}:</strong> {blFournisseur.vendeur.user?.name || blFournisseur.vendeur.numero_post}
                                             </span>
@@ -141,7 +141,7 @@ export default function BLFournisseurShow({ blFournisseur }: BLFournisseurShowPr
                             {blFournisseur.fournisseur && (
                                 <div className="mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
                                     <div className={`flex items-center gap-2 mb-3 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
-                                        <Truck className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                        <Truck className="h-5 w-5 text-blue-600 dark:text-indigo-400" />
                                         <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
                                             {t('supplier_information') || 'Supplier Information'}
                                         </h4>
@@ -179,7 +179,7 @@ export default function BLFournisseurShow({ blFournisseur }: BLFournisseurShowPr
                             {/* Products List */}
                             <div className="mb-6">
                                 <div className={`flex items-center gap-2 mb-4 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
-                                    <Package className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                    <Package className="h-5 w-5 text-blue-600 dark:text-indigo-400" />
                                     <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
                                         {t('products') || 'Products'}
                                     </h4>
@@ -262,8 +262,8 @@ export default function BLFournisseurShow({ blFournisseur }: BLFournisseurShowPr
                             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                                 <div className={`flex items-center justify-between ${locale === 'fr' ? 'flex-row-reverse' : ''}`}>
                                     <div className={`flex items-center gap-2 ${locale === 'fr' ? 'order-1' : locale === 'ar' ? 'order-2' : ''}`}>
-                                        <Coins className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                                        <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                                        <Coins className="h-6 w-6 text-blue-600 dark:text-indigo-400" />
+                                        <span className="text-2xl font-bold text-blue-600 dark:text-indigo-400">
                                             {calculateTotal(details).toFixed(2)} MAD
                                         </span>
                                     </div>

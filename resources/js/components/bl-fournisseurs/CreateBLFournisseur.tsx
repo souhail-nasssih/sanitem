@@ -285,7 +285,7 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
             {!isOpen ? (
                 <Button
                     onClick={() => setIsOpen(true)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                     {t('add_bl_supplier')}
                 </Button>
@@ -320,7 +320,7 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="numero_bl" className="flex items-center gap-2">
-                                    <FileText className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                    <FileText className="h-4 w-4 text-blue-600 dark:text-indigo-400" />
                                     <span>{t('numero_bl')}</span>
                                 </Label>
                                 <Input
@@ -338,7 +338,7 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
 
                             <div className="grid gap-2">
                                 <Label htmlFor="date_bl_fournisseur" className="flex items-center gap-2">
-                                    <Calendar className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                    <Calendar className="h-4 w-4 text-blue-600 dark:text-indigo-400" />
                                     <span>{t('date_bl')} *</span>
                                 </Label>
                                 <Input
@@ -357,7 +357,7 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                             <div className="grid gap-2">
                                 <div className="flex items-center justify-between">
                                     <Label htmlFor="fournisseur_id" className="flex items-center gap-2">
-                                        <Truck className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                        <Truck className="h-4 w-4 text-blue-600 dark:text-indigo-400" />
                                         <span>{t('fournisseur')} *</span>
                                     </Label>
                                     {!showCreateFournisseur && (
@@ -366,7 +366,7 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => setShowCreateFournisseur(true)}
-                                            className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 h-8 px-2 text-xs"
+                                            className="text-blue-600 hover:text-blue-700 dark:text-indigo-400 dark:hover:text-indigo-300 h-8 px-2 text-xs"
                                         >
                                             <Plus className="h-3 w-3 mr-1" />
                                             {t('add_fournisseur') || 'Add Fournisseur'}
@@ -461,7 +461,7 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                         <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                             <div className="flex items-center justify-between">
                                 <Label className="text-base font-semibold flex items-center gap-2">
-                                    <Package className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                    <Package className="h-5 w-5 text-blue-600 dark:text-indigo-400" />
                                     <span>{t('products')}</span>
                                 </Label>
                             </div>
@@ -501,7 +501,7 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                                                         {produit.discription}
                                                     </div>
                                                     <div className="flex items-center justify-between mt-1">
-                                                        <div className="text-sm text-indigo-600 dark:text-indigo-400">
+                                                        <div className="text-sm text-blue-600 dark:text-indigo-400">
                                                             {t('prix')}: {produit.prix_achat.toFixed(2)} MAD
                                                         </div>
                                                         <div className={`text-sm font-medium ${produit.qte_stock <= 10 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
@@ -536,7 +536,7 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                                                     </div>
                                                     <div className="grid gap-2">
                                                         <Label className="flex items-center gap-2">
-                                                            <Package className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                                            <Package className="h-4 w-4 text-blue-600 dark:text-indigo-400" />
                                                             <span>{t('quantite')} *</span>
                                                         </Label>
                                                         <Input
@@ -552,7 +552,7 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                                                     <Button
                                                         type="button"
                                                         onClick={handleAddProduct}
-                                                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+                                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                                                     >
                                                         {t('add')}
                                                     </Button>
@@ -567,7 +567,7 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                             {productDetails.length > 0 && (
                                 <div className="mt-6 space-y-3">
                                     <Label className="text-base font-semibold flex items-center gap-2">
-                                        <Package className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                        <Package className="h-5 w-5 text-blue-600 dark:text-indigo-400" />
                                         <span>{t('added_products')}</span>
                                     </Label>
                                     {productDetails.map((detail, index) => {
@@ -604,7 +604,7 @@ export default function CreateBLFournisseur({ fournisseurs, produits, nextNumero
                             <Button
                                 type="submit"
                                 disabled={processing}
-                                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                                className="bg-blue-600 hover:bg-blue-700 text-white"
                             >
                                 {processing && <Spinner />}
                                 {t('create_bl_supplier')}

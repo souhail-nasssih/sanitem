@@ -194,7 +194,7 @@ export default function BLClientsIndex({ bonLivraisons, clients = [], vendeurs =
                                                     <td className={`px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-sm font-medium text-gray-900 dark:text-white ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
                                                         <div className="flex flex-col">
                                                             <div className={`flex items-center gap-2 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
-                                                                <FileText className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                                                <FileText className="h-4 w-4 text-blue-600 dark:text-indigo-400" />
                                                                 <span>{bonLivraison.numero_bl}</span>
                                                             </div>
                                                             {bonLivraison.client && (
@@ -238,7 +238,7 @@ export default function BLClientsIndex({ bonLivraisons, clients = [], vendeurs =
                                                                 variant="ghost"
                                                                 size="sm"
                                                                 onClick={() => handleEdit(bonLivraison)}
-                                                                className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 p-1.5 sm:p-2"
+                                                                className="text-blue-600 hover:text-blue-900 dark:text-indigo-400 dark:hover:text-indigo-300 p-1.5 sm:p-2"
                                                                 title={t('edit') || 'Edit'}
                                                             >
                                                                 <Pencil className="h-4 w-4" />

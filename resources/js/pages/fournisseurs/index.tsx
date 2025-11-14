@@ -166,7 +166,7 @@ export default function FournisseursIndex({ fournisseurs }: FournisseursIndexPro
                                                                 variant="ghost"
                                                                 size="sm"
                                                                 onClick={() => handleEdit(fournisseur)}
-                                                                className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 p-1.5 sm:p-2"
+                                                                className="text-blue-600 hover:text-blue-900 dark:text-indigo-400 dark:hover:text-indigo-300 p-1.5 sm:p-2"
                                                             >
                                                                 <Pencil className="h-4 w-4" />
                                                             </Button>

@@ -173,8 +173,8 @@ export default function Confirmations({ confirmations: initialConfirmations }: C
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-3 mb-2">
-                                                        <div className="p-2 bg-indigo-100 dark:bg-indigo-900/20 rounded-full">
-                                                            <User className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                                        <div className="p-2 bg-blue-100 dark:bg-indigo-900/20 rounded-full">
+                                                            <User className="h-5 w-5 text-blue-600 dark:text-indigo-400" />
                                                         </div>
                                                         <div>
                                                             <h4 className="font-medium text-gray-900 dark:text-white">

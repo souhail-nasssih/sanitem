@@ -331,7 +331,7 @@ export default function EditBonLivraison({ bonLivraison, clients, vendeurs, prod
                                             <div className="text-sm text-gray-500 dark:text-gray-400">
                                                 {produit.discription}
                                             </div>
-                                            <div className="text-sm text-indigo-600 dark:text-indigo-400">
+                                            <div className="text-sm text-blue-600 dark:text-indigo-400">
                                                 {t('prix')}: {produit.prix_vente.toFixed(2)} MAD
                                             </div>
                                         </div>
@@ -370,7 +370,7 @@ export default function EditBonLivraison({ bonLivraison, clients, vendeurs, prod
                                             <Button
                                                 type="button"
                                                 onClick={handleAddProduct}
-                                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+                                                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                                             >
                                                 {t('add')}
                                             </Button>
@@ -419,7 +419,7 @@ export default function EditBonLivraison({ bonLivraison, clients, vendeurs, prod
                     <Button
                         type="submit"
                         disabled={processing}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                         {processing && <Spinner />}
                         {t('update')}

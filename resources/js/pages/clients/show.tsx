@@ -175,7 +175,7 @@ export default function ClientShow({ client }: ClientShowProps) {
                                                         )}
                                                     </div>
                                                 </div>
-                                                <div className={`text-lg font-bold text-indigo-600 dark:text-indigo-400 ${locale === 'ar' ? 'text-left' : 'text-right'}`}>
+                                                <div className={`text-lg font-bold text-blue-600 dark:text-indigo-400 ${locale === 'ar' ? 'text-left' : 'text-right'}`}>
                                                     {t('total')}: {(() => {
                                                         const details = (bonLivraison as any).detail_b_l_s || 
                                                                        (bonLivraison as any).detail_b_ls || 

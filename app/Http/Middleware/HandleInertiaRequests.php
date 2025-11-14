@@ -68,6 +68,13 @@ class HandleInertiaRequests extends Middleware
             'locale' => app()->getLocale(),
             'translations' => $this->getTranslations(),
             'hasPendingConfirmation' => $hasPendingConfirmation,
+            'pusher' => [
+                'key' => config('broadcasting.connections.pusher.key'),
+                'cluster' => config('broadcasting.connections.pusher.options.cluster'),
+                'host' => config('broadcasting.connections.pusher.options.host'),
+                'port' => config('broadcasting.connections.pusher.options.port'),
+                'scheme' => config('broadcasting.connections.pusher.options.scheme'),
+            ],
         ];
     }
 

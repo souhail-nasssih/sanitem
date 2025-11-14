@@ -173,7 +173,7 @@ export default function Dashboard({
                                 <div key={client.id} className="flex items-center justify-between">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0">
-                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-900 dark:text-indigo-300">
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-indigo-900 dark:text-indigo-300">
                                                 <span className="text-sm font-medium">{index + 1}</span>
                                             </div>
                                         </div>

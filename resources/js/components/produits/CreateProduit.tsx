@@ -47,7 +47,7 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
             {!isOpen ? (
                 <Button
                     onClick={() => setIsOpen(true)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                     {t('add_product')}
                 </Button>
@@ -162,7 +162,7 @@ export default function CreateProduit({ onSuccess }: CreateProduitProps) {
                             <Button
                                 type="submit"
                                 disabled={processing}
-                                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                                className="bg-blue-600 hover:bg-blue-700 text-white"
                             >
                                 {processing && <Spinner />}
                                 {t('create_product')}

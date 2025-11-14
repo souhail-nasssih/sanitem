@@ -1,14 +1,19 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { router } from '@inertiajs/react';
-import { Bell, X, Check, Trash2, AlertTriangle, AlertCircle, Calendar, Clock } from 'lucide-react';
+import { router, usePage } from '@inertiajs/react';
+import { Bell, X, Check, Trash2, AlertTriangle, AlertCircle, Calendar, Clock, User, LogIn } from 'lucide-react';
 import { showToast } from '@/Components/Toast';
+import echo from '@/echo';
 
 const NotificationCenter = forwardRef((props, ref) => {
+    const { props: pageProps } = usePage();
+    const user = pageProps.auth?.user;
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isInitialized, setIsInitialized] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupNotification, setPopupNotification] = useState(null);
 
     // Expose functions to parent component
     useImperativeHandle(ref, () => ({
@@ -249,6 +254,36 @@ const NotificationCenter = forwardRef((props, ref) => {
         return () => clearInterval(interval);
     }, [isInitialized]);
 
+    // Setup WebSocket listener for real-time notifications
+    useEffect(() => {
+        if (!user?.id) return;
+
+        const channel = echo.private(`user.${user.id}`);
+
+        channel.listen('.notification.created', (data) => {
+            const newNotification = data.notification;
+            
+            // Add notification to the list
+            setNotifications(prev => [newNotification, ...prev]);
+            
+            // Increment unread count
+            setUnreadCount(prev => prev + 1);
+            
+            // Show popup notification
+            setPopupNotification(newNotification);
+            setShowPopup(true);
+            
+            // Auto-hide popup after 5 seconds
+            setTimeout(() => {
+                setShowPopup(false);
+            }, 5000);
+        });
+
+        return () => {
+            echo.leave(`user.${user.id}`);
+        };
+    }, [user?.id]);
+
     // Recharger les notifications
     const refreshNotifications = async () => {
         setLoading(true);
@@ -287,6 +322,8 @@ const NotificationCenter = forwardRef((props, ref) => {
     // Obtenir l'icône selon le type de notification
     const getNotificationIcon = (type) => {
         switch (type) {
+            case 'login_request':
+                return <LogIn className="h-5 w-5 text-blue-500" />;
             case 'low_stock':
                 return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
             case 'out_of_stock':
@@ -305,6 +342,8 @@ const NotificationCenter = forwardRef((props, ref) => {
     // Obtenir la couleur selon le type
     const getNotificationColor = (type) => {
         switch (type) {
+            case 'login_request':
+                return 'border-l-blue-500 bg-blue-50 dark:bg-blue-900/20';
             case 'low_stock':
                 return 'border-l-yellow-500 bg-yellow-50 dark:bg-yellow-900/20';
             case 'out_of_stock':
@@ -321,8 +360,55 @@ const NotificationCenter = forwardRef((props, ref) => {
     };
 
     return (
-        <div className="relative">
-            {/* Bouton de notification */}
+        <>
+            {/* Popup Notification */}
+            {showPopup && popupNotification && (
+                <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-5 duration-300">
+                    <div className={`p-4 rounded-lg shadow-lg border-l-4 max-w-sm bg-white dark:bg-gray-800 ${getNotificationColor(popupNotification.data.type)}`}>
+                        <div className="flex items-start space-x-3">
+                            <div className="flex-shrink-0 mt-0.5">
+                                {getNotificationIcon(popupNotification.data.type)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                    {popupNotification.data.title}
+                                </p>
+                                <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                                    {popupNotification.data.message}
+                                </p>
+                                {popupNotification.data.action_url && (
+                                    <button
+                                        onClick={async () => {
+                                            // Mark notification as read if it's unread
+                                            if (!popupNotification.read_at) {
+                                                await markAsRead(popupNotification.id);
+                                            }
+                                            router.visit(popupNotification.data.action_url);
+                                            setShowPopup(false);
+                                        }}
+                                        className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 mt-2"
+                                    >
+                                        {popupNotification.data.type === 'login_request' 
+                                            ? 'Voir les confirmations →'
+                                            : popupNotification.data.type === 'low_stock' || popupNotification.data.type === 'out_of_stock'
+                                            ? 'Voir le produit →'
+                                            : 'Voir →'}
+                                    </button>
+                                )}
+                            </div>
+                            <button
+                                onClick={() => setShowPopup(false)}
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="relative">
+                {/* Bouton de notification */}
             <button
                 onClick={togglePanel}
                 className="relative p-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 transition-colors"
@@ -490,19 +576,31 @@ const NotificationCenter = forwardRef((props, ref) => {
                                                 </p>
                                                 {data.action_url && (
                                                     <button
-                                                        onClick={() => {
+                                                        onClick={async () => {
+                                                            // Mark notification as read if it's unread
+                                                            if (isUnread) {
+                                                                await markAsRead(notification.id);
+                                                            }
                                                             router.visit(data.action_url);
                                                             setIsOpen(false);
                                                         }}
                                                         className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 mt-1"
                                                     >
-                                                        Voir le produit →
+                                                        {data.type === 'login_request' 
+                                                            ? 'Voir les confirmations →'
+                                                            : data.type === 'low_stock' || data.type === 'out_of_stock'
+                                                            ? 'Voir le produit →'
+                                                            : 'Voir →'}
                                                     </button>
                                                 )}
                                                 {/* Bouton d'action pour les notifications de date d'échéance */}
                                                 {(data.type?.includes('due_date') || data.facture_type) && data.facture_id && (
                                                     <button
-                                                        onClick={() => {
+                                                        onClick={async () => {
+                                                            // Mark notification as read if it's unread
+                                                            if (isUnread) {
+                                                                await markAsRead(notification.id);
+                                                            }
                                                             const route = data.type?.includes('client') || data.facture_type === 'client'
                                                                 ? `/facture-clients/${data.facture_id}`
                                                                 : `/facture-fournisseurs/${data.facture_id}`;
@@ -523,7 +621,8 @@ const NotificationCenter = forwardRef((props, ref) => {
                     </div>
                 </div>
             )}
-        </div>
+            </div>
+        </>
     );
 });
 

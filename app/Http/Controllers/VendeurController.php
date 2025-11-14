@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Events\VendeurEmployeeConfirmationRequested;
+use App\Events\NotificationCreated;
 use App\Models\Employee;
 use App\Models\VendeurEmployeeConfirmation;
+use App\Models\User;
+use App\Notifications\LoginRequestNotification;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -74,6 +77,17 @@ class VendeurController extends Controller
 
         // Broadcast the confirmation request event
         event(new VendeurEmployeeConfirmationRequested($confirmation));
+
+        // Send notification to all Responsables
+        $responsables = User::role('Responsable')->get();
+        foreach ($responsables as $responsable) {
+            $notification = $responsable->notify(new LoginRequestNotification($confirmation, 'vendeur', $vendeur->user->name));
+            // Get the database notification that was just created
+            $dbNotification = $responsable->notifications()->latest()->first();
+            if ($dbNotification) {
+                event(new NotificationCreated($dbNotification, $responsable->id));
+            }
+        }
 
         return redirect()->route('vendeur.waiting')
             ->with('success', 'Demande de confirmation envoyée. En attente de l\'approbation du Responsable.');

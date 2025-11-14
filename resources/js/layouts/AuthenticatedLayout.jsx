@@ -1,4 +1,3 @@
-import ApplicationLogo from "@/Components/ApplicationLogo";
 import Dropdown from "@/Components/Dropdown";
 import { Link, usePage } from "@inertiajs/react";
 import { useState, useEffect, useRef, useMemo } from "react";
@@ -20,6 +19,7 @@ import {
     CalendarClock,
     Trash2,
     CheckCircle2,
+    Wrench,
 } from "lucide-react";
 import ThemeToggle from "@/Components/ThemeToggle";
 import NotificationCenter from "@/Components/NotificationCenter";
@@ -141,7 +141,7 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
         ];
 
         if (isVendeur) {
-            return allNavigationItems.filter(item => 
+            return allNavigationItems.filter(item =>
                 item.href === "/dashboard" ||
                 item.href === "/produits" ||
                 item.href === "/bl-fournisseurs" ||
@@ -216,13 +216,13 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
                             currentLocale === 'ar' ? 'space-x-reverse space-x-2' : 'space-x-2'
                         }`}
                     >
-                        <ApplicationLogo className="block h-8 w-auto shrink-0 fill-current text-indigo-600 dark:text-indigo-400" />
+                        <Wrench className="block h-8 w-8 shrink-0 text-blue-600 dark:text-indigo-400" />
                         <span
                             className={`text-xl font-bold whitespace-nowrap ${
                                 sidebarOpen ? "opacity-100" : "opacity-0"
                             } text-gray-900 dark:text-white`}
                         >
-                            Gestion Facture
+                            SANITEM
                         </span>
                     </Link>
                 </div>
@@ -239,15 +239,15 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
                                     onClick={handleNavigation}
                                     className={`group flex items-center px-3 py-3 text-sm font-medium rounded-lg mx-2 transition-colors duration-200 ${
                                         active
-                                            ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 shadow-sm"
-                                            : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 dark:text-gray-300 dark:hover:bg-gray-700"
+                                            ? "bg-blue-100 text-blue-700 dark:bg-indigo-900/50 dark:text-indigo-300 shadow-sm"
+                                            : "text-gray-700 hover:bg-blue-50 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700"
                                     }`}
                                 >
                                     <Icon
                                         className={`h-5 w-5 flex-shrink-0 transition-colors duration-200 ${
                                             active
-                                                ? "text-indigo-600 dark:text-indigo-300"
-                                                : "text-gray-500 group-hover:text-indigo-600 dark:text-gray-400 dark:group-hover:text-indigo-400"
+                                                ? "text-blue-600 dark:text-indigo-300"
+                                                : "text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-indigo-400"
                                         }`}
                                     />
                                     <span
@@ -268,8 +268,8 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
                 <div className="p-4 border-t border-gray-200 dark:border-gray-700">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                            <div className="h-9 w-9 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
-                                <span className="text-sm font-medium text-indigo-600 dark:text-indigo-300">
+                            <div className="h-9 w-9 rounded-full bg-blue-100 dark:bg-indigo-900 flex items-center justify-center">
+                                <span className="text-sm font-medium text-blue-600 dark:text-indigo-300">
                                     {user.name.split(" ").map((n) => n[0]).join("")}
                                 </span>
                             </div>
@@ -315,7 +315,7 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
                                             setSidebarOpen(newState);
                                             localStorage.setItem('sidebarOpen', JSON.stringify(newState));
                                         }}
-                                        className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-gray-400 dark:hover:bg-gray-700"
+                                        className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700"
                                         aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
                                     >
                                         {sidebarOpen ? (
@@ -342,11 +342,11 @@ export default function AuthenticatedLayout({ header, children, hideSidebar = fa
                                         <Dropdown.Trigger>
                                             <button
                                                 type="button"
-                                                className="flex items-center max-w-xs rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-gray-800"
+                                                className="flex items-center max-w-xs rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-gray-800"
                                                 aria-label="User menu"
                                             >
-                                                <div className="h-8 w-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
-                                                    <span className="text-xs font-medium text-indigo-600 dark:text-indigo-300">
+                                                <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-indigo-900 flex items-center justify-center">
+                                                    <span className="text-xs font-medium text-blue-600 dark:text-indigo-300">
                                                         {user.name.split(" ").map((n) => n[0]).join("")}
                                                     </span>
                                                 </div>

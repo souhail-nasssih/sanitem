@@ -254,7 +254,7 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                                     className={`
                                         flex-1 py-4 px-6 text-center text-sm font-medium transition-colors
                                         ${activeTab === 'fournisseurs'
-                                            ? 'border-b-2 border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                                            ? 'border-b-2 border-blue-500 text-blue-600 dark:text-indigo-400'
                                             : 'text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                                         }
                                     `}
@@ -269,7 +269,7 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                                     className={`
                                         flex-1 py-4 px-6 text-center text-sm font-medium transition-colors
                                         ${activeTab === 'clients'
-                                            ? 'border-b-2 border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                                            ? 'border-b-2 border-blue-500 text-blue-600 dark:text-indigo-400'
                                             : 'text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                                         }
                                     `}
@@ -366,7 +366,7 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                                                                 <div className="text-sm text-gray-600 dark:text-gray-300">
                                                                     <strong>{t('products') || 'Products'}:</strong> {details.length} |{' '}
                                                                     <strong>{t('total') || 'Total'}:</strong>{' '}
-                                                                    <span className="text-indigo-600 dark:text-indigo-400 font-semibold">
+                                                                    <span className="text-blue-600 dark:text-indigo-400 font-semibold">
                                                                         {calculateTotal(details).toFixed(2)} MAD
                                                                     </span>
                                                                 </div>
@@ -529,7 +529,7 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                                             return (
                                                 <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                                                     <div className={`flex items-center justify-between ${locale === 'fr' ? 'flex-row-reverse' : ''}`}>
-                                                        <span className={`text-2xl font-bold text-indigo-600 dark:text-indigo-400 ${locale === 'fr' ? 'order-1' : locale === 'ar' ? 'order-2' : ''}`}>
+                                                        <span className={`text-2xl font-bold text-blue-600 dark:text-indigo-400 ${locale === 'fr' ? 'order-1' : locale === 'ar' ? 'order-2' : ''}`}>
                                                             {calculateTotal(details).toFixed(2)} MAD
                                                         </span>
                                                         <span className={`text-lg font-semibold text-gray-900 dark:text-white ${locale === 'fr' ? 'order-2' : locale === 'ar' ? 'order-1' : ''}`}>
@@ -606,7 +606,7 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                                                                 <div className="text-sm text-gray-600 dark:text-gray-300">
                                                                     <strong>{t('products') || 'Products'}:</strong> {details.length} |{' '}
                                                                     <strong>{t('total') || 'Total'}:</strong>{' '}
-                                                                    <span className="text-indigo-600 dark:text-indigo-400 font-semibold">
+                                                                    <span className="text-blue-600 dark:text-indigo-400 font-semibold">
                                                                         {calculateBLClientTotal(details).toFixed(2)} MAD
                                                                     </span>
                                                                 </div>
@@ -755,7 +755,7 @@ export default function EmployeeShow({ employee, blClients = [] }: EmployeeShowP
                                             return (
                                                 <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                                                     <div className={`flex items-center justify-between ${locale === 'fr' ? 'flex-row-reverse' : ''}`}>
-                                                        <span className={`text-2xl font-bold text-indigo-600 dark:text-indigo-400 ${locale === 'fr' ? 'order-1' : locale === 'ar' ? 'order-2' : ''}`}>
+                                                        <span className={`text-2xl font-bold text-blue-600 dark:text-indigo-400 ${locale === 'fr' ? 'order-1' : locale === 'ar' ? 'order-2' : ''}`}>
                                                             {calculateBLClientTotal(details).toFixed(2)} MAD
                                                         </span>
                                                         <span className={`text-lg font-semibold text-gray-900 dark:text-white ${locale === 'fr' ? 'order-2' : locale === 'ar' ? 'order-1' : ''}`}>

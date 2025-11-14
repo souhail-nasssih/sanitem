@@ -97,7 +97,7 @@ export default function Waiting({ confirmation }: WaitingProps) {
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <div className="text-center">
                                 <div className="flex justify-center mb-4">
-                                    <Loader2 className="h-12 w-12 text-indigo-600 dark:text-indigo-400 animate-spin" />
+                                    <Loader2 className="h-12 w-12 text-blue-600 dark:text-indigo-400 animate-spin" />
                                 </div>
                                 <h3 className="text-lg font-semibold mb-2">
                                     {t('waiting_confirmation')}

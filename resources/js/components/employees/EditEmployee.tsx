@@ -120,7 +120,7 @@ export default function EditEmployee({ employee, onSuccess, onCancel }: EditEmpl
                     <Button
                         type="submit"
                         disabled={processing}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                         {processing && <Spinner />}
                         {t('update')}
