@@ -10,6 +10,7 @@ use App\Models\Produit;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class BonLivraisonController extends Controller
 {
@@ -278,6 +279,24 @@ class BonLivraisonController extends Controller
 
         return redirect()->route('bl-clients.index')
             ->with('success', 'Bon de Livraison supprimé avec succès.');
+    }
+
+    /**
+     * Download PDF for the specified Bon Livraison
+     */
+    public function downloadPdf(BonLivraison $bonLivraison)
+    {
+        $bonLivraison->load([
+            'client',
+            'vendeur.user',
+            'detailBLs.produit'
+        ]);
+
+        $pdf = PDF::loadView('pdf.bl-client', [
+            'bonLivraison' => $bonLivraison,
+        ]);
+
+        return $pdf->download('BL-Client-' . $bonLivraison->numero_bl . '.pdf');
     }
 }
 

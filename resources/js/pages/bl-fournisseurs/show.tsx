@@ -2,7 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, User, FileText, Monitor, Truck, Phone, MapPin, Package, Hash, DollarSign, Coins } from 'lucide-react';
+import { ArrowLeft, Calendar, User, FileText, Monitor, Truck, Phone, MapPin, Package, Hash, DollarSign, Coins, Download } from 'lucide-react';
 
 interface Fournisseur {
     id: number;
@@ -88,8 +88,8 @@ export default function BLFournisseurShow({ blFournisseur }: BLFournisseurShowPr
 
             <div className="py-4 sm:py-6 md:py-8 lg:py-12">
                 <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-                    {/* Back Button */}
-                    <div className="mb-4 sm:mb-6">
+                    {/* Back Button and Download Button */}
+                    <div className={`mb-4 sm:mb-6 flex items-center gap-3 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
                         <Button
                             variant="ghost"
                             onClick={() => router.visit('/bl-fournisseurs')}
@@ -97,6 +97,13 @@ export default function BLFournisseurShow({ blFournisseur }: BLFournisseurShowPr
                         >
                             <ArrowLeft className="h-4 w-4" />
                             {t('back') || 'Back'}
+                        </Button>
+                        <Button
+                            onClick={() => window.open(`/bl-fournisseurs/${blFournisseur.id}/download`, '_blank')}
+                            className={`flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white ${locale === 'ar' ? 'flex-row-reverse' : ''}`}
+                        >
+                            <Download className="h-4 w-4" />
+                            {t('download_pdf') || 'Download PDF'}
                         </Button>
                     </div>
 

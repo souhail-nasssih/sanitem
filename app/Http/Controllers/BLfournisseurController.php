@@ -10,6 +10,7 @@ use App\Models\Produit;
 use App\Models\Vendeur;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class BLfournisseurController extends Controller
 {
@@ -329,6 +330,25 @@ class BLfournisseurController extends Controller
 
         return redirect()->route('bl-fournisseurs.index')
             ->with('success', 'BL Fournisseur supprimé avec succès.');
+    }
+
+    /**
+     * Download PDF for the specified BL Fournisseur
+     */
+    public function downloadPdf(BLfournisseur $blFournisseur)
+    {
+        $blFournisseur->load([
+            'fournisseur',
+            'employee',
+            'vendeur.user',
+            'detailBLFournisseurs.produit'
+        ]);
+
+        $pdf = PDF::loadView('pdf.bl-fournisseur', [
+            'blFournisseur' => $blFournisseur,
+        ]);
+
+        return $pdf->download('BL-Fournisseur-' . $blFournisseur->numero_bl . '.pdf');
     }
 }
 

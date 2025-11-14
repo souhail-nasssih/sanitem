@@ -98,6 +98,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // BL Fournisseurs
     Route::get('bl-fournisseurs', [App\Http\Controllers\BLfournisseurController::class, 'index'])->name('bl-fournisseurs.index');
     Route::get('bl-fournisseurs/{blFournisseur}', [App\Http\Controllers\BLfournisseurController::class, 'show'])->name('bl-fournisseurs.show');
+    Route::get('bl-fournisseurs/{blFournisseur}/download', [App\Http\Controllers\BLfournisseurController::class, 'downloadPdf'])->name('bl-fournisseurs.download');
     Route::post('bl-fournisseurs', [App\Http\Controllers\BLfournisseurController::class, 'store'])->name('bl-fournisseurs.store');
     Route::put('bl-fournisseurs/{blFournisseur}', [App\Http\Controllers\BLfournisseurController::class, 'update'])->name('bl-fournisseurs.update');
     Route::delete('bl-fournisseurs/{blFournisseur}', [App\Http\Controllers\BLfournisseurController::class, 'destroy'])->name('bl-fournisseurs.destroy');
@@ -105,6 +106,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // BL Clients
     Route::get('bl-clients', [App\Http\Controllers\BonLivraisonController::class, 'index'])->name('bl-clients.index');
     Route::get('bl-clients/{bonLivraison}', [App\Http\Controllers\BonLivraisonController::class, 'show'])->name('bl-clients.show');
+    Route::get('bl-clients/{bonLivraison}/download', [App\Http\Controllers\BonLivraisonController::class, 'downloadPdf'])->name('bl-clients.download');
     Route::post('bl-clients', [App\Http\Controllers\BonLivraisonController::class, 'store'])->name('bl-clients.store');
     Route::put('bl-clients/{bonLivraison}', [App\Http\Controllers\BonLivraisonController::class, 'update'])->name('bl-clients.update');
     Route::delete('bl-clients/{bonLivraison}', [App\Http\Controllers\BonLivraisonController::class, 'destroy'])->name('bl-clients.destroy');

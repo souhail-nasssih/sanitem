@@ -7,7 +7,7 @@ import EditBLFournisseur from '@/components/bl-fournisseurs/EditBLFournisseur';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { showToast } from '@/Components/Toast';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2, Eye, FileText, Calendar, Truck, User, Package } from 'lucide-react';
+import { Pencil, Trash2, Eye, FileText, Calendar, Truck, User, Package, Download } from 'lucide-react';
 
 interface Fournisseur {
     id: number;
@@ -231,6 +231,15 @@ export default function BLFournisseursIndex({ blFournisseurs, fournisseurs = [],
                                                                 title={t('view_details') || 'View Details'}
                                                             >
                                                                 <Eye className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => window.open(`/bl-fournisseurs/${blFournisseur.id}/download`, '_blank')}
+                                                                className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 p-1.5 sm:p-2"
+                                                                title={t('download_pdf') || 'Download PDF'}
+                                                            >
+                                                                <Download className="h-4 w-4" />
                                                             </Button>
                                                             <Button
                                                                 variant="ghost"
